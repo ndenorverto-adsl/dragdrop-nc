@@ -101,6 +101,7 @@
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
 <body>
 <div class="app">
@@ -120,7 +121,7 @@
       <button data-dev="mobile">Móvil</button><button data-dev="tablet">Tablet</button><button data-dev="desktop" class="on">Desktop</button>
     </div>
     <button class="btn" id="btnPreview">Abrir ⧉</button>
-    <button class="btn primary" id="btnExport">Exportar HTML ↓</button>
+    <button class="btn primary" id="btnExport">Exportar ZIP ↓</button>
   </div>
 
   <div class="main">
@@ -410,7 +411,13 @@ function ph(v,t){return (v&&String(v).trim())?String(v).trim():"{{"+t+"}}";}
 function telHref(){return "tel:"+ph(state.settings.tel,"TELEFONO").replace(/\s/g,"");}
 function telText(){return ph(state.settings.tel,"TELEFONO");}
 function waHref(){return "https://wa.me/"+ph(state.settings.wa,"WHATSAPP").replace(/[^0-9]/g,"");}
-function imgOrBox(src,label,cls){return src?`<img src="${src}" class="${cls||''}" loading="lazy" style="width:100%;height:100%;object-fit:cover" alt="">`:`<div class="d-grid" style="place-items:center;width:100%;height:100%;background:var(--bsoft);color:var(--bmuted);font-size:13px">${label||"Imagen {{IMG}}"}</div>`;}
+function imgOrBox(src,label,cls,focus){return src?`<img src="${src}" class="${cls||''}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:${focus||'center'}" alt="">`:`<div class="d-grid" style="place-items:center;width:100%;height:100%;background:var(--bsoft);color:var(--bmuted);font-size:13px">${label||"Imagen {{IMG}}"}</div>`;}
+function formFieldHTML(f){const req=(f.required==='no')?'':'required';const name=esc(f.name||'campo');const ph=esc(f.label||'');
+  if(f.type==='textarea')return `<div class="col-12"><textarea ${req} name="${name}" class="form-control form-control-lg" placeholder="${ph}" rows="3"></textarea></div>`;
+  if(f.type==='select'){const opts=(f.options||'').split(',').filter(x=>x.trim()).map(o=>`<option>${esc(o.trim())}</option>`).join('');return `<div class="col-12"><select ${req} name="${name}" class="form-select form-select-lg"><option value="" disabled selected>${ph||'Elige'}</option>${opts}</select></div>`;}
+  if(f.type==='checkbox')return `<div class="col-12 form-check my-1"><input ${req} type="checkbox" class="form-check-input" name="${name}" id="fc_${name}"><label class="form-check-label small" for="fc_${name}" style="color:var(--bmuted)">${ph}</label></div>`;
+  const t=f.type||'text';const pat=(t==='tel')?' pattern="[0-9]{9}" title="9 dígitos"':'';
+  return `<div class="col-12"><input ${req} name="${name}" type="${t}"${pat} class="form-control form-control-lg" placeholder="${ph}"></div>`;}
 
 /* ---------- ESTILO DE SECCIÓN ---------- */
 const PAD={S:"padding:30px 0",M:"padding:58px 0",L:"padding:86px 0",XL:"padding:120px 0"};
@@ -482,35 +489,25 @@ const LIB={
 
   /* Hero */
   hero_split:{label:"Hero · imagen lateral",ico:"◧",cat:"Hero",styleDef:{pad:"L",bg:"soft"},
-    def:()=>({eyebrow:"Filtración de agua",headline:"Agua filtrada, sin garrafas y sin obras",sub:"Instalación gratis y cuota sin permanencia. Te llamamos en 24 h.",cta:"Quiero que me llamen",cta2:"Llámanos ahora",image:"",t1:"Sin permanencia",t2:"Instalación gratis",t3:"+10.000 hogares"}),
-    fields:[{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"cta",l:"CTA principal"},{k:"cta2",l:"CTA llamada"},{k:"image",l:"Imagen del hero",t:"image"},{k:"t1",l:"Trust 1"},{k:"t2",l:"Trust 2"},{k:"t3",l:"Trust 3"}],
-    render:p=>`<div class="row align-items-center g-4"><div class="col-lg-6">
-      ${p.eyebrow?`<span class="badge-soft">${esc(p.eyebrow)}</span>`:""}
-      <h1 class="display-5 fw-bold h-font mt-3 mb-3" style="color:var(--headcol)">${esc(p.headline)}</h1>
-      <p class="lead mb-4" style="color:var(--txtmuted)">${esc(p.sub)}</p>
-      <div class="d-flex flex-wrap gap-2"><a href="#form" data-cta="form" class="btn btn-brand btn-lg">${esc(p.cta)}</a><a href="${telHref()}" data-cta="call" class="btn btn-ghost btn-lg">📞 ${esc(p.cta2)}</a></div>
-      <div class="d-flex flex-wrap gap-3 mt-4 small" style="color:var(--txtmuted)">${[p.t1,p.t2,p.t3].filter(Boolean).map(t=>`<span>✓ ${esc(t)}</span>`).join("")}</div>
-    </div><div class="col-lg-6"><div class="brandcard ratio ratio-4x3 overflow-hidden">${imgOrBox(p.image,"Imagen / mockup {{IMG_HERO}}")}</div></div></div>`},
+    def:()=>({eyebrow:"Filtración de agua",headline:"Agua filtrada, sin garrafas y sin obras",sub:"Instalación gratis y cuota sin permanencia. Te llamamos en 24 h.",cta:"Quiero que me llamen",cta2:"Llámanos ahora",image:"",focus:"center",t1:"Sin permanencia",t2:"Instalación gratis",t3:"+10.000 hogares",parts:[{k:"eyebrow",on:true},{k:"headline",on:true},{k:"sub",on:true},{k:"ctas",on:true},{k:"trust",on:true}]}),
+    fields:[{k:"parts",l:"Elementos (orden y visibilidad)",t:"elements",parts:[["eyebrow","Eyebrow"],["headline","Titular"],["sub","Subtítulo"],["ctas","Botones"],["trust","Confianza"]]},{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"cta",l:"CTA principal"},{k:"cta2",l:"CTA llamada"},{k:"image",l:"Imagen del hero",t:"image"},{k:"focus",l:"Foco de imagen (móvil)",t:"select",opts:[["center","Centro"],["top","Arriba"],["bottom","Abajo"],["left","Izquierda"],["right","Derecha"]]},{k:"t1",l:"Trust 1"},{k:"t2",l:"Trust 2"},{k:"t3",l:"Trust 3"}],
+    render:p=>{const parts=arr(p.parts).length?arr(p.parts):[{k:"eyebrow",on:true},{k:"headline",on:true},{k:"sub",on:true},{k:"ctas",on:true},{k:"trust",on:true}];
+      const P={eyebrow:()=>p.eyebrow?`<span class="badge-soft">${esc(p.eyebrow)}</span>`:"",headline:()=>`<h1 class="display-5 fw-bold h-font mt-3 mb-3" style="color:var(--headcol)">${esc(p.headline)}</h1>`,sub:()=>`<p class="lead mb-4" style="color:var(--txtmuted)">${esc(p.sub)}</p>`,ctas:()=>`<div class="d-flex flex-wrap gap-2 mb-2"><a href="#form" data-cta="form" class="btn btn-brand btn-lg">${esc(p.cta)}</a><a href="${telHref()}" data-cta="call" class="btn btn-ghost btn-lg">📞 ${esc(p.cta2)}</a></div>`,trust:()=>`<div class="d-flex flex-wrap gap-3 mt-3 small" style="color:var(--txtmuted)">${[p.t1,p.t2,p.t3].filter(Boolean).map(t=>`<span>✓ ${esc(t)}</span>`).join("")}</div>`};
+      const left=parts.filter(x=>x.on!==false).map(x=>P[x.k]?P[x.k]():"").join("");
+      return `<div class="row align-items-center g-4"><div class="col-lg-6">${left}</div><div class="col-lg-6"><div class="brandcard ratio ratio-4x3 overflow-hidden">${imgOrBox(p.image,"Imagen / mockup {{IMG_HERO}}","",p.focus)}</div></div></div>`}},
   hero_center:{label:"Hero · centrado",ico:"◨",cat:"Hero",styleDef:{align:"center",pad:"XL",bg:"ink"},
-    def:()=>({eyebrow:"",headline:"La forma más simple de tener agua filtrada en casa",sub:"Sin obras, sin permanencia y con instalación gratuita.",cta:"Solicitar información",cta2:"Llamar"}),
-    fields:[{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"cta",l:"CTA principal"},{k:"cta2",l:"CTA llamada"}],
-    render:p=>`<div style="max-width:760px;margin:0 auto">${p.eyebrow?`<span class="badge-soft">${esc(p.eyebrow)}</span>`:""}
-      <h1 class="display-4 fw-bold h-font mt-3 mb-3" style="color:var(--headcol)">${esc(p.headline)}</h1>
-      <p class="lead mb-4" style="color:var(--txtmuted)">${esc(p.sub)}</p>
-      <div class="d-flex flex-wrap gap-2 justify-content-center"><a href="#form" data-cta="form" class="btn btn-brand btn-lg">${esc(p.cta)}</a><a href="${telHref()}" data-cta="call" class="btn btn-ghost btn-lg">📞 ${esc(p.cta2)}</a></div></div>`},
+    def:()=>({eyebrow:"",headline:"La forma más simple de tener agua filtrada en casa",sub:"Sin obras, sin permanencia y con instalación gratuita.",cta:"Solicitar información",cta2:"Llamar",parts:[{k:"eyebrow",on:true},{k:"headline",on:true},{k:"sub",on:true},{k:"ctas",on:true}]}),
+    fields:[{k:"parts",l:"Elementos (orden y visibilidad)",t:"elements",parts:[["eyebrow","Eyebrow"],["headline","Titular"],["sub","Subtítulo"],["ctas","Botones"]]},{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"cta",l:"CTA principal"},{k:"cta2",l:"CTA llamada"}],
+    render:p=>{const parts=arr(p.parts).length?arr(p.parts):[{k:"eyebrow",on:true},{k:"headline",on:true},{k:"sub",on:true},{k:"ctas",on:true}];
+      const P={eyebrow:()=>p.eyebrow?`<span class="badge-soft">${esc(p.eyebrow)}</span>`:"",headline:()=>`<h1 class="display-4 fw-bold h-font mt-3 mb-3" style="color:var(--headcol)">${esc(p.headline)}</h1>`,sub:()=>`<p class="lead mb-4" style="color:var(--txtmuted)">${esc(p.sub)}</p>`,ctas:()=>`<div class="d-flex flex-wrap gap-2 justify-content-center"><a href="#form" data-cta="form" class="btn btn-brand btn-lg">${esc(p.cta)}</a><a href="${telHref()}" data-cta="call" class="btn btn-ghost btn-lg">📞 ${esc(p.cta2)}</a></div>`};
+      return `<div style="max-width:760px;margin:0 auto">${parts.filter(x=>x.on!==false).map(x=>P[x.k]?P[x.k]():"").join("")}</div>`}},
   hero_form:{label:"Hero · con formulario",ico:"◫",cat:"Hero",styleDef:{pad:"L",bg:"soft"},
-    def:()=>({eyebrow:"Te llamamos gratis",headline:"Deja tus datos y te llamamos en menos de 24 h",sub:"Sin compromiso. Un asesor resuelve tus dudas y te da precio.",cta:"Quiero que me llamen",consent:"Acepto la política de privacidad."}),
-    fields:[{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"cta",l:"Botón del formulario"},{k:"consent",l:"Consentimiento"}],
-    render:p=>`<div class="row align-items-center g-4"><div class="col-lg-6">
-      ${p.eyebrow?`<span class="badge-soft">${esc(p.eyebrow)}</span>`:""}
-      <h1 class="display-6 fw-bold h-font mt-3 mb-3" style="color:var(--headcol)">${esc(p.headline)}</h1>
-      <p class="lead" style="color:var(--txtmuted)">${esc(p.sub)}</p></div>
-      <div class="col-lg-6"><div class="brandcard p-4" style="background:#fff"><span id="form"></span>
-        <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
-        <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
-        <div class="col-12"><input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos (teléfono español)" class="form-control form-control-lg" placeholder="Teléfono"></div>
-        <div class="col-12 form-check my-1"><input required class="form-check-input" type="checkbox" id="cn1"><label for="cn1" class="form-check-label small" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
-        <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit">${esc(p.cta)}</button></div></form></div></div></div>`},
+    def:()=>({eyebrow:"Te llamamos gratis",headline:"Deja tus datos y te llamamos en menos de 24 h",sub:"Sin compromiso. Un asesor resuelve tus dudas y te da precio.",cta:"Quiero que me llamen",consent:"Acepto la política de privacidad.",parts:[{k:"eyebrow",on:true},{k:"headline",on:true},{k:"sub",on:true}]}),
+    fields:[{k:"parts",l:"Elementos texto (orden/visibilidad)",t:"elements",parts:[["eyebrow","Eyebrow"],["headline","Titular"],["sub","Subtítulo"]]},{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"cta",l:"Botón del formulario"},{k:"consent",l:"Consentimiento"}],
+    render:p=>{const parts=arr(p.parts).length?arr(p.parts):[{k:"eyebrow",on:true},{k:"headline",on:true},{k:"sub",on:true}];
+      const P={eyebrow:()=>p.eyebrow?`<span class="badge-soft">${esc(p.eyebrow)}</span>`:"",headline:()=>`<h1 class="display-6 fw-bold h-font mt-3 mb-3" style="color:var(--headcol)">${esc(p.headline)}</h1>`,sub:()=>`<p class="lead" style="color:var(--txtmuted)">${esc(p.sub)}</p>`};
+      const left=parts.filter(x=>x.on!==false).map(x=>P[x.k]?P[x.k]():"").join("");
+      return `<div class="row align-items-center g-4"><div class="col-lg-6">${left}</div><div class="col-lg-6"><div class="brandcard p-4" style="background:#fff"><span id="form"></span><form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2"><div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div><div class="col-12"><input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos" class="form-control form-control-lg" placeholder="Teléfono"></div><div class="col-12 form-check my-1"><input required class="form-check-input" type="checkbox" id="cn1"><label for="cn1" class="form-check-label small" style="color:var(--bmuted)">${esc(p.consent)}</label></div><div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit">${esc(p.cta)}</button></div></form></div></div></div>`}},
 
   /* Confianza */
   logos:{label:"Logos (subir)",ico:"❖",cat:"Confianza",styleDef:{bg:"white",pad:"S"},
@@ -522,32 +519,32 @@ const LIB={
   stats:{label:"Métricas",ico:"№",cat:"Confianza",styleDef:{bg:"tint",align:"center"},
     def:()=>({items:"+10.000|hogares con agua filtrada\n24 h|tiempo medio de respuesta\n4,8/5|valoración de clientes"}),
     fields:[{k:"items",l:"Métricas: número|etiqueta",t:"ta"}],
-    render:p=>`<div class="row g-4 text-center">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-md"><div class="display-5 fw-bold h-font" style="color:var(--bp)">${esc(c[0]||"")}</div><div class="small" style="color:var(--txtmuted)">${esc(c[1]||"")}</div></div>`}).join("")}</div>`},
+    render:p=>`<div class="row g-4 text-center justify-content-center">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-6 col-md"><div class="display-4 stat-num h-font">${esc(c[0]||"")}</div><div class="small text-uppercase mt-1" style="color:var(--txtmuted);letter-spacing:.06em">${esc(c[1]||"")}</div></div>`}).join("")}</div>`},
   testimonials:{label:"Testimonios",ico:"❝",cat:"Confianza",styleDef:{bg:"soft"},
     def:()=>({title:"Lo que dicen nuestros clientes",items:"Instalación rapidísima y el agua sabe genial.|Marta, Valencia\nAdiós a cargar garrafas. Muy contentos.|Jorge, Sevilla"}),
     fields:[{k:"title",l:"Título"},{k:"items",l:"Testimonios: texto|autor",t:"ta"}],
-    render:p=>`<h2 class="fw-bold h-font text-center mb-5" style="color:var(--headcol)">${esc(p.title)}</h2>
-      <div class="row g-4">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-md-6"><div class="brandcard h-100 p-4"><div class="mb-2" style="color:var(--ba);font-size:18px">★★★★★</div><p class="mb-3" style="color:var(--bink)">"${esc(c[0]||"")}"</p><div class="small fw-semibold" style="color:var(--bmuted)">${esc(c[1]||"")}</div></div></div>`}).join("")}</div>`},
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><div class="sec-title-line"></div></div>
+      <div class="row g-4">${lines(p.items).map(l=>{const c=cells(l);const au=(c[1]||"").trim();const ini=(au.split(/[ ,]+/).filter(Boolean).slice(0,2).map(w=>w[0]).join("")||"★").toUpperCase();return `<div class="col-md-6"><div class="brandcard h-100 p-4"><div class="quote-mark">“</div><div class="mb-3" style="color:var(--ba);font-size:15px;letter-spacing:2px">★★★★★</div><p class="mb-3" style="color:var(--bink);font-size:1.05rem;line-height:1.5">${esc(c[0]||"")}</p><div class="d-flex align-items-center gap-2"><span class="avatar-ini">${esc(ini)}</span><span class="small fw-semibold" style="color:var(--bmuted)">${esc(au)}</span></div></div></div>`}).join("")}</div>`},
 
   /* Contenido */
   features:{label:"Ventajas (cards)",ico:"▦",cat:"Contenido",
     def:()=>({title:"Por qué elegirnos",subtitle:"Todo lo que necesitas, sin complicaciones.",items:"💧|Agua siempre lista|Fría, del tiempo o con gas al instante.\n🔧|Mantenimiento incluido|Nos ocupamos de todo.\n💶|Sin sorpresas|Cuota fija, sin permanencia."}),
     fields:[{k:"title",l:"Título"},{k:"subtitle",l:"Subtítulo"},{k:"items",l:"Cards: icono|título|texto",t:"ta"}],
-    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><p style="color:var(--txtmuted)">${esc(p.subtitle)}</p></div>
-      <div class="row g-4">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-md-4"><div class="brandcard h-100 p-4"><div class="fs-2 mb-2">${esc(c[0]||"")}</div><h3 class="h5 fw-bold h-font" style="color:var(--bink)">${esc(c[1]||"")}</h3><p class="mb-0" style="color:var(--bmuted)">${esc(c[2]||"")}</p></div></div>`}).join("")}</div>`},
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font mb-2" style="color:var(--headcol)">${esc(p.title)}</h2><p style="color:var(--txtmuted)">${esc(p.subtitle)}</p><div class="sec-title-line"></div></div>
+      <div class="row g-4">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-md-4"><div class="brandcard h-100 p-4 p-md-5"><div class="ficon">${esc(c[0]||"")}</div><h3 class="h5 fw-bold h-font mb-2" style="color:var(--bink)">${esc(c[1]||"")}</h3><p class="mb-0" style="color:var(--bmuted)">${esc(c[2]||"")}</p></div></div>`}).join("")}</div>`},
   imagetext:{label:"Imagen + texto",ico:"◪",cat:"Contenido",
-    def:()=>({image:"",pos:"left",title:"Instalación en menos de 72 h",text:"Un técnico va a tu casa, instala el equipo bajo el fregadero y te explica cómo usarlo. Sin obras.",bullets:"Sin coste de instalación\nSin permanencia\nMantenimiento incluido",cta:"Más información"}),
-    fields:[{k:"image",l:"Imagen",t:"image"},{k:"pos",l:"Posición imagen",t:"select",opts:[["left","Izquierda"],["right","Derecha"]]},{k:"title",l:"Título"},{k:"text",l:"Texto",t:"ta"},{k:"bullets",l:"Bullets (uno por línea)",t:"ta"},{k:"cta",l:"CTA (vacío = sin botón)"}],
-    render:p=>{const img=`<div class="col-lg-6"><div class="brandcard ratio ratio-4x3 overflow-hidden">${imgOrBox(p.image,"Imagen {{IMG}}")}</div></div>`;
-      const txt=`<div class="col-lg-6"><h2 class="fw-bold h-font mb-3" style="color:var(--headcol)">${esc(p.title)}</h2><p style="color:var(--txtmuted)">${esc(p.text)}</p>
-      <ul class="list-unstyled mt-3">${lines(p.bullets).map(b=>`<li class="mb-2" style="color:var(--txtmuted)"><span style="color:var(--bp)">✓</span> ${esc(b)}</li>`).join("")}</ul>
-      ${p.cta?`<a href="#form" data-cta="form" class="btn btn-brand mt-2">${esc(p.cta)}</a>`:""}</div>`;
+    def:()=>({image:"",focus:"center",pos:"left",title:"Instalación en menos de 72 h",text:"Un técnico va a tu casa, instala el equipo bajo el fregadero y te explica cómo usarlo. Sin obras.",bullets:"Sin coste de instalación\nSin permanencia\nMantenimiento incluido",cta:"Más información",parts:[{k:"title",on:true},{k:"text",on:true},{k:"bullets",on:true},{k:"cta",on:true}]}),
+    fields:[{k:"parts",l:"Elementos texto (orden/visibilidad)",t:"elements",parts:[["title","Título"],["text","Texto"],["bullets","Bullets"],["cta","Botón"]]},{k:"image",l:"Imagen",t:"image"},{k:"focus",l:"Foco de imagen (móvil)",t:"select",opts:[["center","Centro"],["top","Arriba"],["bottom","Abajo"],["left","Izquierda"],["right","Derecha"]]},{k:"pos",l:"Posición imagen",t:"select",opts:[["left","Izquierda"],["right","Derecha"]]},{k:"title",l:"Título"},{k:"text",l:"Texto",t:"ta"},{k:"bullets",l:"Bullets (uno por línea)",t:"ta"},{k:"cta",l:"CTA (vacío = sin botón)"}],
+    render:p=>{const img=`<div class="col-lg-6"><div class="brandcard ratio ratio-4x3 overflow-hidden">${imgOrBox(p.image,"Imagen {{IMG}}","",p.focus)}</div></div>`;
+      const parts=arr(p.parts).length?arr(p.parts):[{k:"title",on:true},{k:"text",on:true},{k:"bullets",on:true},{k:"cta",on:true}];
+      const P={title:()=>`<h2 class="fw-bold h-font mb-3" style="color:var(--headcol)">${esc(p.title)}</h2>`,text:()=>`<p style="color:var(--txtmuted)">${esc(p.text)}</p>`,bullets:()=>`<ul class="list-unstyled mt-3">${lines(p.bullets).map(b=>`<li class="mb-2 d-flex align-items-center gap-2" style="color:var(--txtmuted)"><span class="chk">✓</span> ${esc(b)}</li>`).join("")}</ul>`,cta:()=>p.cta?`<a href="#form" data-cta="form" class="btn btn-brand mt-2">${esc(p.cta)}</a>`:""};
+      const txt=`<div class="col-lg-6">${parts.filter(x=>x.on!==false).map(x=>P[x.k]?P[x.k]():"").join("")}</div>`;
       return `<div class="row align-items-center g-4">${p.pos==="right"?txt+img:img+txt}</div>`}},
   steps:{label:"Cómo funciona",ico:"⑃",cat:"Contenido",styleDef:{bg:"soft"},
     def:()=>({title:"En 3 pasos",items:"Nos llamas o dejas tus datos|Te asesoramos sin compromiso.\nElegimos tu equipo|El que encaja con tu consumo.\nInstalamos gratis|En menos de 72 h."}),
     fields:[{k:"title",l:"Título"},{k:"items",l:"Pasos: título|texto",t:"ta"}],
-    render:p=>`<h2 class="fw-bold h-font text-center mb-5" style="color:var(--headcol)">${esc(p.title)}</h2>
-      <div class="row g-4">${lines(p.items).map((l,i)=>{const c=cells(l);return `<div class="col-md-4"><div class="d-flex gap-3"><div class="flex-shrink-0 d-grid" style="width:44px;height:44px;border-radius:50%;background:var(--bp);color:#fff;place-items:center;font-weight:700">${i+1}</div><div><h3 class="h6 fw-bold h-font mb-1" style="color:var(--headcol)">${esc(c[0]||"")}</h3><p class="mb-0 small" style="color:var(--txtmuted)">${esc(c[1]||"")}</p></div></div></div>`}).join("")}</div>`},
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><div class="sec-title-line"></div></div>
+      <div class="row g-4">${lines(p.items).map((l,i)=>{const c=cells(l);return `<div class="col-md-4"><div class="brandcard h-100 p-4 d-flex gap-3 align-items-start"><div class="step-num">${i+1}</div><div><h3 class="h6 fw-bold h-font mb-1" style="color:var(--bink)">${esc(c[0]||"")}</h3><p class="mb-0 small" style="color:var(--bmuted)">${esc(c[1]||"")}</p></div></div></div>`}).join("")}</div>`},
   gallery:{label:"Galería de imágenes",ico:"▥",cat:"Contenido",
     def:()=>({title:"Galería",images:[]}),
     fields:[{k:"title",l:"Título"},{k:"images",l:"Imágenes",t:"images"}],
@@ -556,13 +553,13 @@ const LIB={
   pricing:{label:"Tarifas",ico:"$",cat:"Contenido",
     def:()=>({title:"Elige tu plan",plans:"Alquiler|19,90€/mes|Todo incluido · sin permanencia|Lo quiero\nLiberty|29,90€/mes|Equipo en propiedad a 12 meses|Lo quiero"}),
     fields:[{k:"title",l:"Título"},{k:"plans",l:"Planes: nombre|precio|detalle|CTA",t:"ta"}],
-    render:p=>`<h2 class="fw-bold h-font text-center mb-5" style="color:var(--headcol)">${esc(p.title)}</h2>
-      <div class="row g-4 justify-content-center">${lines(p.plans).map((l,i)=>{const c=cells(l);return `<div class="col-md-5"><div class="brandcard h-100 p-4 text-center ${i===1?'featured':''}"><h3 class="h5 fw-bold h-font" style="color:var(--bink)">${esc(c[0]||"")}</h3><div class="display-6 fw-bold h-font my-2" style="color:var(--bp)">${esc(c[1]||"")}</div><p style="color:var(--bmuted)">${esc(c[2]||"")}</p><a href="#form" data-cta="form" class="btn btn-brand w-100 mt-2">${esc(c[3]||"Solicitar")}</a></div></div>`}).join("")}</div>`},
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><div class="sec-title-line"></div></div>
+      <div class="row g-4 justify-content-center pt-2">${lines(p.plans).map((l,i)=>{const c=cells(l);return `<div class="col-md-5"><div class="brandcard h-100 p-4 p-md-5 text-center ${i===1?'featured':''}"><h3 class="h5 fw-bold h-font" style="color:var(--bink)">${esc(c[0]||"")}</h3><div class="display-5 fw-bold h-font my-2" style="color:var(--bp)">${esc(c[1]||"")}</div><p class="d-inline-flex align-items-center gap-2" style="color:var(--bmuted)"><span class="chk">✓</span>${esc(c[2]||"")}</p><a href="#form" data-cta="form" class="btn btn-brand w-100 mt-2">${esc(c[3]||"Solicitar")}</a></div></div>`}).join("")}</div>`},
   faq:{label:"FAQ (acordeón)",ico:"?",cat:"Contenido",styleDef:{width:"narrow"},
     def:()=>({title:"Preguntas frecuentes",items:"¿Tiene permanencia?|No, puedes darte de baja cuando quieras.\n¿La instalación tiene coste?|No, es gratuita.\n¿Qué mantenimiento necesita?|Ninguno por tu parte."}),
     fields:[{k:"title",l:"Título"},{k:"items",l:"FAQ: pregunta|respuesta",t:"ta"}],
-    render:p=>{const g="faq"+Math.random().toString(36).slice(2,7);return `<h2 class="fw-bold h-font text-center mb-5" style="color:var(--headcol)">${esc(p.title)}</h2>
-      <div class="accordion" id="${g}">${lines(p.items).map((l,i)=>{const c=cells(l);const iid=g+i;return `<div class="accordion-item" style="border-color:var(--line)"><h3 class="accordion-header"><button class="accordion-button ${i?'collapsed':''} h-font fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#c${iid}">${esc(c[0]||"")}</button></h3><div id="c${iid}" class="accordion-collapse collapse ${i?'':'show'}" data-bs-parent="#${g}"><div class="accordion-body" style="color:var(--bmuted)">${esc(c[1]||"")}</div></div></div>`}).join("")}</div>`}},
+    render:p=>{const g="faq"+Math.random().toString(36).slice(2,7);return `<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><div class="sec-title-line"></div></div>
+      <div class="accordion" id="${g}">${lines(p.items).map((l,i)=>{const c=cells(l);const iid=g+i;return `<div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button ${i?'collapsed':''} h-font fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#c${iid}">${esc(c[0]||"")}</button></h3><div id="c${iid}" class="accordion-collapse collapse ${i?'':'show'}" data-bs-parent="#${g}"><div class="accordion-body" style="color:var(--bmuted)">${esc(c[1]||"")}</div></div></div>`}).join("")}</div>`}},
   video:{label:"Vídeo (YouTube/Vimeo)",ico:"▶",cat:"Contenido",styleDef:{width:"wide",align:"center"},
     def:()=>({title:"Míralo en 60 segundos",url:"https://www.youtube.com/embed/VIDEO_ID"}),
     fields:[{k:"title",l:"Título"},{k:"url",l:"URL embed (…/embed/ID)"}],
@@ -575,23 +572,23 @@ const LIB={
 
   /* Conversión */
   form:{label:"Formulario callback",ico:"✉",cat:"Conversión",styleDef:{bg:"primary",width:"narrow"},
-    def:()=>({title:"Te llamamos gratis",subtitle:"Déjanos tu número y te llamamos en menos de 24 h.",cta:"Quiero que me llamen",consent:"He leído y acepto la política de privacidad."}),
-    fields:[{k:"title",l:"Título"},{k:"subtitle",l:"Subtítulo"},{k:"cta",l:"Texto del botón"},{k:"consent",l:"Consentimiento"}],
+    def:()=>({title:"Te llamamos gratis",subtitle:"Déjanos tu número y te llamamos en menos de 24 h.",cta:"Quiero que me llamen",consent:"He leído y acepto la política de privacidad.",showPhone:"si",fields:[{label:"Nombre",name:"nombre",type:"text",required:"si",options:""},{label:"Teléfono",name:"telefono",type:"tel",required:"si",options:""}]}),
+    fields:[{k:"title",l:"Título"},{k:"subtitle",l:"Subtítulo"},{k:"fields",l:"Campos del formulario",t:"repeater",addLabel:"Añadir campo",item:[{k:"label",l:"Etiqueta",def:"Campo"},{k:"name",l:"Name (sin espacios)",def:"campo"},{k:"type",l:"Tipo",t:"select",opts:[["text","Texto"],["tel","Teléfono"],["email","Email"],["textarea","Área de texto"],["select","Desplegable"],["checkbox","Casilla"]],def:"text"},{k:"options",l:"Opciones (coma, solo desplegable)",def:""},{k:"required",l:"Obligatorio",t:"select",opts:[["si","Sí"],["no","No"]],def:"si"}]},{k:"cta",l:"Texto del botón"},{k:"consent",l:"Consentimiento"},{k:"showPhone",l:"Mostrar “o llámanos”",t:"select",opts:[["si","Sí"],["no","No"]]}],
     render:p=>`<span id="form"></span><div class="brandcard p-4 p-md-5" style="background:#fff">
       <h2 class="fw-bold h-font text-center mb-1" style="color:var(--bink)">${esc(p.title)}</h2>
       <p class="text-center mb-4" style="color:var(--bmuted)">${esc(p.subtitle)}</p>
       <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
-        <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
-        <div class="col-12"><input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos (teléfono español)" class="form-control form-control-lg" placeholder="Teléfono"></div>
+        ${arr(p.fields).map(formFieldHTML).join("")}
         <div class="col-12 form-check my-1"><input required class="form-check-input" type="checkbox" id="cn2"><label class="form-check-label small" for="cn2" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
         <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit">${esc(p.cta)}</button></div>
-      </form><div class="text-center small mt-3" style="color:var(--bmuted)">o llámanos al <a href="${telHref()}" data-cta="call" style="color:var(--bp);font-weight:600">${telText()}</a></div></div>`},
-  ctaband:{label:"Banda CTA",ico:"▬",cat:"Conversión",styleDef:{bg:"ink",align:"center",pad:"L"},
-    def:()=>({headline:"¿Listo para dejar de cargar garrafas?",cta:"Que me llamen"}),
-    fields:[{k:"headline",l:"Titular"},{k:"cta",l:"Botón"}],
-    render:p=>`<h2 class="fw-bold h-font mb-3" style="color:var(--headcol)">${esc(p.headline)}</h2>
-      <a href="#form" data-cta="form" class="btn btn-brand btn-lg me-2">${esc(p.cta)}</a>
-      <a href="${telHref()}" data-cta="call" class="btn btn-lg" style="color:#fff;border:2px solid rgba(255,255,255,.55);border-radius:var(--btnr)">📞 ${telText()}</a>`},
+      </form>${(p.showPhone!=='no')?`<div class="text-center small mt-3" style="color:var(--bmuted)">o llámanos al <a href="${telHref()}" data-cta="call" style="color:var(--bp);font-weight:600">${telText()}</a></div>`:''}</div>`},
+  ctaband:{label:"Banda CTA",ico:"▬",cat:"Conversión",styleDef:{bg:"white",align:"center",pad:"L"},
+    def:()=>({headline:"¿Listo para dejar de cargar garrafas?",sub:"Te llamamos gratis y sin compromiso.",cta:"Que me llamen",parts:[{k:"headline",on:true},{k:"sub",on:true},{k:"ctas",on:true}]}),
+    fields:[{k:"parts",l:"Elementos (orden/visibilidad)",t:"elements",parts:[["headline","Titular"],["sub","Subtítulo"],["ctas","Botones"]]},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo"},{k:"cta",l:"Botón"}],
+    render:p=>{const parts=arr(p.parts).length?arr(p.parts):[{k:"headline",on:true},{k:"sub",on:true},{k:"ctas",on:true}];
+      const P={headline:()=>`<h2 class="fw-bold h-font mb-2" style="color:#fff;position:relative">${esc(p.headline)}</h2>`,sub:()=>p.sub?`<p class="mb-4" style="color:rgba(255,255,255,.9);position:relative">${esc(p.sub)}</p>`:"",ctas:()=>`<div class="position-relative"><a href="#form" data-cta="form" class="btn btn-lg me-2" style="background:#fff;color:var(--bp);border-radius:var(--btnr);font-weight:800;box-shadow:0 8px 20px rgba(0,0,0,.15)">${esc(p.cta)}</a><a href="${telHref()}" data-cta="call" class="btn btn-lg" style="color:#fff;border:2px solid rgba(255,255,255,.65);border-radius:var(--btnr);font-weight:700">📞 ${telText()}</a></div>`};
+      const body=parts.filter(x=>x.on!==false).map(x=>P[x.k]?P[x.k]():"").join("");
+      return `<div style="background:linear-gradient(135deg,var(--bp),var(--bp2));border-radius:calc(var(--cardr) + 6px);padding:56px 28px;box-shadow:0 24px 56px color-mix(in srgb,var(--bp) 32%,transparent);position:relative;overflow:hidden"><span style="position:absolute;top:-40px;right:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.10)"></span>${body}</div>`}},
   stickycall:{label:"Barra fija móvil",ico:"⤓",cat:"Conversión",raw:true,
     def:()=>({call:"Llamar",wa:"WhatsApp"}),
     fields:[{k:"call",l:"Texto llamada"},{k:"wa",l:"Texto WhatsApp"}],
@@ -678,12 +675,12 @@ const LIB={
   comparison:{label:"Comparador (tabla)",ico:"⚖️",cat:"Contenido",styleDef:{width:"wide"},
     def:()=>({title:"Compara y decide",colUs:"Nosotros",colThem:"Otros",rows:[{feat:"Sin permanencia",us:"1",them:"0"},{feat:"Instalación gratis",us:"1",them:"0"},{feat:"Atención 24/7",us:"1",them:"1"},{feat:"Precio fijo garantizado",us:"1",them:"0"}]}),
     fields:[{k:"title",l:"Título"},{k:"colUs",l:"Columna A (tú)"},{k:"colThem",l:"Columna B"},{k:"rows",l:"Filas",t:"repeater",addLabel:"Añadir fila",item:[{k:"feat",l:"Característica",def:"Ventaja"},{k:"us",l:"A (1=sí, 0=no)",def:"1"},{k:"them",l:"B (1/0)",def:"0"}]}],
-    render:p=>{const ck='<span style="color:#1eae52;font-size:20px">✓</span>';const x='<span style="color:#cbd0d8;font-size:20px">✕</span>';const R=arr(p.rows);return `<h2 class="fw-bold h-font text-center mb-4" style="color:var(--headcol)">${esc(p.title)}</h2>
+    render:p=>{const ck='<span style="color:#1eae52;font-size:20px">✓</span>';const x='<span style="color:#cbd0d8;font-size:20px">✕</span>';const R=arr(p.rows);return `<div class="text-center mb-4"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><div class="sec-title-line"></div></div>
       <div class="brandcard p-0 overflow-hidden" style="max-width:760px;margin:0 auto"><table class="table mb-0 align-middle"><thead><tr><th style="border-color:var(--line)"></th><th class="text-center fw-bold" style="border-color:var(--line);color:var(--bp)">${esc(p.colUs)}</th><th class="text-center" style="border-color:var(--line);color:var(--bmuted)">${esc(p.colThem)}</th></tr></thead><tbody>${R.map(r=>`<tr><td style="color:var(--bink)">${esc(r.feat||"")}</td><td class="text-center">${(r.us==="1")?ck:x}</td><td class="text-center">${(r.them==="1")?ck:x}</td></tr>`).join("")}</tbody></table></div>`}},
   trust:{label:"Sellos de confianza",ico:"🛡️",cat:"Confianza",styleDef:{bg:"white",pad:"S"},
     def:()=>({items:[{icon:"⭐",text:"4,8/5 en Google"},{icon:"🔒",text:"Datos 100% seguros"},{icon:"👥",text:"+10.000 clientes"},{icon:"✅",text:"Sin permanencia"}]}),
     fields:[{k:"items",l:"Sellos",t:"repeater",addLabel:"Añadir sello",item:[{k:"icon",l:"Icono (emoji)",def:"⭐"},{k:"text",l:"Texto",def:"Ventaja"}]}],
-    render:p=>`<div class="d-flex flex-wrap justify-content-center gap-4">${arr(p.items).map(it=>`<div class="d-flex align-items-center gap-2"><span style="font-size:20px">${esc(it.icon||"")}</span><span class="fw-semibold" style="color:var(--txtmuted)">${esc(it.text||"")}</span></div>`).join("")}</div>`},
+    render:p=>`<div class="d-flex flex-wrap justify-content-center gap-3">${arr(p.items).map(it=>`<div class="d-inline-flex align-items-center gap-2 px-3 py-2" style="background:#fff;border:1px solid var(--line);border-radius:50rem;box-shadow:0 4px 14px rgba(16,20,30,.05)"><span style="font-size:19px">${esc(it.icon||"")}</span><span class="fw-semibold" style="color:var(--bink)">${esc(it.text||"")}</span></div>`).join("")}</div>`},
   marquee:{label:"Logos en marquesina",ico:"🎞️",cat:"Confianza",styleDef:{bg:"white",pad:"S"},
     def:()=>({logos:[]}),
     fields:[{k:"logos",l:"Logos (imágenes)",t:"images"}],
@@ -900,16 +897,32 @@ function baseCSS(){return `
   .btn-brand:hover{background:var(--bp2);border-color:var(--bp2);color:var(--btntext,#fff)}
   .btn-ghost{background:transparent;border:2px solid var(--bp);color:var(--bp);border-radius:var(--btnr);font-weight:600;padding:calc(.6rem - 1px) 1.15rem}
   .btn-ghost:hover{background:var(--bp);color:#fff}
-  .brandcard{background:#fff;border:1px solid var(--line);border-radius:var(--cardr);color:var(--bink)}
-  .brandcard.featured{border-color:var(--bp);box-shadow:0 10px 30px rgba(0,0,0,.10)}
-  .badge-soft{display:inline-block;background:var(--bsoft);color:var(--bp);border:1px solid var(--line);padding:.35rem .8rem;border-radius:50rem;font-size:.8rem;font-weight:600}
-  .accordion-button:not(.collapsed){background:var(--bsoft);color:var(--bp)}
+  .brandcard{background:#fff;border:1px solid var(--line);border-radius:var(--cardr);color:var(--bink);position:relative;box-shadow:0 1px 2px rgba(16,20,30,.04),0 10px 26px rgba(16,20,30,.05);transition:transform .22s ease,box-shadow .22s ease}
+  .brandcard:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(16,20,30,.06),0 22px 48px rgba(16,20,30,.10)}
+  .brandcard:has(form),.brandcard:has(table),.brandcard:has([data-live]){transform:none!important;box-shadow:0 1px 2px rgba(16,20,30,.04),0 12px 30px rgba(16,20,30,.06)!important}
+  .brandcard.featured{border-color:var(--bp);box-shadow:0 18px 46px color-mix(in srgb,var(--bp) 22%,transparent);transform:translateY(-4px)}
+  .brandcard.featured::before{content:"★ Recomendado";position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--bp);color:#fff;padding:4px 14px;border-radius:50rem;font-size:11px;font-weight:700;letter-spacing:.02em;white-space:nowrap;box-shadow:0 6px 16px color-mix(in srgb,var(--bp) 40%,transparent)}
+  .badge-soft{display:inline-block;background:color-mix(in srgb,var(--bp) 9%,#fff);color:var(--bp);border:1px solid color-mix(in srgb,var(--bp) 18%,transparent);padding:.4rem .9rem;border-radius:50rem;font-size:.8rem;font-weight:700;letter-spacing:.01em}
+  .ficon{display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;font-size:26px;margin-bottom:14px;background:color-mix(in srgb,var(--bp) 11%,#fff);border:1px solid color-mix(in srgb,var(--bp) 16%,transparent);box-shadow:0 6px 16px color-mix(in srgb,var(--bp) 12%,transparent)}
+  .sec-kicker{display:inline-block;font-size:.78rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--bp);margin-bottom:.5rem}
+  .sec-title-line{width:52px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--bp),var(--ba));margin:14px auto 0}
+  .quote-mark{font-family:Georgia,serif;font-size:56px;line-height:.6;color:color-mix(in srgb,var(--bp) 35%,#fff)}
+  .avatar-ini{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--bp),var(--bp2));flex:0 0 auto}
+  .step-num{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-weight:800;font-size:20px;color:#fff;background:linear-gradient(135deg,var(--bp),var(--bp2));box-shadow:0 8px 20px color-mix(in srgb,var(--bp) 28%,transparent);flex:0 0 auto}
+  .stat-num{font-weight:800;background:linear-gradient(135deg,var(--bp),var(--ba));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .chk{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:color-mix(in srgb,var(--bp) 14%,#fff);color:var(--bp);font-size:13px;flex:0 0 auto}
+  .accordion-item{border-radius:14px!important;overflow:hidden;margin-bottom:10px;border:1px solid var(--line)!important;box-shadow:0 4px 14px rgba(16,20,30,.04)}
+  .accordion-button{border-radius:14px!important}
+  .accordion-button:not(.collapsed){background:color-mix(in srgb,var(--bp) 7%,#fff);color:var(--bp)}
   .accordion-button:focus{box-shadow:none;border-color:var(--line)}
-  .form-control:focus{border-color:var(--bp);box-shadow:0 0 0 .2rem color-mix(in srgb,var(--bp) 25%,transparent)}
-  .cal-day{border:1px solid var(--line);background:#fff;border-radius:12px;padding:7px 12px;min-width:56px;text-align:center;cursor:pointer;line-height:1.15}
+  .accordion-button::after{background-size:1rem}
+  .form-control,.form-select{border-radius:calc(var(--cardr) - 6px)}
+  .form-control:focus,.form-select:focus{border-color:var(--bp);box-shadow:0 0 0 .2rem color-mix(in srgb,var(--bp) 22%,transparent)}
+  .cal-day{border:1px solid var(--line);background:#fff;border-radius:12px;padding:7px 12px;min-width:56px;text-align:center;cursor:pointer;line-height:1.15;transition:.15s}
+  .cal-day:hover{border-color:var(--bp)}
   .cal-day span{display:block;font-size:11px;color:var(--bmuted)} .cal-day strong{font-size:17px;color:var(--bink)}
   .cal-day.on{background:var(--bp);border-color:var(--bp)} .cal-day.on span,.cal-day.on strong{color:#fff}
-  [data-opt].on{background:var(--bp);border-color:var(--bp);color:#fff}
+  [data-opt]{transition:.15s} [data-opt].on{background:var(--bp);border-color:var(--bp);color:#fff}
   /* Estilos de botonazo (se activan por clase en <body>) */
   .cta-apple .btn-brand{border-radius:999px;font-weight:500;min-height:46px;padding:.55rem 1.5rem;box-shadow:none}
   .cta-instagram .btn-brand{background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);border:0;color:#fff;border-radius:12px;font-weight:700;box-shadow:0 8px 22px rgba(220,39,67,.32)}
@@ -1069,6 +1082,8 @@ function subField(sf,it,repk,i){
 function defRepItem(f){const o={};(f.item||[]).forEach(sf=>{o[sf.k]=(sf.def!==undefined?sf.def:"");});return o;}
 function fieldHTML(f,obj){
   const v=obj[f.k];
+  if(f.t==="elements"){const L=arr(v);const lbl={};(f.parts||[]).forEach(pp=>lbl[pp[0]]=pp[1]);
+    return `<div class="rep">${L.map((it,i)=>`<div class="rep-item" style="display:flex;align-items:center;gap:8px;padding:7px 9px"><input type="checkbox" data-elon="${f.k}" data-ei="${i}" ${it.on!==false?'checked':''}><span style="flex:1">${esc(lbl[it.k]||it.k)}</span><button type="button" class="mini" data-emv="${f.k}" data-ei="${i}" data-d="up">↑</button><button type="button" class="mini" data-emv="${f.k}" data-ei="${i}" data-d="down">↓</button></div>`).join("")}</div>`;}
   if(f.t==="repeater"){const L=arr(v);return `<div class="rep">${L.map((it,i)=>`<div class="rep-item"><div class="rep-head"><b>#${i+1}</b><span><button type="button" class="mini" data-rmv="${f.k}" data-ri="${i}" data-d="up">↑</button><button type="button" class="mini" data-rmv="${f.k}" data-ri="${i}" data-d="down">↓</button><button type="button" class="mini" data-rdel="${f.k}" data-ri="${i}">✕</button></span></div>${(f.item||[]).map(sf=>`<div class="fld"><label>${sf.l}</label>${subField(sf,it,f.k,i)}</div>`).join("")}</div>`).join("")}<button type="button" class="btn sm" data-radd="${f.k}">+ ${f.addLabel||'Añadir'}</button></div>`;}
   if(f.t==="ta")return `<textarea data-fk="${f.k}">${esc(v||"")}</textarea><div class="help">Una fila por línea; campos separados por “|”.</div>`;
   if(f.t==="select")return `<select data-fk="${f.k}">${f.opts.map(o=>`<option value="${o[0]}" ${String(v)===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select>`;
@@ -1094,6 +1109,8 @@ function bindContentFields(container,obj,after,fields){
   container.querySelectorAll('[data-rup]').forEach(btn=>btn.addEventListener('click',()=>container.querySelector('[data-rfile="'+CSS.escape(btn.dataset.rup)+'"]').click()));
   container.querySelectorAll('[data-rfile]').forEach(inp=>inp.addEventListener('change',e=>{const p=inp.dataset.rfile.split('|');readImg(e.target.files[0],url=>{commit();const it=arr(obj[p[0]])[+p[1]];if(it){it[p[2]]=url;rr();}});}));
   container.querySelectorAll('[data-rrm]').forEach(btn=>btn.addEventListener('click',()=>{const p=btn.dataset.rrm.split('|');commit();const it=arr(obj[p[0]])[+p[1]];if(it){it[p[2]]="";rr();}}));
+  container.querySelectorAll('[data-elon]').forEach(cb=>cb.addEventListener('change',()=>{commit();const it=arr(obj[cb.dataset.elon])[+cb.dataset.ei];if(it){it.on=cb.checked;after();}}));
+  container.querySelectorAll('[data-emv]').forEach(btn=>btn.addEventListener('click',()=>{const a=arr(obj[btn.dataset.emv]);const i=+btn.dataset.ei;const j=btn.dataset.d==='up'?i-1:i+1;if(j<0||j>=a.length)return;commit();const t=a[i];a[i]=a[j];a[j]=t;renderRight();renderPreview();}));
 }
 function readImg(file,cb){ if(!file)return;
   if(window.NC_SB){
@@ -1224,6 +1241,37 @@ function setTab(t){state.tab=t;document.getElementById("tabContent").style.displ
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));}
 function setDevice(d){state.device=d;const w={mobile:"390px",tablet:"768px",desktop:"100%"}[d];const fw=document.getElementById("frameWrap");
   fw.style.width=w;fw.style.maxWidth=d==="desktop"?"1100px":w;document.querySelectorAll('#devSeg button').forEach(b=>b.classList.toggle('on',b.dataset.dev===d));}
+function dlBlob(data,name,type){const blob=(data instanceof Blob)?data:new Blob([data],{type:type||"text/plain;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();}
+function buildReadme(html){
+  const s=state.settings;const b=BRANDS[s.brand];
+  const phs=[...new Set((html.match(/\{\{[A-Z0-9_]+\}\}/g)||[]))];
+  const phHint={TELEFONO:"Teléfono real (tel:)",WHATSAPP:"Número WhatsApp con prefijo",ENDPOINT_FORMULARIO:"URL a la que hace POST el formulario",GTM_ID:"ID de Google Tag Manager","GTM-XXXXXXX":"ID de Google Tag Manager",URL_CANONICA:"URL final de la página",URL_LEGAL:"URL de aviso legal / privacidad",URL_COOKIES:"URL de política de cookies",RAZON_SOCIAL:"Razón social para el footer",TITULO_SEO:"Título SEO (<title>)",META_DESCRIPTION:"Meta description",LOGO:"Logo de la marca",IMG_HERO:"Imagen del hero",IMG_POPUP:"Imagen del popup",IMG:"Imagen"};
+  const list=phs.length?phs.map(p=>{const k=p.replace(/[{}]/g,"");return "- `"+p+"` — "+(phHint[k]||"Rellenar");}).join("\n"):"- (ninguno pendiente)";
+  const fam=(b.fhead+","+b.fbody).match(/'([^']+)'/g);const fonts=fam?[...new Set(fam.map(x=>x.replace(/'/g,"")))].join(", "):"—";
+  return "# Landing — handoff para desarrollo\n\n"+
+"Página de conversión generada con **NC Landing Builder**. Es HTML estático listo para maquetar/desplegar.\n\n"+
+"## Stack\n- **Bootstrap 5.3.3** (por CDN).\n- **Google Fonts**: "+fonts+".\n- CSS propio en `css/styles.css` (tokens de marca + componentes).\n- JS propio en `js/main.js` (tracking dataLayer, acciones de CTA, widgets: calculadora/calendario/quiz, cookies).\n\n"+
+"## Estructura\n```\nindex.html        # markup de la landing\ncss/styles.css    # estilos (variables de marca + componentes)\njs/main.js        # comportamiento (tracking, CTAs, widgets)\nREADME.md\n```\n\n"+
+"## Marca aplicada: "+b.name+"\nVariables CSS (en `:root` dentro de `index.html`):\n```css\n"+b.vars.replace(/;/g,";\n")+"\n```\n\n"+
+"## Datos a rellenar (placeholders)\nBusca y sustituye en `index.html`:\n"+list+"\n\n"+
+"## Configuración actual\n- Teléfono: "+(s.tel||"(pendiente)")+"\n- WhatsApp: "+(s.wa||"(pendiente)")+"\n- Endpoint formulario: "+(s.endpoint||"(pendiente)")+"\n- GTM: "+(s.gtm||"(pendiente)")+"\n- Acción CTA principal: "+s.ctaAction+"\n\n"+
+"## Medición (dataLayer)\nEventos que ya se disparan: `cta_click`, `generate_lead`, `schedule`, `quiz_complete`. Conéctalos en GTM.\n\n"+
+"## Despliegue\n- **FTP**: sube la carpeta tal cual (index.html + css/ + js/).\n- **Vercel/estático**: arrastra la carpeta o conéctala a un repo (sin build).\n\n"+
+"## Notas\n- Las imágenes son URLs (Supabase Storage) o Base64 embebido.\n- Mobile-first; probar en móvil.\n";
+}
+function exportZip(){
+  const full=buildDoc(true);const slug=(state.settings.slug||"landing");
+  let css="";
+  let html=full.replace(/<style>([\s\S]*?)<\/style>/,function(m,c){css=c;return '<link rel="stylesheet" href="css/styles.css">';});
+  let js="";
+  html=html.replace(/<script>([\s\S]*?)<\/script>/g,function(m,c){if(/gtm\.start/.test(c))return m;js+=c+"\n";return "";});
+  html=html.replace("</body>",'<script src="js/main.js"><\/script>\n</body>');
+  const readme=buildReadme(full);
+  if(!window.JSZip){ toast("Sin JSZip: descargo HTML autocontenido"); dlBlob(full,slug+".html","text/html;charset=utf-8"); return; }
+  const zip=new JSZip();const root=zip.folder(slug);
+  root.file("index.html",html);root.file("css/styles.css",css.trim());root.file("js/main.js",js.trim());root.file("README.md",readme);
+  zip.generateAsync({type:"blob"}).then(function(blob){dlBlob(blob,slug+".zip");toast("ZIP exportado ✓");}).catch(function(){dlBlob(full,slug+".html","text/html;charset=utf-8");});
+}
 function exportHTML(){const html=buildDoc(true);const kb=Math.round(html.length/1024);
   const blob=new Blob([html],{type:"text/html;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(state.settings.slug||"landing")+".html";document.body.appendChild(a);a.click();a.remove();
   toast("HTML exportado ✓ ("+kb+" KB)");}
@@ -1237,7 +1285,7 @@ function toast(m){const t=document.getElementById("toast");t.textContent=m;t.cla
 window.addEventListener("message",e=>{if(!e.data)return;if(e.data.nc==="sel")select(e.data.id);if(e.data.nc==="act")rowAction(e.data.id,e.data.act);});
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 document.querySelectorAll('#devSeg button').forEach(b=>b.addEventListener('click',()=>setDevice(b.dataset.dev)));
-document.getElementById("btnExport").addEventListener('click',exportHTML);
+document.getElementById("btnExport").addEventListener('click',exportZip);
 document.getElementById("btnUndo").addEventListener('click',undo);
 document.getElementById("btnRedo").addEventListener('click',redo);
 document.getElementById("palSearch").addEventListener('input',renderPalette);
