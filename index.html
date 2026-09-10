@@ -1147,11 +1147,15 @@ function rowAction(id,act){const i=state.sections.findIndex(x=>x.id===id);if(i<0
   if(act==="down"&&i<state.sections.length-1){const t=state.sections[i+1];state.sections[i+1]=state.sections[i];state.sections[i]=t;}
   if(act==="dup"){const c=JSON.parse(JSON.stringify(state.sections[i]));c.id=nid();state.sections.splice(i+1,0,c);state.selected=c.id;}
   if(act==="del"){state.sections.splice(i,1);if(state.selected===id)state.selected=null;}
-  renderPreview();renderRight();}
+  renderPreview();renderRight();renderPalette();}
 let dragId=null,dragType=null;
 function dropOnIndex(t){if(dragType){addSection(dragType,t);dragType=null;return;}
-  if(dragId){commit();const from=state.sections.findIndex(x=>x.id===dragId);if(from<0)return;const m=state.sections.splice(from,1)[0];let to=t;if(from<t)to=t-1;state.sections.splice(to,0,m);dragId=null;renderPreview();renderRight();}}
+  if(dragId){commit();const from=state.sections.findIndex(x=>x.id===dragId);if(from<0)return;const m=state.sections.splice(from,1)[0];let to=t;if(from<t)to=t-1;state.sections.splice(to,0,m);dragId=null;renderPreview();renderRight();renderPalette();}}
 function showDrop(on){const d=document.getElementById("dropZone");d.style.display=on?"grid":"none";}
+function resetDrag(){dragType=null;dragId=null;showDrop(false);}
+document.addEventListener('dragend',resetDrag,true);
+document.addEventListener('drop',()=>setTimeout(resetDrag,0),true);
+window.addEventListener('mouseup',()=>{ if(dragType||dragId) resetDrag(); });
 
 /* ---------- HISTORIAL ---------- */
 let past=[],future=[];
@@ -1160,8 +1164,8 @@ function commit(){past.push(snap());if(past.length>50)past.shift();future=[];upd
 let cdArmed=true,cdT=null;
 function commitDebounced(){if(cdArmed){commit();cdArmed=false;}clearTimeout(cdT);cdT=setTimeout(()=>cdArmed=true,700);}
 function restore(str){const o=JSON.parse(str);state.sections=o.s;state.settings=o.g;Object.assign(CUSTOM,o.c);uid=o.u;syncCustom();}
-function undo(){if(!past.length)return;future.push(snap());restore(past.pop());state.selected=null;document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();updHist();}
-function redo(){if(!future.length)return;past.push(snap());restore(future.pop());state.selected=null;document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();updHist();}
+function undo(){if(!past.length)return;future.push(snap());restore(past.pop());state.selected=null;document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();renderPalette();updHist();}
+function redo(){if(!future.length)return;past.push(snap());restore(future.pop());state.selected=null;document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();renderPalette();updHist();}
 function updHist(){document.getElementById("btnUndo").disabled=!past.length;document.getElementById("btnRedo").disabled=!future.length;}
 
 /* ---------- TABS / DEVICE / EXPORT / PLANTILLAS ---------- */
