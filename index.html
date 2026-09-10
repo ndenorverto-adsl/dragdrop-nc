@@ -188,13 +188,20 @@
    ============================================================ */
 
 /* ---------- MARCAS ---------- */
-const FONTS=["Inter","Poppins","Montserrat","Outfit","Manrope","Sora","DM Sans","Work Sans","Space Grotesk","Nunito","Mulish","Lato","Roboto","Open Sans","Playfair Display","Merriweather"];
+const FONTS=["Inter","Poppins","Montserrat","Outfit","Manrope","Sora","DM Sans","Work Sans","Space Grotesk","Nunito","Mulish","Lato","Roboto","Open Sans","Raleway","Rubik","Karla","Figtree","Plus Jakarta Sans","Onest","Archivo","Libre Franklin","Source Sans 3","IBM Plex Sans","Barlow","Josefin Sans","Quicksand","Urbanist","Epilogue","Red Hat Display","Bricolage Grotesque","Oswald","Bebas Neue","Anton","Playfair Display","Merriweather","Fraunces","DM Serif Display","Lora","Cormorant Garamond","Space Mono","JetBrains Mono","IBM Plex Mono"];
+const FONT_SERIF=["Playfair Display","Merriweather","Fraunces","Lora","Cormorant Garamond"];
+const FONT_ONE=["Bebas Neue","Anton","DM Serif Display"];
+function fontWeights(n){return FONT_ONE.includes(n)?"wght@400":FONT_SERIF.includes(n)?"wght@400;500;600;700":"wght@400;500;600;700;800";}
 function fontsHref(head,body){
   const fam=n=>encodeURIComponent(n).replace(/%20/g,"+");
-  const serif=["Playfair Display","Merriweather"];
-  const w=n=>serif.includes(n)?"wght@400;600;700":"wght@400;500;600;700;800";
-  const set=[...new Set([head,body])];
-  return "https://fonts.googleapis.com/css2?"+set.map(n=>"family="+fam(n)+":"+w(n)).join("&")+"&display=swap";
+  const set=[...new Set([head,body].filter(Boolean))];
+  return "https://fonts.googleapis.com/css2?"+set.map(n=>"family="+fam(n)+":"+fontWeights(n)).join("&")+"&display=swap";
+}
+function fontsHrefMany(names){
+  const fam=n=>encodeURIComponent(n).replace(/%20/g,"+");
+  const set=[...new Set(names.filter(Boolean))];
+  if(!set.length)return "";
+  return "https://fonts.googleapis.com/css2?"+set.map(n=>"family="+fam(n)+":"+fontWeights(n)).join("&")+"&display=swap";
 }
 const BRANDS = {
   nc:{name:"Next Conversion", locked:true,
@@ -390,7 +397,7 @@ const BRAND_GROUPS=[
 function brandOptions(sel){return BRAND_GROUPS.filter(g=>g[1].some(k=>BRANDS[k])).map(g=>`<optgroup label="${g[0]}">`+g[1].filter(k=>BRANDS[k]).map(k=>`<option value="${k}" ${k===sel?'selected':''}>${BRANDS[k].name}</option>`).join("")+`</optgroup>`).join("");}
 
 /* ---------- ESTADO ---------- */
-const state={ settings:{brand:"nc",title:"",desc:"",tel:"",wa:"",endpoint:"",gtm:"",slug:"landing",ctaStyle:"brand",ctaAction:"scroll",popupTitle:"¿Necesitas ayuda?",popupImg:"",cookies:false},
+const state={ settings:{brand:"nc",title:"",desc:"",tel:"",wa:"",endpoint:"",gtm:"",slug:"landing",ctaStyle:"brand",ctaAction:"scroll",popupTitle:"¿Necesitas ayuda?",popupImg:"",cookies:false,thanks:false,thanksText:"¡Gracias! Te llamamos enseguida."},
   sections:[], selected:null, tab:"content", device:"desktop" };
 let uid=1; const nid=()=>"s"+(uid++);
 
@@ -417,21 +424,39 @@ const STYLE_FIELDS=[
   {k:"pad",l:"Espaciado vertical",t:"select",opts:[["S","Compacto"],["M","Normal"],["L","Amplio"],["XL","Extra"]]},
   {k:"align",l:"Alineación",t:"select",opts:[["left","Izquierda"],["center","Centro"]]},
   {k:"width",l:"Ancho del contenido",t:"select",opts:[["narrow","Estrecho"],["normal","Normal"],["wide","Ancho"],["full","Completo"]]},
-  {k:"divider",l:"Forma superior",t:"select",opts:[["none","Recta"],["diagup","Diagonal ↗"],["diagdown","Diagonal ↘"],["curve","Curva"]]}
+  {k:"divider",l:"Forma superior",t:"select",opts:[["none","Recta"],["wave","Onda"],["curve","Curva"],["diagup","Diagonal ↗"],["diagdown","Diagonal ↘"]]},
+  {k:"headFont",l:"Fuente de titulares",t:"select",opts:[["","De la marca"],...FONTS.map(f=>[f,f])]},
+  {k:"titleWeight",l:"Grosor de titulares",t:"select",opts:[["","Auto"],["400","Fino"],["500","Medio"],["600","Semibold"],["700","Negrita"],["800","Extra-negrita"]]},
+  {k:"titleColor",l:"Color de titulares (hex, vacío=auto)",ph:"auto"},
+  {k:"textColor",l:"Color de texto (hex, vacío=auto)",ph:"auto"},
+  {k:"accentColor",l:"Color de acento/botón (hex, vacío=marca)",ph:"auto"}
 ];
-const STYLE_DEF={bg:"white",bgimg:"",overlay:"med",pad:"M",align:"left",width:"normal",divider:"none"};
+const STYLE_DEF={bg:"white",bgimg:"",overlay:"med",pad:"M",align:"left",width:"normal",divider:"none",headFont:"",titleWeight:"",titleColor:"",textColor:"",accentColor:""};
 function secOpen(st){
   const b=BG[st.bg]||BG.white; let bgcss; const isImg=st.bg==="image"&&st.bgimg;
   if(isImg){const o=OVL[st.overlay]||.45;bgcss=`background:linear-gradient(rgba(0,0,0,${o}),rgba(0,0,0,${o})),url('${st.bgimg}') center/cover no-repeat;`;}
   else bgcss=`background:${b.c};`;
   const dark=b.d||isImg;
-  const head=dark?"#ffffff":"var(--bink)"; const mut=dark?"rgba(255,255,255,.80)":"var(--bmuted)";
+  let head=dark?"#ffffff":"var(--bink)"; let mut=dark?"rgba(255,255,255,.80)":"var(--bmuted)";
+  if(st.titleColor)head=st.titleColor; if(st.textColor)mut=st.textColor;
   const align=st.align==="center"?"text-center":"";
-  let div="";const dv=st.divider;
-  if(dv==="diagup")div="clip-path:polygon(0 42px,100% 0,100% 100%,0 100%);margin-top:-1px;padding-top:calc(var(--secpad-"+(st.pad||'M')+") + 30px)!important;";
-  else if(dv==="diagdown")div="clip-path:polygon(0 0,100% 42px,100% 100%,0 100%);margin-top:-1px;padding-top:calc(var(--secpad-"+(st.pad||'M')+") + 30px)!important;";
-  else if(dv==="curve")div="border-top-left-radius:40px;border-top-right-radius:40px;margin-top:-1px;";
-  return `<section style="${bgcss}padding:var(--secpad-${st.pad||'M'}) 0;--headcol:${head};--txtmuted:${mut};color:${dark?'#fff':'inherit'};${div}"><div class="container ${align}" style="${WIDTH[st.width]||''}">`;
+  let extra="";
+  if(st.headFont)extra+=`--fhead:'${st.headFont}',sans-serif;`;
+  if(st.titleWeight)extra+=`--titlew:${st.titleWeight};`;
+  if(st.accentColor)extra+=`--bp:${st.accentColor};--bp2:${st.accentColor};`;
+  // separador con forma (SVG en color de la propia sección)
+  const DIVCOL={white:"#ffffff",soft:"var(--bsoft)",tint:"var(--bsoft)",primary:"var(--bp)",ink:"var(--bink)"};
+  const dc=DIVCOL[st.bg]||"#ffffff"; let svg="";
+  if(!isImg && st.divider && st.divider!=="none"){
+    let path="";
+    if(st.divider==="wave")path="M0,50 L0,26 C300,4 900,48 1200,26 L1200,50 Z";
+    else if(st.divider==="curve")path="M0,50 L0,50 Q600,-6 1200,50 Z";
+    else if(st.divider==="diagup")path="M0,50 L1200,8 L1200,50 Z";
+    else if(st.divider==="diagdown")path="M0,8 L1200,50 L0,50 Z";
+    if(path)svg=`<svg aria-hidden="true" viewBox="0 0 1200 50" preserveAspectRatio="none" style="position:absolute;left:0;top:-49px;width:100%;height:50px;display:block"><path d="${path}" fill="${dc}"/></svg>`;
+  }
+  const pos=(svg?"position:relative;":"");
+  return `<section style="${pos}${bgcss}padding:var(--secpad-${st.pad||'M'}) 0;--headcol:${head};--txtmuted:${mut};color:${dark?'#fff':'inherit'};${extra}">${svg}<div class="container ${align}" style="${WIDTH[st.width]||''}">`;
 }
 const secClose=()=>`</div></section>`;
 
@@ -483,7 +508,7 @@ const LIB={
       <div class="col-lg-6"><div class="brandcard p-4" style="background:#fff"><span id="form"></span>
         <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
         <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
-        <div class="col-12"><input required name="telefono" type="tel" class="form-control form-control-lg" placeholder="Teléfono"></div>
+        <div class="col-12"><input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos (teléfono español)" class="form-control form-control-lg" placeholder="Teléfono"></div>
         <div class="col-12 form-check my-1"><input required class="form-check-input" type="checkbox" id="cn1"><label for="cn1" class="form-check-label small" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
         <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit">${esc(p.cta)}</button></div></form></div></div></div>`},
 
@@ -557,7 +582,7 @@ const LIB={
       <p class="text-center mb-4" style="color:var(--bmuted)">${esc(p.subtitle)}</p>
       <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
         <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
-        <div class="col-12"><input required name="telefono" type="tel" class="form-control form-control-lg" placeholder="Teléfono"></div>
+        <div class="col-12"><input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos (teléfono español)" class="form-control form-control-lg" placeholder="Teléfono"></div>
         <div class="col-12 form-check my-1"><input required class="form-check-input" type="checkbox" id="cn2"><label class="form-check-label small" for="cn2" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
         <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit">${esc(p.cta)}</button></div>
       </form><div class="text-center small mt-3" style="color:var(--bmuted)">o llámanos al <a href="${telHref()}" data-cta="call" style="color:var(--bp);font-weight:600">${telText()}</a></div></div>`},
@@ -575,6 +600,17 @@ const LIB={
       <a href="${waHref()}" data-cta="whatsapp" target="_blank" rel="noopener" class="btn btn-ghost flex-fill">💬 ${esc(p.wa)}</a></div><div class="d-md-none" style="height:64px"></div>`},
 
   /* ==== Herramientas de conversión ==== */
+  hero_video:{label:"Hero · vídeo de fondo",ico:"🎬",cat:"Hero",styleDef:{width:"full"},
+    def:()=>({video:"https://cdn.coverr.co/videos/coverr-water-flowing-1080p.mp4",overlay:"55",headline:"Agua filtrada, directa de tu grifo",sub:"Sin garrafas, sin obras, sin permanencia.",cta:"Quiero que me llamen",cta2:"Llamar ahora"}),
+    fields:[{k:"video",l:"URL del vídeo (MP4)"},{k:"overlay",l:"Oscurecido (0-90)"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo"},{k:"cta",l:"CTA principal"},{k:"cta2",l:"CTA llamada"}],
+    render:p=>`<div style="position:relative;min-height:66vh;display:flex;align-items:center;overflow:hidden;border-radius:0">
+      <video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><source src="${esc(p.video)}" type="video/mp4"></video>
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,${(parseInt(p.overlay)||55)/100})"></div>
+      <div class="container text-center" style="position:relative;max-width:820px">
+        <h1 class="display-4 fw-bold h-font mb-3" style="color:#fff">${esc(p.headline)}</h1>
+        <p class="lead mb-4" style="color:#fff;opacity:.92">${esc(p.sub)}</p>
+        <div class="d-flex gap-2 justify-content-center flex-wrap"><a href="#form" data-cta="form" class="btn btn-brand btn-lg">${esc(p.cta)}</a><a href="${telHref()}" data-cta="call" class="btn btn-lg" style="color:#fff;border:2px solid #fff;border-radius:var(--btnr)">📞 ${esc(p.cta2)}</a></div>
+      </div></div>`},
   cal:{label:"Cita / agenda llamada",ico:"📅",cat:"Conversión",styleDef:{bg:"soft",width:"narrow"},
     def:()=>({title:"Reserva tu llamada",subtitle:"Elige día y hora y te llamamos gratis.",slots:"9:00, 10:00, 11:00, 12:00, 16:00, 17:00, 18:00",cta:"Confirmar cita",consent:"Acepto la política de privacidad."}),
     fields:[{k:"title",l:"Título"},{k:"subtitle",l:"Subtítulo"},{k:"slots",l:"Franjas horarias (coma)"},{k:"cta",l:"Botón"},{k:"consent",l:"Consentimiento"}],
@@ -588,7 +624,7 @@ const LIB={
       <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
         <input type="hidden" name="fecha" data-cal-hidday>
         <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
-        <div class="col-12"><input required name="telefono" type="tel" class="form-control form-control-lg" placeholder="Teléfono"></div>
+        <div class="col-12"><input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos (teléfono español)" class="form-control form-control-lg" placeholder="Teléfono"></div>
         <div class="col-12 form-check my-1"><input required type="checkbox" class="form-check-input" id="cnc"><label class="form-check-label small" for="cnc" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
         <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit" data-cta="schedule">${esc(p.cta)}</button></div>
       </form></div>`},
@@ -606,7 +642,7 @@ const LIB={
       </div>
       <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
         <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
-        <div class="col-12"><input required name="telefono" type="tel" class="form-control form-control-lg" placeholder="Teléfono"></div>
+        <div class="col-12"><input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos (teléfono español)" class="form-control form-control-lg" placeholder="Teléfono"></div>
         <div class="col-12 form-check my-1"><input required type="checkbox" class="form-check-input" id="cnk"><label class="form-check-label small" for="cnk" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
         <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit" data-cta="calc">${esc(p.cta)}</button></div>
       </form></div>`},
@@ -625,7 +661,7 @@ const LIB={
         <div class="text-center mb-3"><div class="h5 fw-bold h-font" style="color:var(--bink)">${esc(p.resultTitle)}</div><p class="mb-0" style="color:var(--bmuted)">${esc(p.resultText)}</p></div>
         <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
           <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
-          <div class="col-12"><input required name="telefono" type="tel" class="form-control form-control-lg" placeholder="Teléfono"></div>
+          <div class="col-12"><input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos (teléfono español)" class="form-control form-control-lg" placeholder="Teléfono"></div>
           <div class="col-12 form-check my-1"><input required type="checkbox" class="form-check-input" id="cnq"><label class="form-check-label small" for="cnq" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
           <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit" data-cta="quiz">${esc(p.cta)}</button></div>
         </form>
@@ -838,7 +874,7 @@ const LIB={
     fields:[{k:"company",l:"Razón social"},{k:"cols",l:"Columnas: Título:enlace,enlace|…",t:"ta"}],
     render:p=>`<footer style="background:#141327;color:#a9a7c4"><div class="container py-5"><div class="row g-4">${lines(p.cols).map(col=>{const pr=col.split(":");const it=(pr[1]||"").split(",");return `<div class="col-6 col-md-4"><div class="fw-bold mb-2" style="color:#00D1B2">${esc(pr[0]||"")}</div>${it.map(x=>`<div class="mb-1"><a href="#" style="color:#a9a7c4;text-decoration:none;font-size:14px">${esc(x.trim())}</a></div>`).join("")}</div>`}).join("")}</div><div class="pt-4 mt-4 small" style="border-top:1px solid rgba(255,255,255,.12)">© ${new Date().getFullYear()} ${esc(p.company)}</div></div></footer>`}
 };
-const ORDER=["topbar","navbar","hero_split","hero_center","hero_form","logos","marquee","stats","testimonials","trust","features","imagetext","steps","gallery","pricing","comparison","countdown","faq","video","richtext","form","cal","calc","quiz","ctaband","stickycall","footer","apple_nav","apple_hero","apple_bento","apple_showcase","apple_footer","mov_nav","mov_hero","mov_tarifas","mov_footer","tmo_nav","tmo_hero","tmo_plans","tmo_footer","o2_nav","o2_hero","o2_tiles","o2_footer","mt_nav","mt_hero","mt_kpi","mt_footer","at_nav","at_hero","at_features","at_footer"];
+const ORDER=["topbar","navbar","hero_split","hero_center","hero_form","hero_video","logos","marquee","stats","testimonials","trust","features","imagetext","steps","gallery","pricing","comparison","countdown","faq","video","richtext","form","cal","calc","quiz","ctaband","stickycall","footer","apple_nav","apple_hero","apple_bento","apple_showcase","apple_footer","mov_nav","mov_hero","mov_tarifas","mov_footer","tmo_nav","tmo_hero","tmo_plans","tmo_footer","o2_nav","o2_hero","o2_tiles","o2_footer","mt_nav","mt_hero","mt_kpi","mt_footer","at_nav","at_hero","at_features","at_footer"];
 
 /* ---------- PLANTILLAS ---------- */
 const TEMPLATES={
@@ -849,7 +885,7 @@ const TEMPLATES={
   "MyTraffic (literal)":["mt_nav","mt_hero","mt_kpi","form","mt_footer"],
   "AB Tasty (literal)":["at_nav","at_hero","at_features","form","at_footer"],
   "Captación · llamada":["navbar","hero_split","logos","features","steps","stats","form","faq","ctaband","stickycall","footer"],
-  "Captación · formulario arriba":["topbar","navbar","hero_form","logos","features","testimonials","imagetext","faq","footer"],
+  "Captación · formulario arriba":["topbar","navbar","hero_form","hero_video","logos","features","testimonials","imagetext","faq","footer"],
   "Oferta / urgencia":["topbar","navbar","hero_center","pricing","stats","testimonials","form","faq","stickycall","footer"]
 };
 
@@ -859,6 +895,7 @@ function baseCSS(){return `
   :root{--secpad-S:30px;--secpad-M:58px;--secpad-L:86px;--secpad-XL:120px}
   body{font-family:var(--fbody);color:var(--bink);margin:0}
   h1,h2,h3,.h-font,.display-4,.display-5,.display-6{font-family:var(--fhead)}
+  section[style*="--titlew"] h1,section[style*="--titlew"] h2,section[style*="--titlew"] h3,section[style*="--titlew"] .h-font{font-weight:var(--titlew)!important}
   .btn-brand{background:var(--bp);border:1px solid var(--bp);color:var(--btntext,#fff);border-radius:var(--btnr);font-weight:600;padding:.6rem 1.15rem}
   .btn-brand:hover{background:var(--bp2);border-color:var(--bp2);color:var(--btntext,#fff)}
   .btn-ghost{background:transparent;border:2px solid var(--bp);color:var(--bp);border-radius:var(--btnr);font-weight:600;padding:calc(.6rem - 1px) 1.15rem}
@@ -904,6 +941,12 @@ function sectionsHTML(forExport){return state.sections.map(s=>{
   return `<div data-sec="${s.id}" class="${sel?'sel':''}">${tb}${renderSection(s)}</div>`;
 }).join("\n");}
 
+function collectFonts(b){
+  const nm=s=>{const m=(s||"").match(/'([^']+)'/);return m?m[1]:null;};
+  const set=[nm(b.fhead),nm(b.fbody)];
+  state.sections.forEach(s=>{const hf=(s.style&&s.style.headFont)||"";if(hf)set.push(hf);});
+  return fontsHrefMany(set);
+}
 function buildDoc(forExport){
   const b=BRANDS[state.settings.brand]; const gtm=ph(state.settings.gtm,"GTM-XXXXXXX");
   const gtmHead=forExport?`<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtm}');<\/script>`:"";
@@ -918,7 +961,7 @@ function buildDoc(forExport){
       <div class="p-3" style="background:#fff;border-radius:14px">
         <div class="d-flex align-items-center gap-3 mb-3"><span style="font-size:22px">&#128222;</span><span><span class="d-block fw-bold" style="color:var(--bink)">Te llamamos nosotros</span><span class="d-block small" style="color:var(--bmuted)">Solicita ahora tu llamada</span></span></div>
         <form data-callback action="${ph(st.endpoint,'ENDPOINT_FORMULARIO')}" method="post">
-          <input required name="telefono" type="tel" class="form-control form-control-lg mb-2" placeholder="Tu número de teléfono">
+          <input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos (teléfono español)" class="form-control form-control-lg mb-2" placeholder="Tu número de teléfono">
           <button class="btn btn-brand btn-lg w-100" type="submit" data-cta="popup_submit">Solicitar información</button>
         </form></div>
     </div></div></div></div>`:'';
@@ -955,6 +998,7 @@ function buildDoc(forExport){
     document.querySelectorAll('[data-countdown]').forEach(function(w){var end=new Date((w.getAttribute('data-end')||'').replace(' ','T')).getTime();var els=w.querySelectorAll('[data-cd]');function t(){if(isNaN(end))return;var d=end-Date.now();if(d<0)d=0;var s=Math.floor(d/1000),dd=Math.floor(s/86400),hh=Math.floor(s%86400/3600),mm=Math.floor(s%3600/60),ss=s%60,v=[dd,hh,mm,ss];els.forEach(function(e,i){e.textContent=('0'+v[i]).slice(-2)});}t();setInterval(t,1000);});
     (function(){var body=document.body;var act=body.getAttribute('data-ctaaction')||'scroll';var tel=body.getAttribute('data-tel')||'';var wa=body.getAttribute('data-wa')||'';document.querySelectorAll('[data-cta="form"]').forEach(function(el){if(act==='call'){el.setAttribute('href','tel:'+tel);}else if(act==='whatsapp'){el.setAttribute('href','https://wa.me/'+wa);el.setAttribute('target','_blank');}else if(act==='popup'||act==='popupimg'){el.addEventListener('click',function(e){e.preventDefault();var m=document.getElementById('ncContact');if(m&&window.bootstrap){bootstrap.Modal.getOrCreateInstance(m).show();}});}});})();
     var ck=document.getElementById('ncCookies');if(ck){var ok=false;try{ok=localStorage.getItem('nc_cookies')==='1'}catch(e){}if(!ok)ck.style.display='block';var cy=document.getElementById('ncCookieYes'),cn=document.getElementById('ncCookieNo');function ckhide(){ck.style.display='none';try{localStorage.setItem('nc_cookies','1')}catch(e){}}if(cy)cy.addEventListener('click',ckhide);if(cn)cn.addEventListener('click',ckhide);}
+    (function(){var body=document.body;if(body.getAttribute('data-thanks')!=='1')return;var txt=body.getAttribute('data-thankstext')||'¡Gracias!';document.querySelectorAll('form[data-callback]').forEach(function(f){f.addEventListener('submit',function(e){e.preventDefault();var url=f.getAttribute('action')||'';function done(){var d=document.createElement('div');d.className='text-center py-4';d.innerHTML='<div style="font-size:38px">✅</div><div class="h5 fw-bold mt-2" style="color:var(--bink)">'+txt+'</div>';f.parentNode.replaceChild(d,f);}try{if(url&&url.indexOf('{{')<0){fetch(url,{method:'POST',mode:'no-cors',body:new FormData(f)}).then(done).catch(function(){try{f.submit();}catch(_){done();}});}else{done();}}catch(err){done();}});});})();
   })();<\/script>`;
   return `<!doctype html><html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -963,9 +1007,9 @@ function buildDoc(forExport){
 <link rel="canonical" href="{{URL_CANONICA}}">
 <meta property="og:title" content="${esc(ph(state.settings.title,"TITULO_SEO"))}"><meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="${b.fonts}" rel="stylesheet"><link href="${bsCSS}" rel="stylesheet">
+<link href="${collectFonts(b)}" rel="stylesheet"><link href="${bsCSS}" rel="stylesheet">
 <style>:root{${b.vars}--fhead:${b.fhead};--fbody:${b.fbody}}${baseCSS()}${b.profileCSS||''}</style>
-${gtmHead}</head><body class="cta-${st.ctaStyle||'brand'}" data-ctaaction="${st.ctaAction||'scroll'}" data-tel="${esc(ph(st.tel,'TELEFONO').replace(/\s/g,''))}" data-wa="${esc(ph(st.wa,'WHATSAPP').replace(/[^0-9]/g,''))}">
+${gtmHead}</head><body class="cta-${st.ctaStyle||'brand'}" data-ctaaction="${st.ctaAction||'scroll'}" data-thanks="${st.thanks?'1':''}" data-thankstext="${esc(st.thanksText||'')}" data-tel="${esc(ph(st.tel,'TELEFONO').replace(/\s/g,''))}" data-wa="${esc(ph(st.wa,'WHATSAPP').replace(/[^0-9]/g,''))}">
 ${gtmBody}
 ${sectionsHTML(forExport)}
 ${modal}${cookie}
@@ -1030,7 +1074,7 @@ function fieldHTML(f,obj){
   if(f.t==="select")return `<select data-fk="${f.k}">${f.opts.map(o=>`<option value="${o[0]}" ${String(v)===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select>`;
   if(f.t==="image")return `<div class="up"><input type="file" accept="image/*" data-file="${f.k}" style="display:none"><div class="thumbrow">${v?`<img class="thumb" src="${v}">`:""}<button type="button" class="btn sm" data-upbtn="${f.k}">${v?"Cambiar":"Subir imagen"}</button>${v?`<button type="button" class="btn sm ghost" data-rm="${f.k}">Quitar</button>`:""}</div><div class="help">Se incrusta en el HTML (Base64).</div></div>`;
   if(f.t==="images"){const L=arr(v);return `<div class="up"><input type="file" accept="image/*" multiple data-filem="${f.k}" style="display:none"><div class="thumbs">${L.map((s,i)=>`<div class="t"><img src="${s}"><button type="button" data-rmi="${f.k}" data-i="${i}">×</button></div>`).join("")}</div><button type="button" class="btn sm" data-upbtnm="${f.k}">+ Añadir imágenes</button></div>`;}
-  return `<input data-fk="${f.k}" value="${esc(v||"")}">`;
+  return `<input data-fk="${f.k}" value="${esc(v||"")}" placeholder="${esc(f.ph||"")}">`;
 }
 function bindContentFields(container,obj,after,fields){
   const rr=()=>{renderRight();renderPreview();};
@@ -1114,6 +1158,8 @@ function renderGlobal(){
     <div class="fld"><label>Acción del CTA principal</label><select id="gCtaAction">${[["scroll","Ir al formulario"],["popup","Abrir popup de contacto"],["popupimg","Popup de contacto con imagen"],["call","Llamar (tel:)"],["whatsapp","WhatsApp"]].map(o=>`<option value="${o[0]}" ${state.settings.ctaAction===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Aplica a todos los botones “Ir al formulario”.</div></div>
     ${(state.settings.ctaAction==='popup'||state.settings.ctaAction==='popupimg')?`<div class="fld"><label>Título del popup</label><input id="gPopTitle" value="${esc(state.settings.popupTitle)}" placeholder="¿Necesitas ayuda?"></div>${state.settings.ctaAction==='popupimg'?`<div class="fld"><label>Imagen del popup</label>${fieldHTML({k:"popupImg",l:"",t:"image"},state.settings)}</div>`:''}`:''}
     <div class="fld inline"><label>Banner de cookies (RGPD)</label><input type="checkbox" id="gCookies" ${state.settings.cookies?'checked':''}></div>
+    <div class="fld inline"><label>Gracias sin recargar (AJAX)</label><input type="checkbox" id="gThanks" ${state.settings.thanks?'checked':''}></div>
+    ${state.settings.thanks?`<div class="fld"><label>Texto de gracias</label><input id="gThanksTxt" value="${esc(state.settings.thanksText)}"></div>`:''}
     <div class="paneltitle" style="padding:10px 0 4px">SEO / Medición</div>
     <div class="fld"><label>Título SEO</label><input id="gTitle" value="${esc(state.settings.title)}" placeholder="{{TITULO_SEO}}"></div>
     <div class="fld"><label>Meta description</label><textarea id="gDesc" placeholder="{{META_DESCRIPTION}}">${esc(state.settings.desc)}</textarea></div>
@@ -1134,6 +1180,8 @@ function renderGlobal(){
   const ca=document.getElementById("gCtaAction");if(ca)ca.addEventListener('change',()=>{commit();state.settings.ctaAction=ca.value;renderPreview();renderGlobal();});
   const pt=document.getElementById("gPopTitle");if(pt)pt.addEventListener('input',()=>{commitDebounced();state.settings.popupTitle=pt.value;renderPreview();});
   const co=document.getElementById("gCookies");if(co)co.addEventListener('change',()=>{commit();state.settings.cookies=co.checked;renderPreview();});
+  const th=document.getElementById("gThanks");if(th)th.addEventListener('change',()=>{commit();state.settings.thanks=th.checked;renderPreview();renderGlobal();});
+  const tt=document.getElementById("gThanksTxt");if(tt)tt.addEventListener('input',()=>{commitDebounced();state.settings.thanksText=tt.value;renderPreview();});
   gf.querySelectorAll('[data-upbtn]').forEach(btn=>btn.addEventListener('click',()=>gf.querySelector('[data-file="'+btn.dataset.upbtn+'"]').click()));
   gf.querySelectorAll('[data-file]').forEach(inp=>inp.addEventListener('change',e=>readImg(e.target.files[0],url=>{commit();state.settings[inp.dataset.file]=url;renderGlobal();renderPreview();})));
   gf.querySelectorAll('[data-rm]').forEach(btn=>btn.addEventListener('click',()=>{commit();state.settings[btn.dataset.rm]="";renderGlobal();renderPreview();}));
