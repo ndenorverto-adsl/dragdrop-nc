@@ -106,7 +106,7 @@
 <div class="app">
   <div class="topbar">
     <div class="brandmark"><span class="dot"></span> NC Landing Builder <small>· v2</small></div>
-    <input id="landingName" class="txt" style="max-width:180px" placeholder="Nombre de la landing" title="Nombre">
+    <input id="landingName" class="txt" style="max-width:180px" placeholder="Nombre de la landing" title="Nombre" autocomplete="off" name="nc_landing_name" data-lpignore="true" data-1p-ignore data-form-type="other">
     <button class="btn" id="btnSave" title="Guardar en la nube">💾 Guardar</button>
     <button class="btn" id="btnMine" title="Mis landings">☁ Mis landings</button>
     <div class="spacer"></div>
@@ -125,7 +125,7 @@
 
   <div class="main">
     <div class="col left">
-      <div class="search"><input class="txt" id="palSearch" placeholder="Buscar bloque…"></div>
+      <div class="search"><input class="txt" id="palSearch" type="search" name="nc_block_search" placeholder="Buscar bloque…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-form-type="other"></div>
       <div id="palette"></div>
     </div>
 
@@ -1191,6 +1191,8 @@ document.getElementById("btnExport").addEventListener('click',exportHTML);
 document.getElementById("btnUndo").addEventListener('click',undo);
 document.getElementById("btnRedo").addEventListener('click',redo);
 document.getElementById("palSearch").addEventListener('input',renderPalette);
+document.getElementById("palSearch").addEventListener('focus',function(){this.setAttribute('readonly',true);const el=this;setTimeout(()=>el.removeAttribute('readonly'),80);});
+setTimeout(()=>{const ps=document.getElementById("palSearch");if(ps&&/@/.test(ps.value)){ps.value="";renderPalette();}},500);
 document.getElementById("btnPreview").addEventListener('click',()=>{try{const url=URL.createObjectURL(new Blob([buildDoc(true)],{type:"text/html;charset=utf-8"}));const w=window.open(url,"_blank");if(!w)toast("El navegador bloqueó la ventana · usa Exportar");}catch(e){toast("Aquí no se puede abrir en pestaña · usa Exportar");}});
 document.getElementById("dropZone").addEventListener('dragover',e=>e.preventDefault());
 document.getElementById("dropZone").addEventListener('drop',e=>{e.preventDefault();showDrop(false);if(dragType){addSection(dragType);dragType=null;}});
