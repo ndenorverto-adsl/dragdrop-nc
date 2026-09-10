@@ -987,7 +987,9 @@ function patchSection(id){const s=state.sections.find(x=>x.id===id);if(!s)return
 
 /* ---------- PALETA ---------- */
 function renderPalette(){
-  const q=(document.getElementById("palSearch").value||"").toLowerCase();
+  const ps=document.getElementById("palSearch");
+  let q=(ps&&ps.value||"").toLowerCase();
+  if(q.indexOf("@")>-1){ q=""; if(ps)ps.value=""; }   // el navegador autocompleta el email: lo descartamos
   const cats={};ORDER.forEach(t=>{const b=LIB[t];if(b.brand&&b.brand!==state.settings.brand)return;if(q&&!(b.label.toLowerCase().includes(q)||b.cat.toLowerCase().includes(q)))return;(cats[b.cat]=cats[b.cat]||[]).push(t);});
   let h="";Object.keys(cats).forEach(cat=>{h+=`<div class="paneltitle">${cat}</div><div class="cat">`;
     cats[cat].forEach(t=>{const b=LIB[t];h+=`<div class="chip" draggable="true" data-add="${t}"><span class="ico">${b.ico}</span> ${b.label}<span class="k">+</span></div>`;});h+="</div>";});
@@ -1191,7 +1193,6 @@ document.getElementById("btnExport").addEventListener('click',exportHTML);
 document.getElementById("btnUndo").addEventListener('click',undo);
 document.getElementById("btnRedo").addEventListener('click',redo);
 document.getElementById("palSearch").addEventListener('input',renderPalette);
-document.getElementById("palSearch").addEventListener('focus',function(){this.setAttribute('readonly',true);const el=this;setTimeout(()=>el.removeAttribute('readonly'),80);});
 setTimeout(()=>{const ps=document.getElementById("palSearch");if(ps&&/@/.test(ps.value)){ps.value="";renderPalette();}},500);
 document.getElementById("btnPreview").addEventListener('click',()=>{try{const url=URL.createObjectURL(new Blob([buildDoc(true)],{type:"text/html;charset=utf-8"}));const w=window.open(url,"_blank");if(!w)toast("El navegador bloqueó la ventana · usa Exportar");}catch(e){toast("Aquí no se puede abrir en pestaña · usa Exportar");}});
 document.getElementById("dropZone").addEventListener('dragover',e=>e.preventDefault());
