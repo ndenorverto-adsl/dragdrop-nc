@@ -1,0 +1,1121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NC Landing Builder — v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1115;--bg2:#151922;--panel:#1a1f2b;--panel2:#202634;
+    --line:#2a3140;--line2:#333c4e;--ink:#e7ecf3;--muted:#9aa6b8;--muted2:#6b7688;
+    --acc:#6B5FFF;--acc2:#A8E63D;--danger:#ff5d6c;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:14px;overflow:hidden}
+  button,input,select,textarea{font-family:inherit}
+  .app{display:flex;flex-direction:column;height:100vh}
+
+  .topbar{display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--bg2);border-bottom:1px solid var(--line);flex:0 0 auto;flex-wrap:wrap}
+  .brandmark{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:-.2px}
+  .dot{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--acc),var(--acc2))}
+  .brandmark small{color:var(--muted);font-weight:500;font-size:11px}
+  .spacer{flex:1}
+  .lbl{color:var(--muted);font-size:12px}
+  .seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{background:transparent;border:0;color:var(--muted);padding:7px 11px;cursor:pointer;font-size:12.5px;font-weight:500}
+  .seg button.on{background:var(--panel2);color:var(--ink)}
+  select.sel,input.txt{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:12.5px}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 12px;border-radius:9px;cursor:pointer;font-size:12.5px;font-weight:600}
+  .btn:hover{border-color:var(--line2)}
+  .btn.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+  .btn.primary:hover{filter:brightness(1.06)}
+  .btn.sm{padding:5px 9px;font-size:11.5px}
+  .btn.ghost{background:transparent}
+  .btn.icob{padding:8px 10px}
+  .btn:disabled{opacity:.4;cursor:default}
+
+  .main{display:flex;flex:1;min-height:0}
+  .col{min-height:0;display:flex;flex-direction:column}
+  .left{flex:0 0 230px;background:var(--bg2);border-right:1px solid var(--line);overflow-y:auto}
+  .center{flex:1;background:var(--bg);position:relative;display:flex;flex-direction:column;align-items:center;overflow:auto}
+  .right{flex:0 0 336px;background:var(--bg2);border-left:1px solid var(--line);overflow-y:auto}
+
+  .search{margin:10px;position:sticky;top:0}
+  .search input{width:100%}
+  .paneltitle{font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted2);padding:12px 12px 4px}
+  .cat{padding:0 8px 8px}
+  .chip{display:flex;align-items:center;gap:9px;padding:8px 10px;margin:5px 4px;background:var(--panel);border:1px solid var(--line);border-radius:9px;cursor:grab;font-size:12.5px;user-select:none}
+  .chip:hover{border-color:var(--acc);background:var(--panel2)}
+  .chip .ico{width:22px;height:22px;border-radius:6px;background:var(--panel2);display:grid;place-items:center;font-size:12px;flex:0 0 auto}
+  .chip .k{color:var(--muted2);font-size:14px;margin-left:auto}
+
+  .stage{padding:20px;width:100%;display:flex;justify-content:center}
+  .frameWrap{position:relative;background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.45);transition:width .18s ease;overflow:hidden}
+  iframe#pv{border:0;display:block;width:100%;height:calc(100vh - 150px);background:#fff}
+  .drop{position:absolute;inset:0;display:none;place-items:center;background:rgba(107,95,255,.14);border:2px dashed var(--acc);border-radius:14px;z-index:5;color:#fff;font-weight:700}
+  .hint{color:var(--muted2);font-size:12px;margin:8px 0 4px;text-align:center;max-width:900px}
+
+  .block{border-bottom:1px solid var(--line)}
+  .outline{padding:6px 10px 12px;max-height:34vh;overflow:auto}
+  .oitem{display:flex;align-items:center;gap:6px;padding:7px 8px;margin:5px 0;background:var(--panel);border:1px solid var(--line);border-radius:8px;font-size:12.5px;cursor:grab}
+  .oitem.sel{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
+  .oitem .grip{color:var(--muted2)}
+  .oitem .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .oitem .mini{background:transparent;border:0;color:var(--muted2);cursor:pointer;font-size:12.5px;padding:2px 3px;border-radius:5px}
+  .oitem .mini:hover{background:var(--panel2);color:var(--ink)}
+  .oitem.dragover{border-color:var(--acc2)}
+  .tabs{display:flex;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg2);z-index:2}
+  .tabs button{flex:1;background:transparent;border:0;color:var(--muted);padding:10px 6px;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent}
+  .tabs button.on{color:var(--ink);border-bottom-color:var(--acc)}
+  .fields{padding:12px 14px 30px}
+  .fld{margin-bottom:13px}
+  .fld label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:5px;font-weight:500}
+  .fld input,.fld textarea,.fld select{width:100%;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px}
+  .fld textarea{min-height:66px;resize:vertical;line-height:1.5}
+  .fld .help{color:var(--muted2);font-size:10.5px;margin-top:4px}
+  .fld.inline{display:flex;align-items:center;gap:8px}
+  .fld.inline label{margin:0;flex:1}
+  .fld.inline input[type=color]{width:44px;height:30px;padding:2px;flex:0 0 auto}
+  .fld.inline input[type=range]{flex:1}
+  .row2{display:flex;gap:10px}.row2>*{flex:1}
+  .up .thumbrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .thumb{height:40px;max-width:110px;object-fit:contain;background:#0b0e14;border:1px solid var(--line);border-radius:6px;padding:3px}
+  .thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+  .thumbs .t{position:relative}
+  .thumbs .t img{height:44px;width:64px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+  .thumbs .t button{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--danger);border:0;color:#fff;font-size:11px;cursor:pointer;line-height:1}
+  .empty{color:var(--muted2);padding:24px 16px;text-align:center;font-size:12.5px;line-height:1.6}
+  .rep-item{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;background:var(--panel)}
+  .rep-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:11px;color:var(--muted2)}
+  .rep-head .mini{background:transparent;border:0;color:var(--muted2);cursor:pointer;font-size:12px;padding:1px 4px;border-radius:4px}
+  .rep-head .mini:hover{background:var(--panel2);color:var(--ink)}
+  .note{margin:10px 0;padding:10px 12px;background:rgba(107,95,255,.08);border:1px solid rgba(107,95,255,.25);border-radius:8px;color:var(--muted);font-size:11.5px;line-height:1.5}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:#10331a;border:1px solid #1f6b36;color:#c7f9d6;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:#2b3342;border-radius:8px;border:2px solid var(--bg2)}
+</style>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brandmark"><span class="dot"></span> NC Landing Builder <small>· v2</small></div>
+    <input id="landingName" class="txt" style="max-width:180px" placeholder="Nombre de la landing" title="Nombre">
+    <button class="btn" id="btnSave" title="Guardar en la nube">💾 Guardar</button>
+    <button class="btn" id="btnMine" title="Mis landings">☁ Mis landings</button>
+    <div class="spacer"></div>
+    <span class="lbl" id="userChip"></span>
+    <button class="btn icob" id="btnUndo" title="Deshacer (Ctrl+Z)">↺</button>
+    <button class="btn icob" id="btnRedo" title="Rehacer (Ctrl+Y)">↻</button>
+    <select class="sel" id="tplSel" title="Cargar plantilla"><option value="">Plantilla…</option></select>
+    <span class="lbl">Marca</span>
+    <select class="sel" id="brandTop"></select>
+    <div class="seg" id="devSeg">
+      <button data-dev="mobile">Móvil</button><button data-dev="tablet">Tablet</button><button data-dev="desktop" class="on">Desktop</button>
+    </div>
+    <button class="btn" id="btnPreview">Abrir ⧉</button>
+    <button class="btn primary" id="btnExport">Exportar HTML ↓</button>
+  </div>
+
+  <div class="main">
+    <div class="col left">
+      <div class="search"><input class="txt" id="palSearch" placeholder="Buscar bloque…"></div>
+      <div id="palette"></div>
+    </div>
+
+    <div class="col center">
+      <div class="stage">
+        <div class="frameWrap" id="frameWrap" style="width:100%;max-width:1100px">
+          <div class="drop" id="dropZone">Suelta aquí para añadir</div>
+          <iframe id="pv" title="preview"></iframe>
+        </div>
+      </div>
+      <div class="hint">Arrastra bloques al lienzo · clic en una sección para editar · en el preview aparecen ↑↓⧉🗑 sobre la sección activa · reordena en “Estructura”.</div>
+    </div>
+
+    <div class="col right">
+      <div class="block">
+        <div class="paneltitle">Estructura <span id="secCount" style="color:var(--muted2)"></span></div>
+        <div class="outline" id="outline"></div>
+      </div>
+      <div class="tabs">
+        <button data-tab="content" class="on">Contenido</button>
+        <button data-tab="style">Estilo</button>
+        <button data-tab="global">Global</button>
+      </div>
+      <div id="tabContent"><div class="fields" id="contentFields"></div></div>
+      <div id="tabStyle" style="display:none"><div class="fields" id="styleFields"></div></div>
+      <div id="tabGlobal" style="display:none"><div class="fields" id="globalFields"></div></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- Login compartido -->
+<div id="loginOverlay" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(9,11,16,.92);backdrop-filter:blur(4px);place-items:center">
+  <div style="width:340px;max-width:92vw;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px">
+    <div class="brandmark" style="justify-content:center;margin-bottom:6px"><span class="dot"></span> NC Landing Builder</div>
+    <div style="text-align:center;color:var(--muted2);font-size:12px;margin-bottom:16px">Acceso del equipo</div>
+    <div class="fld"><label>Email</label><input id="loginEmail" class="txt" style="width:100%" type="email" placeholder="equipo@nextconversion.es"></div>
+    <div class="fld"><label>Contraseña</label><input id="loginPass" class="txt" style="width:100%" type="password" placeholder="••••••••"></div>
+    <button class="btn primary" id="loginBtn" style="width:100%;margin-top:6px">Entrar</button>
+    <div id="loginErr" style="color:var(--danger);font-size:11.5px;margin-top:8px;text-align:center"></div>
+  </div>
+</div>
+
+<!-- Mis landings -->
+<div id="mineOverlay" style="display:none;position:fixed;inset:0;z-index:190;background:rgba(9,11,16,.7);place-items:center">
+  <div style="width:520px;max-width:94vw;max-height:80vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <b>Mis landings</b>
+      <span><button class="btn sm" id="mineNew">+ Nueva</button> <button class="btn sm ghost" id="mineClose">Cerrar</button></span>
+    </div>
+    <div id="mineList"><div class="empty">Cargando…</div></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   NC LANDING BUILDER v2
+   Motor de secciones · salida Bootstrap 5.3.3 + tokens de marca
+   Imágenes Base64 · controles de estilo · editor de tema · undo/redo
+   ============================================================ */
+
+/* ---------- MARCAS ---------- */
+const FONTS=["Inter","Poppins","Montserrat","Outfit","Manrope","Sora","DM Sans","Work Sans","Space Grotesk","Nunito","Mulish","Lato","Roboto","Open Sans","Playfair Display","Merriweather"];
+function fontsHref(head,body){
+  const fam=n=>encodeURIComponent(n).replace(/%20/g,"+");
+  const serif=["Playfair Display","Merriweather"];
+  const w=n=>serif.includes(n)?"wght@400;600;700":"wght@400;500;600;700;800";
+  const set=[...new Set([head,body])];
+  return "https://fonts.googleapis.com/css2?"+set.map(n=>"family="+fam(n)+":"+w(n)).join("&")+"&display=swap";
+}
+const BRANDS = {
+  nc:{name:"Next Conversion", locked:true,
+    vars:"--bp:#6E5AFF;--bp2:#5646d6;--ba:#C1FF33;--bink:#312937;--bmuted:#6b6472;--bsoft:#F3F1FF;--line:#E7E4F5;--btnr:8px;--cardr:16px;",
+    fhead:"'Space Grotesk',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Space Grotesk","Inter"),
+    note:"Extraído en vivo de nextconversion.es · morado #6E5AFF + lima #C1FF33 + tinta #312937 · Space Grotesk."},
+  assista:{name:"Assista Digital", locked:true,
+    vars:"--bp:#d02320;--bp2:#b1040e;--ba:#00112b;--bink:#00112b;--bmuted:#54606f;--bsoft:#f6f7f9;--line:#e4e7ec;--btnr:50rem;--cardr:0 18px 0 18px;",
+    fhead:"'Outfit',sans-serif",fbody:"'Montserrat',sans-serif",fonts:fontsHref("Outfit","Montserrat"),
+    note:"Botones pill y esquinas de card asimétricas (brandbook Grupo Assista)."},
+  tuawa:{name:"Tuawa (Global Omnium)", locked:true,
+    vars:"--bp:#134D8F;--bp2:#0e3c72;--ba:#3BB5B0;--bink:#0c2338;--bmuted:#5a6b7c;--bsoft:#eef4fb;--line:#dbe6f0;--btnr:10px;--cardr:14px;",
+    fhead:"'Manrope',sans-serif",fbody:"'Manrope',sans-serif",fonts:fontsHref("Manrope","Manrope"),
+    note:"Satoshi no está en Google Fonts: sustituida por Manrope."},
+  custom:{name:"Editable", locked:false,
+    vars:"--bp:#2563EB;--bp2:#1d4ed8;--ba:#10B981;--bink:#0f172a;--bmuted:#475569;--bsoft:#f1f5f9;--line:#e2e8f0;--btnr:10px;--cardr:14px;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"Marca editable: ajusta colores, tipografías y radios en la pestaña Global."},
+
+  /* ---- Referencia externa (aproximado, ajustable) ---- */
+  apple:{name:"Apple", locked:true, ref:true,
+    vars:"--bp:#0071E3;--bp2:#0066CC;--ba:#1D1D1F;--bink:#1D1D1F;--bmuted:#86868B;--bsoft:#F5F5F7;--line:#D2D2D7;--btnr:999px;--cardr:28px;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"Perfil de estilo completo (sistema de diseño Apple documentado): SF Pro→Inter, tinta #1D1D1F, azul #0071E3, gris #F5F5F7, botones pill 44px, cards 28px sin borde, sombras sutiles, tipografía a gran escala con tracking negativo y mucho aire.",
+    profileCSS:`/* Apple style profile */
+h1,h2,h3,.h-font,.display-4,.display-5,.display-6{font-weight:600;letter-spacing:-0.03em;line-height:1.07}
+.display-4{font-size:clamp(2.7rem,6vw,4.6rem);letter-spacing:-0.04em;line-height:1.03}
+.display-5{font-size:clamp(2.2rem,5vw,3.5rem);letter-spacing:-0.035em;line-height:1.05}
+.display-6{font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:-0.03em}
+.lead{font-size:1.32rem;line-height:1.45;letter-spacing:-0.01em}
+:root{--secpad-S:44px;--secpad-M:80px;--secpad-L:112px;--secpad-XL:150px}
+.btn-brand,.btn-ghost{border-radius:999px;min-height:44px;font-weight:500;padding:.5rem 1.35rem;box-shadow:none;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
+.btn-ghost{border-width:1px}
+.btn-lg{font-size:17px;min-height:50px;padding:.65rem 1.7rem}
+.brandcard{background:#F5F5F7;border:none;border-radius:28px;box-shadow:none;color:#1D1D1F}
+.brandcard.featured{box-shadow:0 12px 32px rgba(0,0,0,.10);border:none}
+.badge-soft{background:rgba(0,113,227,.10);border:none;color:#0071E3}
+.accordion-item{border:none!important;border-bottom:1px solid #D2D2D7!important;border-radius:0!important;background:transparent}
+.accordion-button{font-weight:500;padding-left:0;padding-right:0}
+.accordion-body{padding-left:0;padding-right:0}
+.apple-link:hover{text-decoration:underline!important}`},
+  movistar:{name:"Movistar", locked:true, ref:true,
+    vars:"--bp:#019DF4;--bp2:#0284c7;--ba:#0B2739;--bink:#0B2739;--bmuted:#5a6b7c;--bsoft:#EAF6FE;--line:#d7e8f4;--btnr:999px;--cardr:16px;",
+    fhead:"'Poppins',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Poppins","Inter"),
+    note:"Aproximado. Azul Movistar #019DF4 + navy Telefónica. Tipografía On Air sustituida por Poppins/Inter."},
+  verizon:{name:"Verizon", locked:true, ref:true,
+    vars:"--bp:#EE0000;--bp2:#c20000;--ba:#000000;--bink:#000000;--bmuted:#6f6f6f;--bsoft:#F6F6F6;--line:#e2e2e2;--btnr:0px;--cardr:0px;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"Aproximado. Rojo #EE0000 + negro, estética muy plana y esquinas rectas. Verizon NHG sustituida por Inter."},
+  tmobile:{name:"T-Mobile", locked:true, ref:true,
+    vars:"--bp:#E20074;--bp2:#b8005f;--ba:#000000;--bink:#1A1A1A;--bmuted:#6b6b6b;--bsoft:#FBEAF3;--line:#f0d6e5;--btnr:999px;--cardr:16px;",
+    fhead:"'Poppins',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Poppins","Inter"),
+    note:"Aproximado. Magenta corporativo #E20074 + negro. TeleGrotesk sustituida por Poppins/Inter."},
+  o2:{name:"O2", locked:true, ref:true,
+    vars:"--bp:#0019A5;--bp2:#001480;--ba:#26D9C3;--bink:#0A1F44;--bmuted:#566079;--bsoft:#EAF0FF;--line:#d5ddf3;--btnr:999px;--cardr:16px;",
+    fhead:"'Poppins',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Poppins","Inter"),
+    note:"Aproximado. Azul O2 ~#0019A5 + acento aqua. On Air sustituida por Poppins/Inter."},
+  mytraffic:{name:"MyTraffic (dark)", locked:true, ref:true,
+    vars:"--bp:#FF2D78;--bp2:#e01e63;--ba:#35E1E1;--bink:#0B0B12;--bmuted:#8b8ba3;--bsoft:#14141C;--line:#242433;--btnr:12px;--cardr:18px;",
+    fhead:"'Space Grotesk',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Space Grotesk","Inter"),
+    note:"Aproximado. Estética dark con gradiente rosa→cian. Úsala con fondos ‘Oscuro’ en las secciones."},
+  abtasty:{name:"AB Tasty", locked:true, ref:true,
+    vars:"--bp:#4E3BFF;--bp2:#3a2bd6;--ba:#00D1B2;--bink:#141327;--bmuted:#5b5b73;--bsoft:#F1F0FF;--line:#e2e0f7;--btnr:12px;--cardr:16px;",
+    fhead:"'Sora',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Sora","Inter"),
+    note:"Aproximado (verificar). Base violeta/indigo + acento teal. Ajusta con el editor si tienes su brandbook."},
+
+  /* ---- Estilos premiados (tendencias, no marcas) ---- */
+  ed_serif:{name:"Editorial serif", locked:true, ref:true,
+    vars:"--bp:#B4552D;--bp2:#8f4123;--ba:#14110E;--bink:#14110E;--bmuted:#5c554c;--bsoft:#F4EEE6;--line:#e6ded1;--btnr:4px;--cardr:6px;",
+    fhead:"'Playfair Display',serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Playfair Display","Inter"),
+    note:"Tendencia editorial: serif de display, terracota, mucho aire. Ideal salud/legal premium."},
+  swiss:{name:"Swiss minimal", locked:true, ref:true,
+    vars:"--bp:#111111;--bp2:#000000;--ba:#FF3B00;--bink:#111111;--bmuted:#666666;--bsoft:#F2F2F2;--line:#e4e4e4;--btnr:2px;--cardr:2px;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"Tipografía grande, rejilla estricta, un solo acento. Look agencia/premio limpio."},
+  brutalist:{name:"Brutalist mono", locked:true, ref:true,
+    vars:"--bp:#000000;--bp2:#000000;--ba:#E6FF00;--bink:#000000;--bmuted:#444444;--bsoft:#ffffff;--line:#000000;--btnr:0px;--cardr:0px;",
+    fhead:"'Space Grotesk',sans-serif",fbody:"'DM Sans',sans-serif",fonts:fontsHref("Space Grotesk","DM Sans"),
+    note:"Bordes duros, negro puro, amarillo ácido. Alto impacto, poco convencional."},
+  glass:{name:"Glass dark", locked:true, ref:true,
+    vars:"--bp:#6C5CE7;--bp2:#5646d6;--ba:#00E5FF;--bink:#0B0E14;--bmuted:#9aa3b8;--bsoft:#12151E;--line:#232838;--btnr:999px;--cardr:20px;",
+    fhead:"'Sora',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Sora","Inter"),
+    note:"SaaS oscuro con glassmorphism. Úsala con fondos ‘Oscuro’. Estilo MyTraffic/Apple keynote."},
+  mesh:{name:"Gradient mesh", locked:true, ref:true,
+    vars:"--bp:#7C3AED;--bp2:#6d28d9;--ba:#EC4899;--bink:#1E1B2E;--bmuted:#5b5670;--bsoft:#F5F3FF;--line:#e7e1fb;--btnr:16px;--cardr:20px;",
+    fhead:"'Poppins',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Poppins","Inter"),
+    note:"Degradados morado→rosa, formas suaves. Muy usado en lanzamientos y fintech."},
+  bigtype:{name:"Big type bold", locked:true, ref:true,
+    vars:"--bp:#FF5A1F;--bp2:#e0490f;--ba:#111111;--bink:#111111;--bmuted:#5f5f5f;--bsoft:#FFF7F0;--line:#f0e4d9;--btnr:8px;--cardr:14px;",
+    fhead:"'Outfit',sans-serif",fbody:"'Work Sans',sans-serif",fonts:fontsHref("Outfit","Work Sans"),
+    note:"Titulares enormes, naranja enérgico. Conversión agresiva tipo oferta."},
+
+  /* ---- Clientes NC (extraídos en vivo con Claude-in-Chrome) ---- */
+  c_orange:{name:"Orange", locked:true, client:true,
+    vars:"--bp:#FF7900;--bp2:#e06a00;--ba:#000000;--bink:#000000;--bmuted:#5b6573;--bsoft:#FFF3E9;--line:#f0e4d9;--btnr:0px;--cardr:0px;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"orange.es · naranja #FF7900 + negro · botones rectos (0px) · Orange Sans→Inter."},
+  c_masmovil:{name:"MásMóvil", locked:true, client:true,
+    vars:"--bp:#43AA15;--bp2:#379010;--ba:#FFE200;--bink:#373A3C;--bmuted:#5b6573;--bsoft:#EEF9E9;--line:#dbeede;--btnr:0px;--cardr:8px;",
+    fhead:"'Mulish',sans-serif",fbody:"'Mulish',sans-serif",fonts:fontsHref("Mulish","Mulish"),
+    note:"tarifasmasmovil.es · verde #43AA15 + amarillo #FFE200 · Mulish."},
+  c_yoigo:{name:"Yoigo", locked:true, client:true,
+    vars:"--bp:#3EA200;--bp2:#338700;--ba:#E42E84;--bink:#363546;--bmuted:#5b6573;--bsoft:#EAF7E6;--line:#d9ecd9;--btnr:8px;--cardr:12px;",
+    fhead:"'Roboto',sans-serif",fbody:"'Roboto',sans-serif",fonts:fontsHref("Roboto","Roboto"),
+    note:"contrataryoigo.es · verde CTA #3EA200 + magenta Yoigo #E42E84 · Roboto."},
+  c_masahorro:{name:"MásAhorro", locked:true, client:true,
+    vars:"--bp:#012BFF;--bp2:#0121cc;--ba:#FFE000;--bink:#0b1020;--bmuted:#5b6573;--bsoft:#EAF0FF;--line:#d7e3ff;--btnr:999px;--cardr:16px;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"masahorrofibraymovil.com · azul #012BFF + amarillo #FFE000 · botón pill · Arial→Inter."},
+  c_jazztel:{name:"Jazztel", locked:true, client:true,
+    vars:"--bp:#08A800;--bp2:#078a00;--ba:#DA1884;--bink:#333333;--bmuted:#5b6573;--bsoft:#EAF7E6;--line:#dcecdc;--btnr:4px;--cardr:10px;",
+    fhead:"'Montserrat',sans-serif",fbody:"'Montserrat',sans-serif",fonts:fontsHref("Montserrat","Montserrat"),
+    note:"mijazztel.com · verde #08A800 + magenta #DA1884 · Montserrat."},
+  c_simyo:{name:"Simyo", locked:true, client:true,
+    vars:"--bp:#FF6600;--bp2:#e25a00;--ba:#08A6DB;--bink:#111111;--bmuted:#5b6573;--bsoft:#FFF1E6;--line:#ffe3cc;--btnr:0px;--cardr:8px;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"simyotarifas.es · naranja #FF6600 + azul #08A6DB · botón recto · Interstate→Inter."},
+  c_vodafone:{name:"Vodafone", locked:true, client:true,
+    vars:"--bp:#E60000;--bp2:#c20000;--ba:#007C92;--bink:#0D0D0D;--bmuted:#5b6573;--bsoft:#FDEAEA;--line:#f6d6d6;--btnr:16px;--cardr:16px;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"tufibraymovil.com · rojo Vodafone #E60000 · Vodafone Rg→Inter."},
+  c_lowi:{name:"Lowi", locked:true, client:true,
+    vars:"--bp:#E60000;--bp2:#c20000;--ba:#111111;--bink:#0D0D0D;--bmuted:#5b6573;--bsoft:#FDEAEA;--line:#f6d6d6;--btnr:16px;--cardr:16px;",
+    fhead:"'Poppins',sans-serif",fbody:"'Poppins',sans-serif",fonts:fontsHref("Poppins","Poppins"),
+    note:"ofertasfibra-online.com · la landing usa plantilla roja tipo Vodafone; la marca Lowi real es lima/coral (revisar)."},
+  c_finetwork:{name:"Finetwork", locked:true, client:true,
+    vars:"--bp:#5F0AFF;--bp2:#4e08d6;--ba:#00DC74;--bink:#0F0733;--bmuted:#5b6573;--bsoft:#F1EAFF;--line:#e5d9ff;--btnr:8px;--cardr:14px;",
+    fhead:"'Poppins',sans-serif",fbody:"'Nunito',sans-serif",fonts:fontsHref("Poppins","Nunito"),
+    note:"finetwork-online.es · morado #5F0AFF + verde #00DC74 · Poppins/Nunito Sans."},
+  c_totalenergies:{name:"TotalEnergies", locked:true, client:true,
+    vars:"--bp:#ED0000;--bp2:#c40000;--ba:#0090D6;--bink:#374649;--bmuted:#5b6573;--bsoft:#FDEAEA;--line:#f6d6d6;--btnr:999px;--cardr:16px;",
+    fhead:"'Nunito',sans-serif",fbody:"'Roboto',sans-serif",fonts:fontsHref("Nunito","Roboto"),
+    note:"totalenergies-ofertas.es · rojo #ED0000 + azul · botón pill · Nunito/Roboto."},
+  c_adt:{name:"ADT", locked:true, client:true,
+    vars:"--bp:#005FA9;--bp2:#024d88;--ba:#44A0E3;--bink:#303538;--bmuted:#5b6573;--bsoft:#E9F2FB;--line:#d6e6f5;--btnr:28px;--cardr:16px;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"adt.configuratualarma.es · azul ADT #005FA9 · Avenir/Benton→Inter."},
+  c_sicor:{name:"Sicor", locked:true, client:true,
+    vars:"--bp:#008D3F;--bp2:#037433;--ba:#03485A;--bink:#03485A;--bmuted:#5b6573;--bsoft:#E8F6EE;--line:#d5ece0;--btnr:4px;--cardr:10px;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"alarmasicor.com · verde #008D3F + petróleo #03485A · Allumi→Inter."},
+  c_prosegur:{name:"Prosegur", locked:true, client:true,
+    vars:"--bp:#FFD102;--bp2:#e6bb00;--ba:#019BF2;--bink:#1A1A1A;--bmuted:#5b6573;--bsoft:#FFF9E0;--line:#f3ecc9;--btnr:6px;--cardr:12px;--btntext:#1A1A1A;",
+    fhead:"'Poppins',sans-serif",fbody:"'Poppins',sans-serif",fonts:fontsHref("Poppins","Poppins"),
+    note:"alarmasprosegur.es · amarillo #FFD102 (texto oscuro en botón) + azul #019BF2 · Poppins."},
+  c_segurma:{name:"Segurma", locked:true, client:true,
+    vars:"--bp:#FF6800;--bp2:#e25c00;--ba:#111111;--bink:#0F0F0F;--bmuted:#5b6573;--bsoft:#FFF0E6;--line:#ffe0cc;--btnr:999px;--cardr:16px;",
+    fhead:"'Poppins',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Poppins","Inter"),
+    note:"assista.segurmadistribucion.es · naranja #FF6800 · Century Gothic→Poppins/Inter."},
+  c_teleasistencia:{name:"SICOR Teleasistencia", locked:true, client:true,
+    vars:"--bp:#00CFD9;--bp2:#00b3bc;--ba:#003B3F;--bink:#003B3F;--bmuted:#5b6573;--bsoft:#E6FBFC;--line:#cdeff1;--btnr:2px;--cardr:8px;--btntext:#003B3F;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"sicorteleasistencia.com · turquesa #00CFD9 (texto oscuro en botón) + verde #003B3F · Allumi→Inter."},
+  c_alarmafacil:{name:"AlarmaFácil", locked:true, client:true,
+    vars:"--bp:#FF0033;--bp2:#d4002a;--ba:#00A89D;--bink:#212529;--bmuted:#5b6573;--bsoft:#FFEAEE;--line:#ffd6de;--btnr:999px;--cardr:16px;",
+    fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
+    note:"alarmafacil.es · rojo #FF0033 + teal #00A89D · botón pill."}
+};
+const CUSTOM={bp:"#2563EB",ba:"#10B981",ink:"#0f172a",soft:"#f1f5f9",btnr:10,cardr:14,fhead:"Inter",fbody:"Inter"};
+function syncCustom(){
+  const shade=(h,f)=>{h=h.replace('#','');const n=parseInt(h,16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;r=Math.round(r*f);g=Math.round(g*f);b=Math.round(b*f);return"#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);};
+  BRANDS.custom.vars=`--bp:${CUSTOM.bp};--bp2:${shade(CUSTOM.bp,.82)};--ba:${CUSTOM.ba};--bink:${CUSTOM.ink};--bmuted:#5b6573;--bsoft:${CUSTOM.soft};--line:#e2e8f0;--btnr:${CUSTOM.btnr}px;--cardr:${CUSTOM.cardr}px;`;
+  BRANDS.custom.fhead=`'${CUSTOM.fhead}',sans-serif`;BRANDS.custom.fbody=`'${CUSTOM.fbody}',sans-serif`;
+  BRANDS.custom.fonts=fontsHref(CUSTOM.fhead,CUSTOM.fbody);
+}
+/* Grupos del selector de marca */
+const BRAND_GROUPS=[
+  ["Next Conversion & marcas",["nc","assista","tuawa","custom"]],
+  ["Clientes NC",["c_orange","c_masmovil","c_yoigo","c_masahorro","c_jazztel","c_simyo","c_vodafone","c_lowi","c_finetwork","c_totalenergies","c_adt","c_sicor","c_prosegur","c_segurma","c_teleasistencia","c_alarmafacil"]],
+  ["Referencia externa (aprox.)",["apple","movistar","verizon","tmobile","o2","mytraffic","abtasty"]],
+  ["Estilos premiados",["ed_serif","swiss","brutalist","glass","mesh","bigtype"]]
+];
+function brandOptions(sel){return BRAND_GROUPS.filter(g=>g[1].some(k=>BRANDS[k])).map(g=>`<optgroup label="${g[0]}">`+g[1].filter(k=>BRANDS[k]).map(k=>`<option value="${k}" ${k===sel?'selected':''}>${BRANDS[k].name}</option>`).join("")+`</optgroup>`).join("");}
+
+/* ---------- ESTADO ---------- */
+const state={ settings:{brand:"nc",title:"",desc:"",tel:"",wa:"",endpoint:"",gtm:"",slug:"landing",ctaStyle:"brand",ctaAction:"scroll",popupTitle:"¿Necesitas ayuda?",popupImg:"",cookies:false},
+  sections:[], selected:null, tab:"content", device:"desktop" };
+let uid=1; const nid=()=>"s"+(uid++);
+
+/* ---------- HELPERS ---------- */
+const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const lines=s=>String(s||"").split("\n").map(l=>l.trim()).filter(Boolean);
+const cells=l=>l.split("|").map(x=>x.trim());
+const arr=v=>Array.isArray(v)?v:[];
+function ph(v,t){return (v&&String(v).trim())?String(v).trim():"{{"+t+"}}";}
+function telHref(){return "tel:"+ph(state.settings.tel,"TELEFONO").replace(/\s/g,"");}
+function telText(){return ph(state.settings.tel,"TELEFONO");}
+function waHref(){return "https://wa.me/"+ph(state.settings.wa,"WHATSAPP").replace(/[^0-9]/g,"");}
+function imgOrBox(src,label,cls){return src?`<img src="${src}" class="${cls||''}" loading="lazy" style="width:100%;height:100%;object-fit:cover" alt="">`:`<div class="d-grid" style="place-items:center;width:100%;height:100%;background:var(--bsoft);color:var(--bmuted);font-size:13px">${label||"Imagen {{IMG}}"}</div>`;}
+
+/* ---------- ESTILO DE SECCIÓN ---------- */
+const PAD={S:"padding:30px 0",M:"padding:58px 0",L:"padding:86px 0",XL:"padding:120px 0"};
+const WIDTH={narrow:"max-width:700px",normal:"",wide:"max-width:1240px",full:"max-width:100%"};
+const OVL={soft:.25,med:.45,strong:.62};
+const BG={white:{c:"#ffffff",d:false},soft:{c:"var(--bsoft)",d:false},tint:{c:"color-mix(in srgb,var(--bp) 8%,#fff)",d:false},primary:{c:"var(--bp)",d:true},ink:{c:"var(--bink)",d:true},image:{c:null,d:true}};
+const STYLE_FIELDS=[
+  {k:"bg",l:"Fondo",t:"select",opts:[["white","Blanco"],["soft","Suave"],["tint","Tinte de marca"],["primary","Primario"],["ink","Oscuro"],["image","Imagen"]]},
+  {k:"bgimg",l:"Imagen de fondo",t:"image",when:s=>s.bg==="image"},
+  {k:"overlay",l:"Oscurecer imagen",t:"select",opts:[["soft","Suave"],["med","Media"],["strong","Fuerte"]],when:s=>s.bg==="image"},
+  {k:"pad",l:"Espaciado vertical",t:"select",opts:[["S","Compacto"],["M","Normal"],["L","Amplio"],["XL","Extra"]]},
+  {k:"align",l:"Alineación",t:"select",opts:[["left","Izquierda"],["center","Centro"]]},
+  {k:"width",l:"Ancho del contenido",t:"select",opts:[["narrow","Estrecho"],["normal","Normal"],["wide","Ancho"],["full","Completo"]]},
+  {k:"divider",l:"Forma superior",t:"select",opts:[["none","Recta"],["diagup","Diagonal ↗"],["diagdown","Diagonal ↘"],["curve","Curva"]]}
+];
+const STYLE_DEF={bg:"white",bgimg:"",overlay:"med",pad:"M",align:"left",width:"normal",divider:"none"};
+function secOpen(st){
+  const b=BG[st.bg]||BG.white; let bgcss; const isImg=st.bg==="image"&&st.bgimg;
+  if(isImg){const o=OVL[st.overlay]||.45;bgcss=`background:linear-gradient(rgba(0,0,0,${o}),rgba(0,0,0,${o})),url('${st.bgimg}') center/cover no-repeat;`;}
+  else bgcss=`background:${b.c};`;
+  const dark=b.d||isImg;
+  const head=dark?"#ffffff":"var(--bink)"; const mut=dark?"rgba(255,255,255,.80)":"var(--bmuted)";
+  const align=st.align==="center"?"text-center":"";
+  let div="";const dv=st.divider;
+  if(dv==="diagup")div="clip-path:polygon(0 42px,100% 0,100% 100%,0 100%);margin-top:-1px;padding-top:calc(var(--secpad-"+(st.pad||'M')+") + 30px)!important;";
+  else if(dv==="diagdown")div="clip-path:polygon(0 0,100% 42px,100% 100%,0 100%);margin-top:-1px;padding-top:calc(var(--secpad-"+(st.pad||'M')+") + 30px)!important;";
+  else if(dv==="curve")div="border-top-left-radius:40px;border-top-right-radius:40px;margin-top:-1px;";
+  return `<section style="${bgcss}padding:var(--secpad-${st.pad||'M'}) 0;--headcol:${head};--txtmuted:${mut};color:${dark?'#fff':'inherit'};${div}"><div class="container ${align}" style="${WIDTH[st.width]||''}">`;
+}
+const secClose=()=>`</div></section>`;
+
+/* ---------- LIBRERÍA DE BLOQUES ---------- */
+const LIB={
+  /* Estructura */
+  topbar:{label:"Barra de aviso",ico:"▔",cat:"Estructura",raw:true,
+    def:()=>({text:"🎁 Oferta limitada: instalación gratis este mes",cta:"Aprovechar",href:"#form"}),
+    fields:[{k:"text",l:"Texto"},{k:"cta",l:"CTA (vacío = sin botón)"},{k:"href",l:"Destino CTA"}],
+    render:p=>`<div style="background:var(--bink);color:#fff" class="py-2"><div class="container d-flex flex-wrap justify-content-center align-items-center gap-2 small text-center">
+      <span>${esc(p.text)}</span>${p.cta?`<a href="${esc(p.href||'#form')}" data-cta="topbar" class="fw-bold" style="color:var(--ba)">${esc(p.cta)} →</a>`:""}</div></div>`},
+  navbar:{label:"Navbar",ico:"▭",cat:"Estructura",raw:true,
+    def:()=>({logoimg:"",logo:"{{LOGO}}",cta:"Llamar ahora"}),
+    fields:[{k:"logoimg",l:"Logo (imagen)",t:"image"},{k:"logo",l:"Logo (texto, si no hay imagen)"},{k:"cta",l:"CTA teléfono"}],
+    render:p=>`<nav class="navbar sticky-top" style="background:#fff;border-bottom:1px solid var(--line)"><div class="container py-1">
+      ${p.logoimg?`<a class="navbar-brand" href="#"><img src="${p.logoimg}" style="height:34px;object-fit:contain" alt="logo"></a>`:`<a class="navbar-brand fw-bold h-font" style="color:var(--bink)" href="#">${esc(p.logo)}</a>`}
+      <a data-cta="call" href="${telHref()}" class="btn btn-brand ms-auto">📞 ${esc(p.cta)}</a></div></nav>`},
+  footer:{label:"Footer",ico:"▁",cat:"Estructura",raw:true,
+    def:()=>({company:"{{RAZON_SOCIAL}}",legal:"Aviso legal|Privacidad|Cookies"}),
+    fields:[{k:"company",l:"Razón social"},{k:"legal",l:"Enlaces legales (|)"}],
+    render:p=>`<footer class="py-4" style="background:#fff;border-top:1px solid var(--line)"><div class="container d-flex flex-wrap justify-content-between align-items-center gap-2 small" style="color:var(--bmuted)">
+      <span>© ${new Date().getFullYear()} ${esc(p.company)}</span><span class="d-flex gap-3">${cells(p.legal).map(x=>`<a href="{{URL_LEGAL}}" style="color:var(--bmuted)">${esc(x)}</a>`).join("")}</span></div></footer>`},
+
+  /* Hero */
+  hero_split:{label:"Hero · imagen lateral",ico:"◧",cat:"Hero",styleDef:{pad:"L",bg:"soft"},
+    def:()=>({eyebrow:"Filtración de agua",headline:"Agua filtrada, sin garrafas y sin obras",sub:"Instalación gratis y cuota sin permanencia. Te llamamos en 24 h.",cta:"Quiero que me llamen",cta2:"Llámanos ahora",image:"",t1:"Sin permanencia",t2:"Instalación gratis",t3:"+10.000 hogares"}),
+    fields:[{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"cta",l:"CTA principal"},{k:"cta2",l:"CTA llamada"},{k:"image",l:"Imagen del hero",t:"image"},{k:"t1",l:"Trust 1"},{k:"t2",l:"Trust 2"},{k:"t3",l:"Trust 3"}],
+    render:p=>`<div class="row align-items-center g-4"><div class="col-lg-6">
+      ${p.eyebrow?`<span class="badge-soft">${esc(p.eyebrow)}</span>`:""}
+      <h1 class="display-5 fw-bold h-font mt-3 mb-3" style="color:var(--headcol)">${esc(p.headline)}</h1>
+      <p class="lead mb-4" style="color:var(--txtmuted)">${esc(p.sub)}</p>
+      <div class="d-flex flex-wrap gap-2"><a href="#form" data-cta="form" class="btn btn-brand btn-lg">${esc(p.cta)}</a><a href="${telHref()}" data-cta="call" class="btn btn-ghost btn-lg">📞 ${esc(p.cta2)}</a></div>
+      <div class="d-flex flex-wrap gap-3 mt-4 small" style="color:var(--txtmuted)">${[p.t1,p.t2,p.t3].filter(Boolean).map(t=>`<span>✓ ${esc(t)}</span>`).join("")}</div>
+    </div><div class="col-lg-6"><div class="brandcard ratio ratio-4x3 overflow-hidden">${imgOrBox(p.image,"Imagen / mockup {{IMG_HERO}}")}</div></div></div>`},
+  hero_center:{label:"Hero · centrado",ico:"◨",cat:"Hero",styleDef:{align:"center",pad:"XL",bg:"ink"},
+    def:()=>({eyebrow:"",headline:"La forma más simple de tener agua filtrada en casa",sub:"Sin obras, sin permanencia y con instalación gratuita.",cta:"Solicitar información",cta2:"Llamar"}),
+    fields:[{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"cta",l:"CTA principal"},{k:"cta2",l:"CTA llamada"}],
+    render:p=>`<div style="max-width:760px;margin:0 auto">${p.eyebrow?`<span class="badge-soft">${esc(p.eyebrow)}</span>`:""}
+      <h1 class="display-4 fw-bold h-font mt-3 mb-3" style="color:var(--headcol)">${esc(p.headline)}</h1>
+      <p class="lead mb-4" style="color:var(--txtmuted)">${esc(p.sub)}</p>
+      <div class="d-flex flex-wrap gap-2 justify-content-center"><a href="#form" data-cta="form" class="btn btn-brand btn-lg">${esc(p.cta)}</a><a href="${telHref()}" data-cta="call" class="btn btn-ghost btn-lg">📞 ${esc(p.cta2)}</a></div></div>`},
+  hero_form:{label:"Hero · con formulario",ico:"◫",cat:"Hero",styleDef:{pad:"L",bg:"soft"},
+    def:()=>({eyebrow:"Te llamamos gratis",headline:"Deja tus datos y te llamamos en menos de 24 h",sub:"Sin compromiso. Un asesor resuelve tus dudas y te da precio.",cta:"Quiero que me llamen",consent:"Acepto la política de privacidad."}),
+    fields:[{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"cta",l:"Botón del formulario"},{k:"consent",l:"Consentimiento"}],
+    render:p=>`<div class="row align-items-center g-4"><div class="col-lg-6">
+      ${p.eyebrow?`<span class="badge-soft">${esc(p.eyebrow)}</span>`:""}
+      <h1 class="display-6 fw-bold h-font mt-3 mb-3" style="color:var(--headcol)">${esc(p.headline)}</h1>
+      <p class="lead" style="color:var(--txtmuted)">${esc(p.sub)}</p></div>
+      <div class="col-lg-6"><div class="brandcard p-4" style="background:#fff"><span id="form"></span>
+        <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
+        <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
+        <div class="col-12"><input required name="telefono" type="tel" class="form-control form-control-lg" placeholder="Teléfono"></div>
+        <div class="col-12 form-check my-1"><input required class="form-check-input" type="checkbox" id="cn1"><label for="cn1" class="form-check-label small" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
+        <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit">${esc(p.cta)}</button></div></form></div></div></div>`},
+
+  /* Confianza */
+  logos:{label:"Logos (subir)",ico:"❖",cat:"Confianza",styleDef:{bg:"white",pad:"S"},
+    def:()=>({title:"Colaboramos con",logos:[]}),
+    fields:[{k:"title",l:"Texto"},{k:"logos",l:"Logos (imágenes)",t:"images"}],
+    render:p=>{const L=arr(p.logos);return `<div class="d-flex flex-wrap align-items-center justify-content-center gap-4">
+      <span class="small" style="color:var(--txtmuted)">${esc(p.title)}</span>
+      ${L.length?L.map(s=>`<img src="${s}" style="height:34px;max-width:130px;object-fit:contain" alt="">`).join(""):`<span style="color:var(--txtmuted)">Sube logos en el panel derecho →</span>`}</div>`}},
+  stats:{label:"Métricas",ico:"№",cat:"Confianza",styleDef:{bg:"tint",align:"center"},
+    def:()=>({items:"+10.000|hogares con agua filtrada\n24 h|tiempo medio de respuesta\n4,8/5|valoración de clientes"}),
+    fields:[{k:"items",l:"Métricas: número|etiqueta",t:"ta"}],
+    render:p=>`<div class="row g-4 text-center">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-md"><div class="display-5 fw-bold h-font" style="color:var(--bp)">${esc(c[0]||"")}</div><div class="small" style="color:var(--txtmuted)">${esc(c[1]||"")}</div></div>`}).join("")}</div>`},
+  testimonials:{label:"Testimonios",ico:"❝",cat:"Confianza",styleDef:{bg:"soft"},
+    def:()=>({title:"Lo que dicen nuestros clientes",items:"Instalación rapidísima y el agua sabe genial.|Marta, Valencia\nAdiós a cargar garrafas. Muy contentos.|Jorge, Sevilla"}),
+    fields:[{k:"title",l:"Título"},{k:"items",l:"Testimonios: texto|autor",t:"ta"}],
+    render:p=>`<h2 class="fw-bold h-font text-center mb-5" style="color:var(--headcol)">${esc(p.title)}</h2>
+      <div class="row g-4">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-md-6"><div class="brandcard h-100 p-4"><div class="mb-2" style="color:var(--ba);font-size:18px">★★★★★</div><p class="mb-3" style="color:var(--bink)">"${esc(c[0]||"")}"</p><div class="small fw-semibold" style="color:var(--bmuted)">${esc(c[1]||"")}</div></div></div>`}).join("")}</div>`},
+
+  /* Contenido */
+  features:{label:"Ventajas (cards)",ico:"▦",cat:"Contenido",
+    def:()=>({title:"Por qué elegirnos",subtitle:"Todo lo que necesitas, sin complicaciones.",items:"💧|Agua siempre lista|Fría, del tiempo o con gas al instante.\n🔧|Mantenimiento incluido|Nos ocupamos de todo.\n💶|Sin sorpresas|Cuota fija, sin permanencia."}),
+    fields:[{k:"title",l:"Título"},{k:"subtitle",l:"Subtítulo"},{k:"items",l:"Cards: icono|título|texto",t:"ta"}],
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><p style="color:var(--txtmuted)">${esc(p.subtitle)}</p></div>
+      <div class="row g-4">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-md-4"><div class="brandcard h-100 p-4"><div class="fs-2 mb-2">${esc(c[0]||"")}</div><h3 class="h5 fw-bold h-font" style="color:var(--bink)">${esc(c[1]||"")}</h3><p class="mb-0" style="color:var(--bmuted)">${esc(c[2]||"")}</p></div></div>`}).join("")}</div>`},
+  imagetext:{label:"Imagen + texto",ico:"◪",cat:"Contenido",
+    def:()=>({image:"",pos:"left",title:"Instalación en menos de 72 h",text:"Un técnico va a tu casa, instala el equipo bajo el fregadero y te explica cómo usarlo. Sin obras.",bullets:"Sin coste de instalación\nSin permanencia\nMantenimiento incluido",cta:"Más información"}),
+    fields:[{k:"image",l:"Imagen",t:"image"},{k:"pos",l:"Posición imagen",t:"select",opts:[["left","Izquierda"],["right","Derecha"]]},{k:"title",l:"Título"},{k:"text",l:"Texto",t:"ta"},{k:"bullets",l:"Bullets (uno por línea)",t:"ta"},{k:"cta",l:"CTA (vacío = sin botón)"}],
+    render:p=>{const img=`<div class="col-lg-6"><div class="brandcard ratio ratio-4x3 overflow-hidden">${imgOrBox(p.image,"Imagen {{IMG}}")}</div></div>`;
+      const txt=`<div class="col-lg-6"><h2 class="fw-bold h-font mb-3" style="color:var(--headcol)">${esc(p.title)}</h2><p style="color:var(--txtmuted)">${esc(p.text)}</p>
+      <ul class="list-unstyled mt-3">${lines(p.bullets).map(b=>`<li class="mb-2" style="color:var(--txtmuted)"><span style="color:var(--bp)">✓</span> ${esc(b)}</li>`).join("")}</ul>
+      ${p.cta?`<a href="#form" data-cta="form" class="btn btn-brand mt-2">${esc(p.cta)}</a>`:""}</div>`;
+      return `<div class="row align-items-center g-4">${p.pos==="right"?txt+img:img+txt}</div>`}},
+  steps:{label:"Cómo funciona",ico:"⑃",cat:"Contenido",styleDef:{bg:"soft"},
+    def:()=>({title:"En 3 pasos",items:"Nos llamas o dejas tus datos|Te asesoramos sin compromiso.\nElegimos tu equipo|El que encaja con tu consumo.\nInstalamos gratis|En menos de 72 h."}),
+    fields:[{k:"title",l:"Título"},{k:"items",l:"Pasos: título|texto",t:"ta"}],
+    render:p=>`<h2 class="fw-bold h-font text-center mb-5" style="color:var(--headcol)">${esc(p.title)}</h2>
+      <div class="row g-4">${lines(p.items).map((l,i)=>{const c=cells(l);return `<div class="col-md-4"><div class="d-flex gap-3"><div class="flex-shrink-0 d-grid" style="width:44px;height:44px;border-radius:50%;background:var(--bp);color:#fff;place-items:center;font-weight:700">${i+1}</div><div><h3 class="h6 fw-bold h-font mb-1" style="color:var(--headcol)">${esc(c[0]||"")}</h3><p class="mb-0 small" style="color:var(--txtmuted)">${esc(c[1]||"")}</p></div></div></div>`}).join("")}</div>`},
+  gallery:{label:"Galería de imágenes",ico:"▥",cat:"Contenido",
+    def:()=>({title:"Galería",images:[]}),
+    fields:[{k:"title",l:"Título"},{k:"images",l:"Imágenes",t:"images"}],
+    render:p=>{const G=arr(p.images);return `<h2 class="fw-bold h-font text-center mb-4" style="color:var(--headcol)">${esc(p.title)}</h2>
+      <div class="row g-3">${G.length?G.map(s=>`<div class="col-6 col-md-4"><div class="brandcard ratio ratio-1x1 overflow-hidden"><img src="${s}" style="width:100%;height:100%;object-fit:cover" alt=""></div></div>`).join(""):`<div class="col-12 text-center" style="color:var(--txtmuted)">Sube imágenes en el panel derecho →</div>`}</div>`}},
+  pricing:{label:"Tarifas",ico:"$",cat:"Contenido",
+    def:()=>({title:"Elige tu plan",plans:"Alquiler|19,90€/mes|Todo incluido · sin permanencia|Lo quiero\nLiberty|29,90€/mes|Equipo en propiedad a 12 meses|Lo quiero"}),
+    fields:[{k:"title",l:"Título"},{k:"plans",l:"Planes: nombre|precio|detalle|CTA",t:"ta"}],
+    render:p=>`<h2 class="fw-bold h-font text-center mb-5" style="color:var(--headcol)">${esc(p.title)}</h2>
+      <div class="row g-4 justify-content-center">${lines(p.plans).map((l,i)=>{const c=cells(l);return `<div class="col-md-5"><div class="brandcard h-100 p-4 text-center ${i===1?'featured':''}"><h3 class="h5 fw-bold h-font" style="color:var(--bink)">${esc(c[0]||"")}</h3><div class="display-6 fw-bold h-font my-2" style="color:var(--bp)">${esc(c[1]||"")}</div><p style="color:var(--bmuted)">${esc(c[2]||"")}</p><a href="#form" data-cta="form" class="btn btn-brand w-100 mt-2">${esc(c[3]||"Solicitar")}</a></div></div>`}).join("")}</div>`},
+  faq:{label:"FAQ (acordeón)",ico:"?",cat:"Contenido",styleDef:{width:"narrow"},
+    def:()=>({title:"Preguntas frecuentes",items:"¿Tiene permanencia?|No, puedes darte de baja cuando quieras.\n¿La instalación tiene coste?|No, es gratuita.\n¿Qué mantenimiento necesita?|Ninguno por tu parte."}),
+    fields:[{k:"title",l:"Título"},{k:"items",l:"FAQ: pregunta|respuesta",t:"ta"}],
+    render:p=>{const g="faq"+Math.random().toString(36).slice(2,7);return `<h2 class="fw-bold h-font text-center mb-5" style="color:var(--headcol)">${esc(p.title)}</h2>
+      <div class="accordion" id="${g}">${lines(p.items).map((l,i)=>{const c=cells(l);const iid=g+i;return `<div class="accordion-item" style="border-color:var(--line)"><h3 class="accordion-header"><button class="accordion-button ${i?'collapsed':''} h-font fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#c${iid}">${esc(c[0]||"")}</button></h3><div id="c${iid}" class="accordion-collapse collapse ${i?'':'show'}" data-bs-parent="#${g}"><div class="accordion-body" style="color:var(--bmuted)">${esc(c[1]||"")}</div></div></div>`}).join("")}</div>`}},
+  video:{label:"Vídeo (YouTube/Vimeo)",ico:"▶",cat:"Contenido",styleDef:{width:"wide",align:"center"},
+    def:()=>({title:"Míralo en 60 segundos",url:"https://www.youtube.com/embed/VIDEO_ID"}),
+    fields:[{k:"title",l:"Título"},{k:"url",l:"URL embed (…/embed/ID)"}],
+    render:p=>`<h2 class="fw-bold h-font mb-4" style="color:var(--headcol)">${esc(p.title)}</h2>
+      <div class="ratio ratio-16x9 brandcard overflow-hidden" style="max-width:820px;margin:0 auto"><iframe src="${esc(p.url)}" title="vídeo" allowfullscreen style="border:0"></iframe></div>`},
+  richtext:{label:"Texto libre",ico:"¶",cat:"Contenido",styleDef:{width:"narrow"},
+    def:()=>({title:"Sobre el servicio",body:"Escribe aquí un párrafo.\nCada línea crea un nuevo párrafo."}),
+    fields:[{k:"title",l:"Título (vacío = sin título)"},{k:"body",l:"Texto (líneas = párrafos)",t:"ta"}],
+    render:p=>`${p.title?`<h2 class="fw-bold h-font mb-3" style="color:var(--headcol)">${esc(p.title)}</h2>`:""}${lines(p.body).map(x=>`<p style="color:var(--txtmuted)">${esc(x)}</p>`).join("")}`},
+
+  /* Conversión */
+  form:{label:"Formulario callback",ico:"✉",cat:"Conversión",styleDef:{bg:"primary",width:"narrow"},
+    def:()=>({title:"Te llamamos gratis",subtitle:"Déjanos tu número y te llamamos en menos de 24 h.",cta:"Quiero que me llamen",consent:"He leído y acepto la política de privacidad."}),
+    fields:[{k:"title",l:"Título"},{k:"subtitle",l:"Subtítulo"},{k:"cta",l:"Texto del botón"},{k:"consent",l:"Consentimiento"}],
+    render:p=>`<span id="form"></span><div class="brandcard p-4 p-md-5" style="background:#fff">
+      <h2 class="fw-bold h-font text-center mb-1" style="color:var(--bink)">${esc(p.title)}</h2>
+      <p class="text-center mb-4" style="color:var(--bmuted)">${esc(p.subtitle)}</p>
+      <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
+        <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
+        <div class="col-12"><input required name="telefono" type="tel" class="form-control form-control-lg" placeholder="Teléfono"></div>
+        <div class="col-12 form-check my-1"><input required class="form-check-input" type="checkbox" id="cn2"><label class="form-check-label small" for="cn2" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
+        <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit">${esc(p.cta)}</button></div>
+      </form><div class="text-center small mt-3" style="color:var(--bmuted)">o llámanos al <a href="${telHref()}" data-cta="call" style="color:var(--bp);font-weight:600">${telText()}</a></div></div>`},
+  ctaband:{label:"Banda CTA",ico:"▬",cat:"Conversión",styleDef:{bg:"ink",align:"center",pad:"L"},
+    def:()=>({headline:"¿Listo para dejar de cargar garrafas?",cta:"Que me llamen"}),
+    fields:[{k:"headline",l:"Titular"},{k:"cta",l:"Botón"}],
+    render:p=>`<h2 class="fw-bold h-font mb-3" style="color:var(--headcol)">${esc(p.headline)}</h2>
+      <a href="#form" data-cta="form" class="btn btn-brand btn-lg me-2">${esc(p.cta)}</a>
+      <a href="${telHref()}" data-cta="call" class="btn btn-lg" style="color:#fff;border:2px solid rgba(255,255,255,.55);border-radius:var(--btnr)">📞 ${telText()}</a>`},
+  stickycall:{label:"Barra fija móvil",ico:"⤓",cat:"Conversión",raw:true,
+    def:()=>({call:"Llamar",wa:"WhatsApp"}),
+    fields:[{k:"call",l:"Texto llamada"},{k:"wa",l:"Texto WhatsApp"}],
+    render:p=>`<div class="d-md-none" style="position:fixed;left:0;right:0;bottom:0;z-index:1030;background:#fff;border-top:1px solid var(--line);padding:8px;display:flex;gap:8px">
+      <a href="${telHref()}" data-cta="call" class="btn btn-brand flex-fill">📞 ${esc(p.call)}</a>
+      <a href="${waHref()}" data-cta="whatsapp" target="_blank" rel="noopener" class="btn btn-ghost flex-fill">💬 ${esc(p.wa)}</a></div><div class="d-md-none" style="height:64px"></div>`},
+
+  /* ==== Herramientas de conversión ==== */
+  cal:{label:"Cita / agenda llamada",ico:"📅",cat:"Conversión",styleDef:{bg:"soft",width:"narrow"},
+    def:()=>({title:"Reserva tu llamada",subtitle:"Elige día y hora y te llamamos gratis.",slots:"9:00, 10:00, 11:00, 12:00, 16:00, 17:00, 18:00",cta:"Confirmar cita",consent:"Acepto la política de privacidad."}),
+    fields:[{k:"title",l:"Título"},{k:"subtitle",l:"Subtítulo"},{k:"slots",l:"Franjas horarias (coma)"},{k:"cta",l:"Botón"},{k:"consent",l:"Consentimiento"}],
+    render:p=>`<div data-live data-cal class="brandcard p-4 p-md-5" style="background:#fff"><span id="form"></span>
+      <h2 class="fw-bold h-font text-center mb-1" style="color:var(--bink)">${esc(p.title)}</h2>
+      <p class="text-center mb-4" style="color:var(--bmuted)">${esc(p.subtitle)}</p>
+      <div class="small fw-semibold mb-2" style="color:var(--bmuted)">Elige día</div>
+      <div data-cal-days class="d-flex flex-wrap gap-2 mb-3"></div>
+      <div class="small fw-semibold mb-2" style="color:var(--bmuted)">Elige hora</div>
+      <select data-cal-slot class="form-select form-select-lg mb-3">${cells(p.slots).map(s=>`<option>${esc(s)}</option>`).join("")}</select>
+      <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
+        <input type="hidden" name="fecha" data-cal-hidday>
+        <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
+        <div class="col-12"><input required name="telefono" type="tel" class="form-control form-control-lg" placeholder="Teléfono"></div>
+        <div class="col-12 form-check my-1"><input required type="checkbox" class="form-check-input" id="cnc"><label class="form-check-label small" for="cnc" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
+        <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit" data-cta="schedule">${esc(p.cta)}</button></div>
+      </form></div>`},
+  calc:{label:"Calculadora de ahorro",ico:"🧮",cat:"Conversión",styleDef:{bg:"tint",width:"narrow"},
+    def:()=>({title:"Calcula cuánto ahorras",subtitle:"Introduce lo que pagas ahora al mes.",label:"¿Cuánto pagas al mes?",unit:"€/mes",pct:"30",cta:"Que me llamen para ahorrar",consent:"Acepto la política de privacidad."}),
+    fields:[{k:"title",l:"Título"},{k:"subtitle",l:"Subtítulo"},{k:"label",l:"Etiqueta del input"},{k:"unit",l:"Unidad"},{k:"pct",l:"% de ahorro estimado"},{k:"cta",l:"Botón"},{k:"consent",l:"Consentimiento"}],
+    render:p=>`<div data-live data-calc data-pct="${esc(p.pct||'30')}" class="brandcard p-4 p-md-5" style="background:#fff"><span id="form"></span>
+      <h2 class="fw-bold h-font text-center mb-1" style="color:var(--bink)">${esc(p.title)}</h2>
+      <p class="text-center mb-4" style="color:var(--bmuted)">${esc(p.subtitle)}</p>
+      <label class="form-label small fw-semibold" style="color:var(--bmuted)">${esc(p.label)}</label>
+      <div class="input-group input-group-lg mb-3"><input data-calc-input type="number" inputmode="decimal" class="form-control" placeholder="0"><span class="input-group-text">${esc(p.unit)}</span></div>
+      <div class="d-flex justify-content-around text-center p-3 mb-3" style="background:var(--bsoft);border-radius:var(--cardr)">
+        <div><div class="small" style="color:var(--bmuted)">Ahorro/mes</div><div class="h4 fw-bold mb-0" style="color:var(--bp)" data-calc-m>0 €</div></div>
+        <div><div class="small" style="color:var(--bmuted)">Ahorro/año</div><div class="h4 fw-bold mb-0" style="color:var(--bp)" data-calc-y>0 €</div></div>
+      </div>
+      <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
+        <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
+        <div class="col-12"><input required name="telefono" type="tel" class="form-control form-control-lg" placeholder="Teléfono"></div>
+        <div class="col-12 form-check my-1"><input required type="checkbox" class="form-check-input" id="cnk"><label class="form-check-label small" for="cnk" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
+        <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit" data-cta="calc">${esc(p.cta)}</button></div>
+      </form></div>`},
+  quiz:{label:"Multipaso + call-me-back",ico:"❓",cat:"Conversión",styleDef:{bg:"soft",width:"narrow"},
+    def:()=>({title:"Encuentra tu tarifa en 3 pasos",questions:[{q:"¿Cuántas líneas necesitas?",options:"1, 2, 3 o más"},{q:"¿Cuántos datos usas?",options:"Pocos, Normales, Muchos"},{q:"¿Quieres fibra en casa?",options:"Sí, No"}],resultTitle:"¡Tenemos tu tarifa ideal!",resultText:"Déjanos tu número y te la contamos con el mejor precio.",cta:"Que me llamen",consent:"Acepto la política de privacidad."}),
+    fields:[{k:"title",l:"Título"},{k:"questions",l:"Preguntas",t:"repeater",addLabel:"Añadir pregunta",item:[{k:"q",l:"Pregunta",def:"Pregunta"},{k:"options",l:"Opciones (coma)",def:"Sí, No"}]},{k:"resultTitle",l:"Título del resultado"},{k:"resultText",l:"Texto del resultado"},{k:"cta",l:"Botón final"},{k:"consent",l:"Consentimiento"}],
+    render:p=>{const Q=arr(p.questions);return `<div data-live data-quiz class="brandcard p-4 p-md-5" style="background:#fff"><span id="form"></span>
+      <h2 class="fw-bold h-font text-center mb-3" style="color:var(--bink)">${esc(p.title)}</h2>
+      <div class="mb-4" style="height:6px;background:var(--bsoft);border-radius:50rem;overflow:hidden"><div data-quiz-bar style="height:100%;width:0;background:var(--bp);transition:width .3s"></div></div>
+      ${Q.map((q,i)=>`<div data-step style="display:none">
+        <div class="fw-semibold mb-3 text-center" style="color:var(--bink)">${esc(q.q||"")}</div>
+        <div class="d-grid gap-2">${cells(q.options||"").map(o=>`<button type="button" class="btn btn-ghost" data-opt="${esc(o)}" data-q="q${i}">${esc(o)}</button>`).join("")}</div>
+        ${i>0?`<button type="button" class="btn btn-sm w-100 mt-3" data-quiz-back style="color:var(--bmuted)">← Atrás</button>`:""}
+      </div>`).join("")}
+      <div data-step style="display:none">
+        <div class="text-center mb-3"><div class="h5 fw-bold h-font" style="color:var(--bink)">${esc(p.resultTitle)}</div><p class="mb-0" style="color:var(--bmuted)">${esc(p.resultText)}</p></div>
+        <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
+          <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
+          <div class="col-12"><input required name="telefono" type="tel" class="form-control form-control-lg" placeholder="Teléfono"></div>
+          <div class="col-12 form-check my-1"><input required type="checkbox" class="form-check-input" id="cnq"><label class="form-check-label small" for="cnq" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
+          <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit" data-cta="quiz">${esc(p.cta)}</button></div>
+        </form>
+        <button type="button" class="btn btn-sm w-100 mt-2" data-quiz-back style="color:var(--bmuted)">← Atrás</button>
+      </div></div>`}},
+
+  countdown:{label:"Cuenta atrás (oferta)",ico:"⏳",cat:"Contenido",styleDef:{bg:"ink",align:"center"},
+    def:()=>({title:"La oferta termina en",end:"2026-12-31 23:59",cta:"Aprovechar ahora"}),
+    fields:[{k:"title",l:"Título"},{k:"end",l:"Fin (AAAA-MM-DD HH:MM)"},{k:"cta",l:"Botón"}],
+    render:p=>`<div data-live data-countdown data-end="${esc(p.end||'')}">
+      <h2 class="fw-bold h-font mb-4" style="color:var(--headcol)">${esc(p.title)}</h2>
+      <div class="d-flex justify-content-center gap-3 mb-4">${["Días","Horas","Min","Seg"].map(l=>`<div style="min-width:68px"><div class="fw-bold h-font" style="font-size:2.4rem;line-height:1;color:var(--ba)" data-cd>00</div><div class="small text-uppercase mt-1" style="color:var(--txtmuted);letter-spacing:.08em">${l}</div></div>`).join("")}</div>
+      <a href="#form" data-cta="form" class="btn btn-brand btn-lg">${esc(p.cta)}</a></div>`},
+  comparison:{label:"Comparador (tabla)",ico:"⚖️",cat:"Contenido",styleDef:{width:"wide"},
+    def:()=>({title:"Compara y decide",colUs:"Nosotros",colThem:"Otros",rows:[{feat:"Sin permanencia",us:"1",them:"0"},{feat:"Instalación gratis",us:"1",them:"0"},{feat:"Atención 24/7",us:"1",them:"1"},{feat:"Precio fijo garantizado",us:"1",them:"0"}]}),
+    fields:[{k:"title",l:"Título"},{k:"colUs",l:"Columna A (tú)"},{k:"colThem",l:"Columna B"},{k:"rows",l:"Filas",t:"repeater",addLabel:"Añadir fila",item:[{k:"feat",l:"Característica",def:"Ventaja"},{k:"us",l:"A (1=sí, 0=no)",def:"1"},{k:"them",l:"B (1/0)",def:"0"}]}],
+    render:p=>{const ck='<span style="color:#1eae52;font-size:20px">✓</span>';const x='<span style="color:#cbd0d8;font-size:20px">✕</span>';const R=arr(p.rows);return `<h2 class="fw-bold h-font text-center mb-4" style="color:var(--headcol)">${esc(p.title)}</h2>
+      <div class="brandcard p-0 overflow-hidden" style="max-width:760px;margin:0 auto"><table class="table mb-0 align-middle"><thead><tr><th style="border-color:var(--line)"></th><th class="text-center fw-bold" style="border-color:var(--line);color:var(--bp)">${esc(p.colUs)}</th><th class="text-center" style="border-color:var(--line);color:var(--bmuted)">${esc(p.colThem)}</th></tr></thead><tbody>${R.map(r=>`<tr><td style="color:var(--bink)">${esc(r.feat||"")}</td><td class="text-center">${(r.us==="1")?ck:x}</td><td class="text-center">${(r.them==="1")?ck:x}</td></tr>`).join("")}</tbody></table></div>`}},
+  trust:{label:"Sellos de confianza",ico:"🛡️",cat:"Confianza",styleDef:{bg:"white",pad:"S"},
+    def:()=>({items:[{icon:"⭐",text:"4,8/5 en Google"},{icon:"🔒",text:"Datos 100% seguros"},{icon:"👥",text:"+10.000 clientes"},{icon:"✅",text:"Sin permanencia"}]}),
+    fields:[{k:"items",l:"Sellos",t:"repeater",addLabel:"Añadir sello",item:[{k:"icon",l:"Icono (emoji)",def:"⭐"},{k:"text",l:"Texto",def:"Ventaja"}]}],
+    render:p=>`<div class="d-flex flex-wrap justify-content-center gap-4">${arr(p.items).map(it=>`<div class="d-flex align-items-center gap-2"><span style="font-size:20px">${esc(it.icon||"")}</span><span class="fw-semibold" style="color:var(--txtmuted)">${esc(it.text||"")}</span></div>`).join("")}</div>`},
+  marquee:{label:"Logos en marquesina",ico:"🎞️",cat:"Confianza",styleDef:{bg:"white",pad:"S"},
+    def:()=>({logos:[]}),
+    fields:[{k:"logos",l:"Logos (imágenes)",t:"images"}],
+    render:p=>{const L=arr(p.logos);const seq=L.concat(L);return `<div style="overflow:hidden">${L.length?`<div class="ncmarq">${seq.map(s=>`<img src="${s}" loading="lazy" alt="">`).join("")}</div>`:`<div class="text-center" style="color:var(--txtmuted)">Sube logos en el panel derecho →</div>`}</div>`}},
+
+  /* ==== Módulos LITERALES de Apple (solo visibles con marca Apple) ==== */
+  apple_nav:{label:"Apple · barra nav",ico:"",cat:"Apple",raw:true,brand:"apple",
+    def:()=>({logo:"",links:"Store|Mac|iPhone|iPad|Watch|Soporte"}),
+    fields:[{k:"logo",l:"Texto marca (vacío = manzana )"},{k:"links",l:"Enlaces (|)"}],
+    render:p=>`<div style="position:sticky;top:0;z-index:1020;background:rgba(251,251,253,.82);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,.06)">
+      <div class="container d-flex align-items-center justify-content-between" style="height:44px;max-width:1024px">
+        <span class="h-font" style="font-weight:600;color:#1d1d1f;font-size:18px">${p.logo?esc(p.logo):"&#63743;"}</span>
+        <div class="d-none d-md-flex align-items-center" style="gap:30px">${cells(p.links).map(l=>`<a href="#" style="color:#1d1d1f;text-decoration:none;font-size:12px;opacity:.92">${esc(l)}</a>`).join("")}</div>
+        <div class="d-flex align-items-center" style="gap:18px;font-size:15px;color:#1d1d1f"><a href="#" style="color:#1d1d1f;text-decoration:none">&#9906;</a><a href="${telHref()}" data-cta="call" style="color:#1d1d1f;text-decoration:none">&#128722;</a></div>
+      </div></div>`},
+  apple_hero:{label:"Apple · hero producto",ico:"",cat:"Apple",brand:"apple",styleDef:{align:"center",pad:"L",bg:"white",width:"wide"},
+    def:()=>({eyebrow:"Nuevo",headline:"iPhone. Titán. Así de fuerte.",sub:"Diseñado para durar. Rediseñado para volar.",link1:"Más información",link2:"Comprar",image:""}),
+    fields:[{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo"},{k:"link1",l:"Enlace 1"},{k:"link2",l:"Enlace 2"},{k:"image",l:"Imagen de producto",t:"image"}],
+    render:p=>`<div class="text-center" style="max-width:900px;margin:0 auto">
+      ${p.eyebrow?`<div style="font-size:.95rem;font-weight:600;color:var(--txtmuted);margin-bottom:6px">${esc(p.eyebrow)}</div>`:""}
+      <h1 class="display-4 fw-bold h-font mb-2" style="color:var(--headcol)">${esc(p.headline)}</h1>
+      <p class="lead mb-3" style="color:var(--txtmuted)">${esc(p.sub)}</p>
+      <div class="d-flex gap-4 justify-content-center mb-4">
+        <a class="apple-link" href="#form" data-cta="form" style="color:#0071E3;text-decoration:none;font-size:17px">${esc(p.link1)} &rsaquo;</a>
+        <a class="apple-link" href="${telHref()}" data-cta="call" style="color:#0071E3;text-decoration:none;font-size:17px">${esc(p.link2)} &rsaquo;</a>
+      </div>
+      <div class="ratio ratio-16x9" style="max-width:980px;margin:0 auto;border-radius:18px;overflow:hidden">${imgOrBox(p.image,"Imagen de producto {{IMG}}")}</div></div>`},
+  apple_bento:{label:"Apple · bento grid",ico:"",cat:"Apple",brand:"apple",styleDef:{bg:"white",pad:"S",width:"wide"},
+    def:()=>({tiles:[{name:"iPhone",sub:"Titán. Así de fuerte.",theme:"dark",link:"Comprar",img:""},{name:"Apple Watch",sub:"Un salto para tu salud.",theme:"light",link:"Más información",img:""},{name:"Mac",sub:"Potencia que vuela.",theme:"light",link:"Comprar",img:""},{name:"iPad",sub:"Tan versátil como tú.",theme:"dark",link:"Más información",img:""}]}),
+    fields:[{k:"tiles",l:"Tiles",t:"repeater",addLabel:"Añadir tile",item:[{k:"name",l:"Nombre",def:"Producto"},{k:"sub",l:"Titular",def:"Titular corto"},{k:"theme",l:"Tema",t:"select",opts:[["light","Claro"],["dark","Oscuro"]],def:"light"},{k:"link",l:"Enlace",def:"Más información"},{k:"img",l:"Imagen",t:"image"}]}],
+    render:p=>{const T=arr(p.tiles);return `<div class="row g-3">${T.map(c=>{const dark=(c.theme||"light")==="dark";return `<div class="col-md-6"><div style="border-radius:28px;overflow:hidden;text-align:center;padding:46px 20px 0;min-height:460px;display:flex;flex-direction:column;align-items:center;background:${dark?"#000":"#f5f5f7"};color:${dark?"#f5f5f7":"#1d1d1f"}">
+      <div class="h-font" style="font-size:1.7rem;font-weight:600;letter-spacing:-.02em">${esc(c.name||"")}</div>
+      <div style="font-size:1.05rem;margin-top:6px;max-width:440px">${esc(c.sub||"")}</div>
+      <div class="mt-2"><a href="#form" data-cta="form" style="color:${dark?"#2997ff":"#0071E3"};text-decoration:none;font-size:15px">${esc(c.link||"Más información")} &rsaquo;</a></div>
+      <div class="mt-auto pt-4" style="width:100%"><div class="ratio ratio-4x3" style="max-width:340px;margin:0 auto 0">${imgOrBox(c.img,"")}</div></div>
+    </div></div>`}).join("")}</div>`}},
+  apple_showcase:{label:"Apple · showcase oscuro",ico:"",cat:"Apple",brand:"apple",styleDef:{bg:"ink",align:"center",pad:"L",width:"wide"},
+    def:()=>({eyebrow:"",headline:"Titán. Así de fuerte.",sub:"El iPhone más resistente que hemos creado.",link1:"Más información",link2:"Comprar",image:""}),
+    fields:[{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo"},{k:"link1",l:"Enlace 1"},{k:"link2",l:"Enlace 2"},{k:"image",l:"Imagen full-bleed",t:"image"}],
+    render:p=>`<div class="text-center" style="max-width:900px;margin:0 auto">
+      ${p.eyebrow?`<div style="font-size:.95rem;font-weight:600;color:#2997ff;margin-bottom:6px">${esc(p.eyebrow)}</div>`:""}
+      <h2 class="display-4 fw-bold h-font mb-2" style="color:var(--headcol)">${esc(p.headline)}</h2>
+      <p class="lead mb-3" style="color:var(--txtmuted)">${esc(p.sub)}</p>
+      <div class="d-flex gap-4 justify-content-center mb-4">
+        <a class="apple-link" href="#form" data-cta="form" style="color:#2997ff;text-decoration:none;font-size:17px">${esc(p.link1)} &rsaquo;</a>
+        <a class="apple-link" href="${telHref()}" data-cta="call" style="color:#2997ff;text-decoration:none;font-size:17px">${esc(p.link2)} &rsaquo;</a>
+      </div>
+      <div class="ratio ratio-16x9" style="max-width:1000px;margin:0 auto;border-radius:18px;overflow:hidden">${imgOrBox(p.image,"Imagen full-bleed {{IMG}}")}</div></div>`},
+  apple_footer:{label:"Apple · footer",ico:"",cat:"Apple",raw:true,brand:"apple",
+    def:()=>({disclaimer:"La disponibilidad de funciones puede variar según el país o la región. Consulta las condiciones.",company:"{{RAZON_SOCIAL}}",cols:"Comprar y más:Store,Mac,iPhone,iPad|Cuenta:Gestiona tu ID,iCloud|Apple Store:Buscar una tienda,Genius Bar|Sobre Apple:Newsroom,Empleo,Contacto",legal:"Aviso legal|Privacidad|Cookies|Mapa del sitio"}),
+    fields:[{k:"disclaimer",l:"Letra pequeña"},{k:"company",l:"Razón social"},{k:"cols",l:"Columnas: Título:enlace,enlace|…",t:"ta"},{k:"legal",l:"Enlaces legales (|)"}],
+    render:p=>`<footer style="background:#f5f5f7;color:#6e6e73;font-size:12px"><div class="container py-4" style="max-width:1024px">
+      <p style="border-bottom:1px solid #d2d2d7;padding-bottom:14px;margin-bottom:14px;line-height:1.6">${esc(p.disclaimer)}</p>
+      <div class="row g-3">${lines(p.cols).map(col=>{const parts=col.split(":");const items=(parts[1]||"").split(",");return `<div class="col-6 col-md-3"><div style="color:#1d1d1f;font-weight:600;margin-bottom:8px">${esc(parts[0]||"")}</div>${items.map(i=>`<div style="margin-bottom:4px"><a href="#" style="color:#6e6e73;text-decoration:none">${esc(i.trim())}</a></div>`).join("")}</div>`}).join("")}</div>
+      <div class="d-flex flex-wrap justify-content-between align-items-center pt-3 mt-3" style="border-top:1px solid #d2d2d7;gap:8px">
+        <span>Copyright &copy; ${new Date().getFullYear()} ${esc(p.company)}. Todos los derechos reservados.</span>
+        <span class="d-flex flex-wrap gap-3">${cells(p.legal).map(x=>`<a href="#" style="color:#6e6e73;text-decoration:none">${esc(x)}</a>`).join("")}</span>
+      </div></div></footer>`}
+};
+const ORDER=["topbar","navbar","hero_split","hero_center","hero_form","logos","marquee","stats","testimonials","trust","features","imagetext","steps","gallery","pricing","comparison","countdown","faq","video","richtext","form","cal","calc","quiz","ctaband","stickycall","footer","apple_nav","apple_hero","apple_bento","apple_showcase","apple_footer"];
+
+/* ---------- PLANTILLAS ---------- */
+const TEMPLATES={
+  "Apple (literal)":["apple_nav","apple_hero","apple_bento","apple_showcase","apple_footer"],
+  "Captación · llamada":["navbar","hero_split","logos","features","steps","stats","form","faq","ctaband","stickycall","footer"],
+  "Captación · formulario arriba":["topbar","navbar","hero_form","logos","features","testimonials","imagetext","faq","footer"],
+  "Oferta / urgencia":["topbar","navbar","hero_center","pricing","stats","testimonials","form","faq","stickycall","footer"]
+};
+
+/* ---------- RENDER DOC ---------- */
+function baseCSS(){return `
+  *{box-sizing:border-box} .row>*{min-width:0}
+  :root{--secpad-S:30px;--secpad-M:58px;--secpad-L:86px;--secpad-XL:120px}
+  body{font-family:var(--fbody);color:var(--bink);margin:0}
+  h1,h2,h3,.h-font,.display-4,.display-5,.display-6{font-family:var(--fhead)}
+  .btn-brand{background:var(--bp);border:1px solid var(--bp);color:var(--btntext,#fff);border-radius:var(--btnr);font-weight:600;padding:.6rem 1.15rem}
+  .btn-brand:hover{background:var(--bp2);border-color:var(--bp2);color:var(--btntext,#fff)}
+  .btn-ghost{background:transparent;border:2px solid var(--bp);color:var(--bp);border-radius:var(--btnr);font-weight:600;padding:calc(.6rem - 1px) 1.15rem}
+  .btn-ghost:hover{background:var(--bp);color:#fff}
+  .brandcard{background:#fff;border:1px solid var(--line);border-radius:var(--cardr);color:var(--bink)}
+  .brandcard.featured{border-color:var(--bp);box-shadow:0 10px 30px rgba(0,0,0,.10)}
+  .badge-soft{display:inline-block;background:var(--bsoft);color:var(--bp);border:1px solid var(--line);padding:.35rem .8rem;border-radius:50rem;font-size:.8rem;font-weight:600}
+  .accordion-button:not(.collapsed){background:var(--bsoft);color:var(--bp)}
+  .accordion-button:focus{box-shadow:none;border-color:var(--line)}
+  .form-control:focus{border-color:var(--bp);box-shadow:0 0 0 .2rem color-mix(in srgb,var(--bp) 25%,transparent)}
+  .cal-day{border:1px solid var(--line);background:#fff;border-radius:12px;padding:7px 12px;min-width:56px;text-align:center;cursor:pointer;line-height:1.15}
+  .cal-day span{display:block;font-size:11px;color:var(--bmuted)} .cal-day strong{font-size:17px;color:var(--bink)}
+  .cal-day.on{background:var(--bp);border-color:var(--bp)} .cal-day.on span,.cal-day.on strong{color:#fff}
+  [data-opt].on{background:var(--bp);border-color:var(--bp);color:#fff}
+  /* Estilos de botonazo (se activan por clase en <body>) */
+  .cta-apple .btn-brand{border-radius:999px;font-weight:500;min-height:46px;padding:.55rem 1.5rem;box-shadow:none}
+  .cta-instagram .btn-brand{background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);border:0;color:#fff;border-radius:12px;font-weight:700;box-shadow:0 8px 22px rgba(220,39,67,.32)}
+  .cta-instagram .btn-brand:hover{filter:brightness(1.05);color:#fff}
+  .cta-ncgreen .btn-brand{background:#2ca01c;border-color:#2ca01c;color:#fff;border-radius:10px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;box-shadow:0 10px 24px rgba(44,160,28,.30)}
+  .cta-ncgreen .btn-brand:hover{background:#238016;border-color:#238016}
+  .cta-neon .btn-brand{background:var(--ba);border-color:var(--ba);color:#08130a;font-weight:700;box-shadow:0 0 22px color-mix(in srgb,var(--ba) 65%,transparent)}
+  .cta-neon .btn-brand:hover{filter:brightness(1.05);color:#08130a}
+  .cta-outline .btn-brand{background:transparent;border:2px solid var(--bp);color:var(--bp);font-weight:700}
+  .cta-outline .btn-brand:hover{background:var(--bp);color:#fff}
+  .cta-dark .btn-brand{background:#111;border-color:#111;color:#fff;border-radius:10px;font-weight:700}
+  .cta-dark .btn-brand:hover{background:#000;border-color:#000}
+  .cta-pill .btn-brand{border-radius:999px;font-weight:700}
+  /* Marquesina de logos */
+  @keyframes ncmarq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .ncmarq{display:flex;gap:48px;width:max-content;animation:ncmarq 22s linear infinite}
+  .ncmarq img{height:36px;object-fit:contain;opacity:.75}
+  img,svg{max-width:100%}`;}
+
+function styleOf(s){return Object.assign({},STYLE_DEF,LIB[s.type].styleDef||{},s.style||{});}
+function renderSection(s){
+  const lib=LIB[s.type]; const inner=lib.render(s.props||{});
+  if(lib.raw) return inner;
+  return secOpen(styleOf(s))+inner+secClose();
+}
+function sectionsHTML(forExport){return state.sections.map(s=>{
+  const sel=(!forExport&&s.id===state.selected);
+  const tb=sel?`<div class="nc-tb"><button data-act="up" data-actid="${s.id}" title="Subir">↑</button><button data-act="down" data-actid="${s.id}" title="Bajar">↓</button><button data-act="dup" data-actid="${s.id}" title="Duplicar">⧉</button><button data-act="del" data-actid="${s.id}" title="Eliminar">🗑</button></div>`:"";
+  return `<div data-sec="${s.id}" class="${sel?'sel':''}">${tb}${renderSection(s)}</div>`;
+}).join("\n");}
+
+function buildDoc(forExport){
+  const b=BRANDS[state.settings.brand]; const gtm=ph(state.settings.gtm,"GTM-XXXXXXX");
+  const gtmHead=forExport?`<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtm}');<\/script>`:"";
+  const gtmBody=forExport?`<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${gtm}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>`:"";
+  const st=state.settings;
+  const modal=(st.ctaAction==='popup'||st.ctaAction==='popupimg')?`<div class="modal fade" id="ncContact" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content" style="background:var(--bp);border:0;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.35)">
+    <div class="modal-header border-0 pb-1 position-relative"><h5 class="modal-title w-100 text-center text-uppercase fw-bold" style="color:#fff;letter-spacing:.03em">${esc(st.popupTitle||'¿Necesitas ayuda?')}</h5><button type="button" class="btn-close btn-close-white position-absolute" style="top:16px;right:16px" data-bs-dismiss="modal" aria-label="Cerrar"></button></div>
+    <div class="modal-body pt-2">
+      ${(st.ctaAction==='popupimg')?`<div class="mb-3" style="border-radius:14px;overflow:hidden;aspect-ratio:16/7">${imgOrBox(st.popupImg,'Imagen {{IMG_POPUP}}')}</div>`:''}
+      <a href="${telHref()}" data-cta="call" class="d-flex align-items-center gap-3 p-3 mb-3 text-decoration-none" style="background:#fff;border-radius:14px">
+        <span style="font-size:22px">&#128222;</span><span class="me-auto"><span class="d-block fw-bold" style="color:var(--bink)">Llámanos</span><span class="d-block fw-bold" style="color:var(--bp)">${telText()}</span></span><span style="color:var(--bp);font-size:20px">&rsaquo;</span></a>
+      <div class="p-3" style="background:#fff;border-radius:14px">
+        <div class="d-flex align-items-center gap-3 mb-3"><span style="font-size:22px">&#128222;</span><span><span class="d-block fw-bold" style="color:var(--bink)">Te llamamos nosotros</span><span class="d-block small" style="color:var(--bmuted)">Solicita ahora tu llamada</span></span></div>
+        <form data-callback action="${ph(st.endpoint,'ENDPOINT_FORMULARIO')}" method="post">
+          <input required name="telefono" type="tel" class="form-control form-control-lg mb-2" placeholder="Tu número de teléfono">
+          <button class="btn btn-brand btn-lg w-100" type="submit" data-cta="popup_submit">Solicitar información</button>
+        </form></div>
+    </div></div></div></div>`:'';
+  const cookie=st.cookies?`<div id="ncCookies" style="position:fixed;left:0;right:0;bottom:0;z-index:1050;background:var(--bink);color:#fff;padding:14px 16px;display:none"><div class="container d-flex flex-wrap align-items-center justify-content-center gap-3" style="max-width:900px">
+    <span class="small" style="opacity:.92">Usamos cookies para mejorar tu experiencia. <a href="{{URL_COOKIES}}" style="color:var(--ba);text-decoration:underline">Más información</a></span>
+    <span class="d-flex gap-2"><button type="button" class="btn btn-sm" id="ncCookieNo" style="background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:8px">Rechazar</button><button type="button" class="btn btn-brand btn-sm" id="ncCookieYes">Aceptar</button></span>
+  </div></div>`:'';
+  const bsCSS=forExport?"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css":"https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css";
+  const bsJS=forExport?"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js":"https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js";
+  const editor=forExport?"":`<style>
+    [data-sec]{position:relative}
+    [data-sec]:hover{outline:1px dashed color-mix(in srgb,var(--bp) 55%,transparent);outline-offset:-1px;cursor:pointer}
+    [data-sec].sel{outline:2px solid var(--bp);outline-offset:-2px}
+    .nc-tb{position:absolute;top:8px;right:8px;z-index:30;display:flex;gap:4px;background:#111826;border:1px solid #2a3345;border-radius:8px;padding:3px}
+    .nc-tb button{background:transparent;border:0;color:#dfe6f0;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:5px}
+    .nc-tb button:hover{background:#232d40}
+  </style><script>
+    document.body.addEventListener('click',function(e){
+      var a=e.target.closest('[data-act]');
+      if(a){e.preventDefault();e.stopPropagation();parent.postMessage({nc:'act',act:a.getAttribute('data-act'),id:a.getAttribute('data-actid')},'*');return;}
+      if(e.target.closest('[data-live]'))return;
+      var lk=e.target.closest('a,button');if(lk)e.preventDefault();
+      var s=e.target.closest('[data-sec]');if(s)parent.postMessage({nc:'sel',id:s.getAttribute('data-sec')},'*');
+    },true);
+    document.body.addEventListener('submit',function(e){e.preventDefault();},true);
+  <\/script>`;
+  const track=`<script>window.dataLayer=window.dataLayer||[];function nctrack(ev,ex){try{window.dataLayer.push(Object.assign({event:ev},ex||{}))}catch(e){}}
+    document.querySelectorAll('[data-cta]').forEach(function(el){el.addEventListener('click',function(){nctrack('cta_click',{cta:el.getAttribute('data-cta')})})});
+    document.querySelectorAll('form[data-callback]').forEach(function(f){f.addEventListener('submit',function(){nctrack('generate_lead',{form:'callback'})})});<\/script>`;
+  const widgets=`<script>(function(){
+    document.querySelectorAll('[data-calc]').forEach(function(w){var inp=w.querySelector('[data-calc-input]');var pct=parseFloat(w.getAttribute('data-pct'))||30;var oM=w.querySelector('[data-calc-m]'),oY=w.querySelector('[data-calc-y]');function f(n){return n.toLocaleString('es-ES',{maximumFractionDigits:0})+' \\u20AC';}function u(){var v=parseFloat(((inp&&inp.value)||'').replace(',','.'))||0;var m=v*pct/100;if(oM)oM.textContent=f(m);if(oY)oY.textContent=f(m*12);}if(inp)inp.addEventListener('input',u);u();});
+    document.querySelectorAll('[data-cal]').forEach(function(w){var dw=w.querySelector('[data-cal-days]');var hid=w.querySelector('[data-cal-hidday]');if(!dw)return;var nm=['dom','lun','mar','mi\\u00e9','jue','vie','s\\u00e1b'];var t=new Date();for(var i=0;i<7;i++){(function(i){var d=new Date(t.getTime());d.setDate(d.getDate()+i);var b=document.createElement('button');b.type='button';b.className='cal-day';b.innerHTML='<span>'+nm[d.getDay()]+'</span><strong>'+d.getDate()+'</strong>';b.addEventListener('click',function(){dw.querySelectorAll('.cal-day').forEach(function(x){x.classList.remove('on')});b.classList.add('on');if(hid)hid.value=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);});dw.appendChild(b);})(i);}});
+    document.querySelectorAll('[data-quiz]').forEach(function(w){var steps=[].slice.call(w.querySelectorAll('[data-step]'));var idx=0;var ans={};var bar=w.querySelector('[data-quiz-bar]');function show(){steps.forEach(function(s,i){s.style.display=i===idx?'':'none'});if(bar)bar.style.width=Math.round(idx/Math.max(1,steps.length-1)*100)+'%';}w.querySelectorAll('[data-opt]').forEach(function(o){o.addEventListener('click',function(){ans[o.getAttribute('data-q')]=o.getAttribute('data-opt');var st=o.closest('[data-step]');st.querySelectorAll('[data-opt]').forEach(function(x){x.classList.remove('on')});o.classList.add('on');if(idx<steps.length-1){idx++;show();}});});w.querySelectorAll('[data-quiz-back]').forEach(function(b){b.addEventListener('click',function(){if(idx>0){idx--;show();}});});var fm=w.querySelector('form');if(fm)fm.addEventListener('submit',function(){try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'quiz_complete',answers:ans});}catch(e){}});show();});
+    document.querySelectorAll('[data-countdown]').forEach(function(w){var end=new Date((w.getAttribute('data-end')||'').replace(' ','T')).getTime();var els=w.querySelectorAll('[data-cd]');function t(){if(isNaN(end))return;var d=end-Date.now();if(d<0)d=0;var s=Math.floor(d/1000),dd=Math.floor(s/86400),hh=Math.floor(s%86400/3600),mm=Math.floor(s%3600/60),ss=s%60,v=[dd,hh,mm,ss];els.forEach(function(e,i){e.textContent=('0'+v[i]).slice(-2)});}t();setInterval(t,1000);});
+    (function(){var body=document.body;var act=body.getAttribute('data-ctaaction')||'scroll';var tel=body.getAttribute('data-tel')||'';var wa=body.getAttribute('data-wa')||'';document.querySelectorAll('[data-cta="form"]').forEach(function(el){if(act==='call'){el.setAttribute('href','tel:'+tel);}else if(act==='whatsapp'){el.setAttribute('href','https://wa.me/'+wa);el.setAttribute('target','_blank');}else if(act==='popup'||act==='popupimg'){el.addEventListener('click',function(e){e.preventDefault();var m=document.getElementById('ncContact');if(m&&window.bootstrap){bootstrap.Modal.getOrCreateInstance(m).show();}});}});})();
+    var ck=document.getElementById('ncCookies');if(ck){var ok=false;try{ok=localStorage.getItem('nc_cookies')==='1'}catch(e){}if(!ok)ck.style.display='block';var cy=document.getElementById('ncCookieYes'),cn=document.getElementById('ncCookieNo');function ckhide(){ck.style.display='none';try{localStorage.setItem('nc_cookies','1')}catch(e){}}if(cy)cy.addEventListener('click',ckhide);if(cn)cn.addEventListener('click',ckhide);}
+  })();<\/script>`;
+  return `<!doctype html><html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(ph(state.settings.title,"TITULO_SEO"))}</title>
+<meta name="description" content="${esc(ph(state.settings.desc,"META_DESCRIPTION"))}">
+<link rel="canonical" href="{{URL_CANONICA}}">
+<meta property="og:title" content="${esc(ph(state.settings.title,"TITULO_SEO"))}"><meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="${b.fonts}" rel="stylesheet"><link href="${bsCSS}" rel="stylesheet">
+<style>:root{${b.vars}--fhead:${b.fhead};--fbody:${b.fbody}}${baseCSS()}${b.profileCSS||''}</style>
+${gtmHead}</head><body class="cta-${st.ctaStyle||'brand'}" data-ctaaction="${st.ctaAction||'scroll'}" data-tel="${esc(ph(st.tel,'TELEFONO').replace(/\s/g,''))}" data-wa="${esc(ph(st.wa,'WHATSAPP').replace(/[^0-9]/g,''))}">
+${gtmBody}
+${sectionsHTML(forExport)}
+${modal}${cookie}
+<script src="${bsJS}"><\/script>
+${track}${widgets}${editor}
+</body></html>`;
+}
+
+/* ---------- PREVIEW ---------- */
+let pendingScrollId=null;
+function renderPreview(){const f=document.getElementById("pv");
+  f.onload=function(){if(pendingScrollId){try{const el=f.contentDocument.querySelector('[data-sec="'+pendingScrollId+'"]');if(el)el.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}pendingScrollId=null;}};
+  f.srcdoc=buildDoc(false);renderOutline();}
+function patchSection(id){const s=state.sections.find(x=>x.id===id);if(!s)return;
+  const doc=document.getElementById("pv").contentDocument;if(!doc){renderPreview();return;}
+  const wrap=doc.querySelector('[data-sec="'+id+'"]');if(!wrap){renderPreview();return;}
+  const tb=wrap.querySelector('.nc-tb');
+  wrap.innerHTML=(tb?tb.outerHTML:"")+renderSection(s);}
+
+/* ---------- PALETA ---------- */
+function renderPalette(){
+  const q=(document.getElementById("palSearch").value||"").toLowerCase();
+  const cats={};ORDER.forEach(t=>{const b=LIB[t];if(b.brand&&b.brand!==state.settings.brand)return;if(q&&!(b.label.toLowerCase().includes(q)||b.cat.toLowerCase().includes(q)))return;(cats[b.cat]=cats[b.cat]||[]).push(t);});
+  let h="";Object.keys(cats).forEach(cat=>{h+=`<div class="paneltitle">${cat}</div><div class="cat">`;
+    cats[cat].forEach(t=>{const b=LIB[t];h+=`<div class="chip" draggable="true" data-add="${t}"><span class="ico">${b.ico}</span> ${b.label}<span class="k">+</span></div>`;});h+="</div>";});
+  const p=document.getElementById("palette");p.innerHTML=h||`<div class="empty">Sin resultados</div>`;
+  p.querySelectorAll('.chip[data-add]').forEach(c=>{
+    c.addEventListener('dragstart',()=>{dragType=c.dataset.add;showDrop(true);});
+    c.addEventListener('dragend',()=>showDrop(false));
+    c.addEventListener('click',()=>addSection(c.dataset.add));});
+}
+
+/* ---------- ESTRUCTURA ---------- */
+function renderOutline(){const o=document.getElementById("outline");
+  document.getElementById("secCount").textContent="· "+state.sections.length;
+  if(!state.sections.length){o.innerHTML=`<div class="empty">Vacío. Arrastra un bloque o haz clic en la izquierda.</div>`;return;}
+  o.innerHTML=state.sections.map((s,i)=>`<div class="oitem ${s.id===state.selected?'sel':''}" draggable="true" data-id="${s.id}" data-i="${i}"><span class="grip">⋮⋮</span><span class="nm">${LIB[s.type].label}</span><button class="mini" data-act="up">↑</button><button class="mini" data-act="down">↓</button><button class="mini" data-act="dup">⧉</button><button class="mini" data-act="del">🗑</button></div>`).join("");
+  o.querySelectorAll('.oitem').forEach(el=>{const id=el.dataset.id;
+    el.addEventListener('click',e=>{if(e.target.dataset.act)return;select(id);});
+    el.querySelectorAll('.mini').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();rowAction(id,btn.dataset.act);}));
+    el.addEventListener('dragstart',()=>{dragId=id;dragType=null;});
+    el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('dragover');});
+    el.addEventListener('dragleave',()=>el.classList.remove('dragover'));
+    el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('dragover');dropOnIndex(parseInt(el.dataset.i,10));});});
+}
+
+/* ---------- CAMPOS (content/style) ---------- */
+function subField(sf,it,repk,i){
+  const v=it[sf.k];
+  if(sf.t==="select")return `<select data-rf="${repk}" data-ri="${i}" data-rk="${sf.k}">${sf.opts.map(o=>`<option value="${o[0]}" ${String(v)===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select>`;
+  if(sf.t==="image"){const key=repk+"|"+i+"|"+sf.k;return `<div class="up"><input type="file" accept="image/*" data-rfile="${key}" style="display:none"><div class="thumbrow">${v?`<img class="thumb" src="${v}">`:""}<button type="button" class="btn sm" data-rup="${key}">${v?"Cambiar":"Subir"}</button>${v?`<button type="button" class="btn sm ghost" data-rrm="${key}">Quitar</button>`:""}</div></div>`;}
+  if(sf.t==="ta")return `<textarea data-rf="${repk}" data-ri="${i}" data-rk="${sf.k}">${esc(v||"")}</textarea>`;
+  return `<input data-rf="${repk}" data-ri="${i}" data-rk="${sf.k}" value="${esc(v||"")}">`;
+}
+function defRepItem(f){const o={};(f.item||[]).forEach(sf=>{o[sf.k]=(sf.def!==undefined?sf.def:"");});return o;}
+function fieldHTML(f,obj){
+  const v=obj[f.k];
+  if(f.t==="repeater"){const L=arr(v);return `<div class="rep">${L.map((it,i)=>`<div class="rep-item"><div class="rep-head"><b>#${i+1}</b><span><button type="button" class="mini" data-rmv="${f.k}" data-ri="${i}" data-d="up">↑</button><button type="button" class="mini" data-rmv="${f.k}" data-ri="${i}" data-d="down">↓</button><button type="button" class="mini" data-rdel="${f.k}" data-ri="${i}">✕</button></span></div>${(f.item||[]).map(sf=>`<div class="fld"><label>${sf.l}</label>${subField(sf,it,f.k,i)}</div>`).join("")}</div>`).join("")}<button type="button" class="btn sm" data-radd="${f.k}">+ ${f.addLabel||'Añadir'}</button></div>`;}
+  if(f.t==="ta")return `<textarea data-fk="${f.k}">${esc(v||"")}</textarea><div class="help">Una fila por línea; campos separados por “|”.</div>`;
+  if(f.t==="select")return `<select data-fk="${f.k}">${f.opts.map(o=>`<option value="${o[0]}" ${String(v)===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select>`;
+  if(f.t==="image")return `<div class="up"><input type="file" accept="image/*" data-file="${f.k}" style="display:none"><div class="thumbrow">${v?`<img class="thumb" src="${v}">`:""}<button type="button" class="btn sm" data-upbtn="${f.k}">${v?"Cambiar":"Subir imagen"}</button>${v?`<button type="button" class="btn sm ghost" data-rm="${f.k}">Quitar</button>`:""}</div><div class="help">Se incrusta en el HTML (Base64).</div></div>`;
+  if(f.t==="images"){const L=arr(v);return `<div class="up"><input type="file" accept="image/*" multiple data-filem="${f.k}" style="display:none"><div class="thumbs">${L.map((s,i)=>`<div class="t"><img src="${s}"><button type="button" data-rmi="${f.k}" data-i="${i}">×</button></div>`).join("")}</div><button type="button" class="btn sm" data-upbtnm="${f.k}">+ Añadir imágenes</button></div>`;}
+  return `<input data-fk="${f.k}" value="${esc(v||"")}">`;
+}
+function bindContentFields(container,obj,after,fields){
+  const rr=()=>{renderRight();renderPreview();};
+  container.querySelectorAll('textarea[data-fk],input[data-fk]').forEach(inp=>inp.addEventListener('input',()=>{commitDebounced();obj[inp.dataset.fk]=inp.value;after();}));
+  container.querySelectorAll('select[data-fk]').forEach(inp=>inp.addEventListener('change',()=>{commit();obj[inp.dataset.fk]=inp.value;after();renderRight();}));
+  container.querySelectorAll('[data-upbtn]').forEach(btn=>btn.addEventListener('click',()=>container.querySelector('[data-file="'+btn.dataset.upbtn+'"]').click()));
+  container.querySelectorAll('[data-file]').forEach(inp=>inp.addEventListener('change',e=>readImg(e.target.files[0],url=>{commit();obj[inp.dataset.file]=url;renderRight();renderPreview();})));
+  container.querySelectorAll('[data-rm]').forEach(btn=>btn.addEventListener('click',()=>{commit();obj[btn.dataset.rm]="";renderRight();renderPreview();}));
+  container.querySelectorAll('[data-upbtnm]').forEach(btn=>btn.addEventListener('click',()=>container.querySelector('[data-filem="'+btn.dataset.upbtnm+'"]').click()));
+  container.querySelectorAll('[data-filem]').forEach(inp=>inp.addEventListener('change',e=>{const fs=Array.from(e.target.files);commit();obj[inp.dataset.filem]=arr(obj[inp.dataset.filem]);let n=fs.length;fs.forEach(file=>readImg(file,url=>{obj[inp.dataset.filem].push(url);if(--n===0){renderRight();renderPreview();}}));}));
+  container.querySelectorAll('[data-rmi]').forEach(btn=>btn.addEventListener('click',()=>{commit();arr(obj[btn.dataset.rmi]).splice(parseInt(btn.dataset.i,10),1);renderRight();renderPreview();}));
+  // repeater
+  container.querySelectorAll('[data-rf]').forEach(inp=>inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>{commitDebounced();const it=arr(obj[inp.dataset.rf])[+inp.dataset.ri];if(it){it[inp.dataset.rk]=inp.value;after();}}));
+  container.querySelectorAll('[data-radd]').forEach(btn=>btn.addEventListener('click',()=>{const f=(fields||[]).find(x=>x.k===btn.dataset.radd);if(!f)return;commit();obj[f.k]=arr(obj[f.k]);obj[f.k].push(defRepItem(f));rr();}));
+  container.querySelectorAll('[data-rdel]').forEach(btn=>btn.addEventListener('click',()=>{commit();arr(obj[btn.dataset.rdel]).splice(+btn.dataset.ri,1);rr();}));
+  container.querySelectorAll('[data-rmv]').forEach(btn=>btn.addEventListener('click',()=>{const a=arr(obj[btn.dataset.rmv]);const i=+btn.dataset.ri;const j=btn.dataset.d==='up'?i-1:i+1;if(j<0||j>=a.length)return;commit();const t=a[i];a[i]=a[j];a[j]=t;rr();}));
+  container.querySelectorAll('[data-rup]').forEach(btn=>btn.addEventListener('click',()=>container.querySelector('[data-rfile="'+CSS.escape(btn.dataset.rup)+'"]').click()));
+  container.querySelectorAll('[data-rfile]').forEach(inp=>inp.addEventListener('change',e=>{const p=inp.dataset.rfile.split('|');readImg(e.target.files[0],url=>{commit();const it=arr(obj[p[0]])[+p[1]];if(it){it[p[2]]=url;rr();}});}));
+  container.querySelectorAll('[data-rrm]').forEach(btn=>btn.addEventListener('click',()=>{const p=btn.dataset.rrm.split('|');commit();const it=arr(obj[p[0]])[+p[1]];if(it){it[p[2]]="";rr();}}));
+}
+function readImg(file,cb){ if(!file)return;
+  if(window.NC_SB){
+    const clean=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const path=Date.now()+'_'+Math.random().toString(36).slice(2,7)+'_'+clean;
+    const bucket=(window.NC_CONFIG&&window.NC_CONFIG.BUCKET)||'landings-assets';
+    toast('Subiendo imagen…');
+    window.NC_SB.storage.from(bucket).upload(path,file,{cacheControl:'3600',upsert:false}).then(function(r){
+      if(r.error){toast('Error al subir: '+r.error.message);return;}
+      const pub=window.NC_SB.storage.from(bucket).getPublicUrl(path);
+      cb(pub.data.publicUrl); toast('Imagen subida ✓');
+    });
+  } else {
+    if(file.size>3*1024*1024)toast('⚠ Imagen >3MB: engordará el HTML');
+    const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(file);
+  }
+}
+
+/* ---------- PANEL DERECHO ---------- */
+function renderRight(){
+  const s=state.sections.find(x=>x.id===state.selected);
+  const cf=document.getElementById("contentFields");
+  if(!s){cf.innerHTML=`<div class="empty">Selecciona una sección (en el preview o en Estructura) para editar su contenido.</div>`;}
+  else{cf.innerHTML=`<div class="paneltitle" style="padding:0 0 8px">${LIB[s.type].label}</div>`+LIB[s.type].fields.map(f=>`<div class="fld"><label>${f.l}</label>${fieldHTML(f,s.props)}</div>`).join("");
+    bindContentFields(cf,s.props,()=>patchSection(s.id),LIB[s.type].fields);}
+  const sf=document.getElementById("styleFields");
+  if(!s){sf.innerHTML=`<div class="empty">Selecciona una sección para editar su estilo.</div>`;}
+  else if(LIB[s.type].raw){sf.innerHTML=`<div class="empty">Esta sección estructural no usa controles de estilo (formato fijo).</div>`;}
+  else{const st=styleOf(s);s.style=s.style||{};
+    sf.innerHTML=STYLE_FIELDS.filter(f=>!f.when||f.when(st)).map(f=>`<div class="fld"><label>${f.l}</label>${fieldHTML(f,st)}</div>`).join("");
+    sf.querySelectorAll('select[data-fk],input[data-fk]').forEach(inp=>{
+      const ev=inp.tagName==="SELECT"?'change':'input';
+      inp.addEventListener(ev,()=>{commit();s.style[inp.dataset.fk]=inp.value;renderPreview();if(inp.tagName==="SELECT")renderRight();});});
+    sf.querySelectorAll('[data-upbtn]').forEach(btn=>btn.addEventListener('click',()=>sf.querySelector('[data-file="'+btn.dataset.upbtn+'"]').click()));
+    sf.querySelectorAll('[data-file]').forEach(inp=>inp.addEventListener('change',e=>readImg(e.target.files[0],url=>{commit();s.style[inp.dataset.file]=url;renderRight();renderPreview();})));
+    sf.querySelectorAll('[data-rm]').forEach(btn=>btn.addEventListener('click',()=>{commit();s.style[btn.dataset.rm]="";renderRight();renderPreview();}));}
+  renderGlobal();
+}
+function renderGlobal(){
+  const b=BRANDS[state.settings.brand];const gf=document.getElementById("globalFields");
+  let theme="";
+  if(!b.locked){theme=`
+    <div class="paneltitle" style="padding:6px 0">Tema (marca editable)</div>
+    <div class="fld inline"><label>Color primario</label><input type="color" data-ct="bp" value="${CUSTOM.bp}"></div>
+    <div class="fld inline"><label>Color de acento</label><input type="color" data-ct="ba" value="${CUSTOM.ba}"></div>
+    <div class="fld inline"><label>Color de texto</label><input type="color" data-ct="ink" value="${CUSTOM.ink}"></div>
+    <div class="fld inline"><label>Fondo suave</label><input type="color" data-ct="soft" value="${CUSTOM.soft}"></div>
+    <div class="row2"><div class="fld"><label>Fuente títulos</label><select data-ct="fhead">${FONTS.map(f=>`<option ${f===CUSTOM.fhead?'selected':''}>${f}</option>`).join("")}</select></div>
+    <div class="fld"><label>Fuente texto</label><select data-ct="fbody">${FONTS.map(f=>`<option ${f===CUSTOM.fbody?'selected':''}>${f}</option>`).join("")}</select></div></div>
+    <div class="fld inline"><label>Radio botón (${CUSTOM.btnr}px)</label><input type="range" min="0" max="40" data-ct="btnr" value="${CUSTOM.btnr}"></div>
+    <div class="fld inline"><label>Radio card (${CUSTOM.cardr}px)</label><input type="range" min="0" max="30" data-ct="cardr" value="${CUSTOM.cardr}"></div>`;}
+  else theme=`<div class="note">${b.note}</div><button class="btn sm" id="dupBrand">Duplicar en marca editable</button>`;
+  gf.innerHTML=`
+    <div class="fld"><label>Marca</label><select id="gBrand">${brandOptions(state.settings.brand)}</select></div>
+    ${theme}
+    <div class="paneltitle" style="padding:10px 0 4px">Contacto (tel: · wa.me · form)</div>
+    <div class="fld"><label>Teléfono</label><input id="gTel" value="${esc(state.settings.tel)}" placeholder="{{TELEFONO}}"></div>
+    <div class="fld"><label>WhatsApp (con prefijo)</label><input id="gWa" value="${esc(state.settings.wa)}" placeholder="{{WHATSAPP}}"></div>
+    <div class="fld"><label>Endpoint del formulario</label><input id="gEp" value="${esc(state.settings.endpoint)}" placeholder="{{ENDPOINT_FORMULARIO}}"></div>
+    <div class="paneltitle" style="padding:10px 0 4px">Botones y acciones</div>
+    <div class="fld"><label>Estilo de botón (CTA)</label><select id="gCtaStyle">${[["brand","Marca"],["apple","Apple (pill azul)"],["instagram","Instagram (degradado)"],["ncgreen","Verde NC (botonazo)"],["neon","Neón"],["outline","Contorno"],["dark","Oscuro"],["pill","Pastilla marca"]].map(o=>`<option value="${o[0]}" ${state.settings.ctaStyle===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select></div>
+    <div class="fld"><label>Acción del CTA principal</label><select id="gCtaAction">${[["scroll","Ir al formulario"],["popup","Abrir popup de contacto"],["popupimg","Popup de contacto con imagen"],["call","Llamar (tel:)"],["whatsapp","WhatsApp"]].map(o=>`<option value="${o[0]}" ${state.settings.ctaAction===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Aplica a todos los botones “Ir al formulario”.</div></div>
+    ${(state.settings.ctaAction==='popup'||state.settings.ctaAction==='popupimg')?`<div class="fld"><label>Título del popup</label><input id="gPopTitle" value="${esc(state.settings.popupTitle)}" placeholder="¿Necesitas ayuda?"></div>${state.settings.ctaAction==='popupimg'?`<div class="fld"><label>Imagen del popup</label>${fieldHTML({k:"popupImg",l:"",t:"image"},state.settings)}</div>`:''}`:''}
+    <div class="fld inline"><label>Banner de cookies (RGPD)</label><input type="checkbox" id="gCookies" ${state.settings.cookies?'checked':''}></div>
+    <div class="paneltitle" style="padding:10px 0 4px">SEO / Medición</div>
+    <div class="fld"><label>Título SEO</label><input id="gTitle" value="${esc(state.settings.title)}" placeholder="{{TITULO_SEO}}"></div>
+    <div class="fld"><label>Meta description</label><textarea id="gDesc" placeholder="{{META_DESCRIPTION}}">${esc(state.settings.desc)}</textarea></div>
+    <div class="fld"><label>GTM ID</label><input id="gGtm" value="${esc(state.settings.gtm)}" placeholder="GTM-XXXXXXX"></div>
+    <div class="fld"><label>Nombre de archivo</label><input id="gSlug" value="${esc(state.settings.slug)}"></div>`;
+  document.getElementById("gBrand").addEventListener("change",e=>{commit();state.settings.brand=e.target.value;document.getElementById("brandTop").value=e.target.value;renderPalette();renderPreview();renderRight();});
+  const dup=document.getElementById("dupBrand");if(dup)dup.addEventListener('click',()=>{const cur=BRANDS[state.settings.brand];
+    const g=(k,d)=>{const m=cur.vars.match(new RegExp("--"+k+":([^;]+)"));return m?m[1].trim():d;};
+    CUSTOM.bp=g("bp","#2563EB");CUSTOM.ba=g("ba","#10B981");CUSTOM.ink=g("bink","#0f172a");CUSTOM.soft=g("bsoft","#f1f5f9");
+    CUSTOM.fhead=(cur.fhead.match(/'([^']+)'/)||[])[1]||"Inter";CUSTOM.fbody=(cur.fbody.match(/'([^']+)'/)||[])[1]||"Inter";
+    syncCustom();commit();state.settings.brand="custom";document.getElementById("brandTop").value="custom";renderPreview();renderRight();toast("Copiado a marca editable");});
+  gf.querySelectorAll('[data-ct]').forEach(inp=>{const ev=(inp.type==="range"||inp.type==="color")?'input':'change';
+    inp.addEventListener(ev,()=>{commitDebounced();const k=inp.dataset.ct;CUSTOM[k]=(inp.type==="range")?parseInt(inp.value,10):inp.value;syncCustom();renderPreview();if(inp.tagName==="SELECT"||inp.type==="range")renderGlobal();});});
+  const bindG=(id,key,pv)=>{const el=document.getElementById(id);if(el)el.addEventListener('input',()=>{commitDebounced();state.settings[key]=el.value;if(pv)renderPreview();});};
+  bindG("gTel","tel",true);bindG("gWa","wa",true);bindG("gEp","endpoint",true);
+  bindG("gTitle","title",false);bindG("gDesc","desc",false);bindG("gGtm","gtm",false);bindG("gSlug","slug",false);
+  const cs=document.getElementById("gCtaStyle");if(cs)cs.addEventListener('change',()=>{commit();state.settings.ctaStyle=cs.value;renderPreview();});
+  const ca=document.getElementById("gCtaAction");if(ca)ca.addEventListener('change',()=>{commit();state.settings.ctaAction=ca.value;renderPreview();renderGlobal();});
+  const pt=document.getElementById("gPopTitle");if(pt)pt.addEventListener('input',()=>{commitDebounced();state.settings.popupTitle=pt.value;renderPreview();});
+  const co=document.getElementById("gCookies");if(co)co.addEventListener('change',()=>{commit();state.settings.cookies=co.checked;renderPreview();});
+  gf.querySelectorAll('[data-upbtn]').forEach(btn=>btn.addEventListener('click',()=>gf.querySelector('[data-file="'+btn.dataset.upbtn+'"]').click()));
+  gf.querySelectorAll('[data-file]').forEach(inp=>inp.addEventListener('change',e=>readImg(e.target.files[0],url=>{commit();state.settings[inp.dataset.file]=url;renderGlobal();renderPreview();})));
+  gf.querySelectorAll('[data-rm]').forEach(btn=>btn.addEventListener('click',()=>{commit();state.settings[btn.dataset.rm]="";renderGlobal();renderPreview();}));
+}
+
+/* ---------- ACCIONES ---------- */
+function addSection(type,index){commit();const s={id:nid(),type,props:LIB[type].def(),style:{}};
+  if(index==null||index<0||index>state.sections.length)state.sections.push(s);else state.sections.splice(index,0,s);
+  state.selected=s.id;renderPreview();renderRight();toast(LIB[type].label+" añadido");}
+function select(id){state.selected=id;setTab("content");pendingScrollId=id;renderPreview();renderRight();}
+function rowAction(id,act){const i=state.sections.findIndex(x=>x.id===id);if(i<0)return;commit();
+  if(act==="up"&&i>0){const t=state.sections[i-1];state.sections[i-1]=state.sections[i];state.sections[i]=t;}
+  if(act==="down"&&i<state.sections.length-1){const t=state.sections[i+1];state.sections[i+1]=state.sections[i];state.sections[i]=t;}
+  if(act==="dup"){const c=JSON.parse(JSON.stringify(state.sections[i]));c.id=nid();state.sections.splice(i+1,0,c);state.selected=c.id;}
+  if(act==="del"){state.sections.splice(i,1);if(state.selected===id)state.selected=null;}
+  renderPreview();renderRight();}
+let dragId=null,dragType=null;
+function dropOnIndex(t){if(dragType){addSection(dragType,t);dragType=null;return;}
+  if(dragId){commit();const from=state.sections.findIndex(x=>x.id===dragId);if(from<0)return;const m=state.sections.splice(from,1)[0];let to=t;if(from<t)to=t-1;state.sections.splice(to,0,m);dragId=null;renderPreview();renderRight();}}
+function showDrop(on){const d=document.getElementById("dropZone");d.style.display=on?"grid":"none";}
+
+/* ---------- HISTORIAL ---------- */
+let past=[],future=[];
+const snap=()=>JSON.stringify({s:state.sections,g:state.settings,c:CUSTOM,u:uid});
+function commit(){past.push(snap());if(past.length>50)past.shift();future=[];updHist();}
+let cdArmed=true,cdT=null;
+function commitDebounced(){if(cdArmed){commit();cdArmed=false;}clearTimeout(cdT);cdT=setTimeout(()=>cdArmed=true,700);}
+function restore(str){const o=JSON.parse(str);state.sections=o.s;state.settings=o.g;Object.assign(CUSTOM,o.c);uid=o.u;syncCustom();}
+function undo(){if(!past.length)return;future.push(snap());restore(past.pop());state.selected=null;document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();updHist();}
+function redo(){if(!future.length)return;past.push(snap());restore(future.pop());state.selected=null;document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();updHist();}
+function updHist(){document.getElementById("btnUndo").disabled=!past.length;document.getElementById("btnRedo").disabled=!future.length;}
+
+/* ---------- TABS / DEVICE / EXPORT / PLANTILLAS ---------- */
+function setTab(t){state.tab=t;document.getElementById("tabContent").style.display=t==="content"?"":"none";
+  document.getElementById("tabStyle").style.display=t==="style"?"":"none";document.getElementById("tabGlobal").style.display=t==="global"?"":"none";
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));}
+function setDevice(d){state.device=d;const w={mobile:"390px",tablet:"768px",desktop:"100%"}[d];const fw=document.getElementById("frameWrap");
+  fw.style.width=w;fw.style.maxWidth=d==="desktop"?"1100px":w;document.querySelectorAll('#devSeg button').forEach(b=>b.classList.toggle('on',b.dataset.dev===d));}
+function exportHTML(){const html=buildDoc(true);const kb=Math.round(html.length/1024);
+  const blob=new Blob([html],{type:"text/html;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(state.settings.slug||"landing")+".html";document.body.appendChild(a);a.click();a.remove();
+  toast("HTML exportado ✓ ("+kb+" KB)");}
+function loadTemplate(name){const t=TEMPLATES[name];if(!t)return;if(state.sections.length&&!confirm("¿Reemplazar la landing actual por la plantilla “"+name+"”?"))return;
+  commit();state.sections=t.map(ty=>({id:nid(),type:ty,props:LIB[ty].def(),style:{}}));state.selected=null;renderPreview();renderRight();toast("Plantilla cargada");}
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2100);}
+
+/* ---------- LISTENERS ---------- */
+window.addEventListener("message",e=>{if(!e.data)return;if(e.data.nc==="sel")select(e.data.id);if(e.data.nc==="act")rowAction(e.data.id,e.data.act);});
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+document.querySelectorAll('#devSeg button').forEach(b=>b.addEventListener('click',()=>setDevice(b.dataset.dev)));
+document.getElementById("btnExport").addEventListener('click',exportHTML);
+document.getElementById("btnUndo").addEventListener('click',undo);
+document.getElementById("btnRedo").addEventListener('click',redo);
+document.getElementById("palSearch").addEventListener('input',renderPalette);
+document.getElementById("btnPreview").addEventListener('click',()=>{try{const url=URL.createObjectURL(new Blob([buildDoc(true)],{type:"text/html;charset=utf-8"}));const w=window.open(url,"_blank");if(!w)toast("El navegador bloqueó la ventana · usa Exportar");}catch(e){toast("Aquí no se puede abrir en pestaña · usa Exportar");}});
+document.getElementById("dropZone").addEventListener('dragover',e=>e.preventDefault());
+document.getElementById("dropZone").addEventListener('drop',e=>{e.preventDefault();showDrop(false);if(dragType){addSection(dragType);dragType=null;}});
+(function(){const sel=document.getElementById("brandTop");sel.innerHTML=brandOptions(state.settings.brand);sel.value=state.settings.brand;
+  sel.addEventListener('change',e=>{commit();state.settings.brand=e.target.value;renderPalette();renderPreview();renderRight();});})();
+(function(){const t=document.getElementById("tplSel");t.innerHTML='<option value="">Plantilla…</option>'+Object.keys(TEMPLATES).map(n=>`<option>${n}</option>`).join("");
+  t.addEventListener('change',e=>{if(e.target.value)loadTemplate(e.target.value);e.target.value="";});})();
+document.addEventListener('keydown',e=>{const tag=(e.target.tagName||"");if(tag==="INPUT"||tag==="TEXTAREA")return;
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"&&!e.shiftKey){e.preventDefault();undo();}
+  else if((e.ctrlKey||e.metaKey)&&(e.key.toLowerCase()==="y"||(e.shiftKey&&e.key.toLowerCase()==="z"))){e.preventDefault();redo();}});
+
+/* ---------- CLOUD (Supabase) ---------- */
+window.NC_SB=null;
+const cloud={id:null};
+(function initSB(){
+  try{
+    if(window.NC_CONFIG&&window.NC_CONFIG.SUPABASE_URL&&window.supabase){
+      window.NC_SB=window.supabase.createClient(window.NC_CONFIG.SUPABASE_URL,window.NC_CONFIG.SUPABASE_ANON_KEY);
+    }
+  }catch(e){}
+})();
+function cloudState(){return {sections:state.sections,settings:state.settings,custom:CUSTOM};}
+function applyCloud(o){try{state.sections=o.sections||[];state.settings=Object.assign(state.settings,o.settings||{});if(o.custom)Object.assign(CUSTOM,o.custom);syncCustom();state.selected=null;document.getElementById("brandTop").value=state.settings.brand;renderPalette();renderPreview();renderRight();}catch(e){toast('Datos corruptos');}}
+async function saveLanding(){
+  if(!window.NC_SB){toast('Configura Supabase (config.js) para guardar');return;}
+  const nombre=(document.getElementById("landingName").value||'Sin título').trim();
+  const row={nombre,marca:state.settings.brand,data:cloudState(),updated_at:new Date().toISOString()};
+  if(cloud.id)row.id=cloud.id;
+  const {data,error}=await window.NC_SB.from('landings').upsert(row).select().single();
+  if(error){toast('Error: '+error.message);return;}
+  cloud.id=data.id;toast('Guardado ✓');
+}
+async function listLandings(){
+  const box=document.getElementById("mineList");
+  if(!window.NC_SB){box.innerHTML='<div class="empty">Configura Supabase (config.js) para usar la nube.</div>';return;}
+  box.innerHTML='<div class="empty">Cargando…</div>';
+  const {data,error}=await window.NC_SB.from('landings').select('id,nombre,marca,updated_at').order('updated_at',{ascending:false});
+  if(error){box.innerHTML='<div class="empty">'+error.message+'</div>';return;}
+  if(!data.length){box.innerHTML='<div class="empty">Aún no hay landings guardadas.</div>';return;}
+  box.innerHTML=data.map(l=>`<div class="oitem" style="cursor:default"><span class="nm" style="cursor:pointer" data-load="${l.id}">${(l.nombre||'Sin título')} <span style="color:var(--muted2)">· ${(BRANDS[l.marca]?BRANDS[l.marca].name:l.marca)}</span></span>
+    <button class="mini" data-dup="${l.id}" title="Duplicar">⧉</button><button class="mini" data-del="${l.id}" title="Borrar">🗑</button></div>`).join("");
+  box.querySelectorAll('[data-load]').forEach(el=>el.addEventListener('click',()=>openLanding(el.dataset.load)));
+  box.querySelectorAll('[data-del]').forEach(el=>el.addEventListener('click',()=>delLanding(el.dataset.del)));
+  box.querySelectorAll('[data-dup]').forEach(el=>el.addEventListener('click',()=>dupLanding(el.dataset.dup)));
+}
+async function openLanding(id){
+  const {data,error}=await window.NC_SB.from('landings').select('*').eq('id',id).single();
+  if(error){toast(error.message);return;}
+  cloud.id=data.id;document.getElementById("landingName").value=data.nombre||'';
+  applyCloud(data.data||{});past=[];future=[];updHist();
+  document.getElementById("mineOverlay").style.display='none';toast('Cargada: '+(data.nombre||''));
+}
+async function dupLanding(id){
+  const {data}=await window.NC_SB.from('landings').select('*').eq('id',id).single();
+  if(!data)return;await window.NC_SB.from('landings').insert({nombre:(data.nombre||'')+' (copia)',marca:data.marca,data:data.data,updated_at:new Date().toISOString()});
+  listLandings();toast('Duplicada');
+}
+async function delLanding(id){
+  if(!confirm('¿Borrar esta landing?'))return;
+  await window.NC_SB.from('landings').delete().eq('id',id);
+  if(cloud.id===id)cloud.id=null;listLandings();toast('Borrada');
+}
+function newLanding(){cloud.id=null;document.getElementById("landingName").value='';state.sections=[];state.selected=null;past=[];future=[];updHist();renderPreview();renderRight();document.getElementById("mineOverlay").style.display='none';toast('Nueva landing');}
+/* Auth compartido */
+function showLogin(v){document.getElementById("loginOverlay").style.display=v?'grid':'none';}
+async function checkAuth(){
+  if(!window.NC_SB){document.getElementById("userChip").textContent='local (sin nube)';return;}
+  const {data}=await window.NC_SB.auth.getSession();
+  if(data&&data.session){document.getElementById("userChip").textContent=data.session.user.email;showLogin(false);}
+  else{showLogin(true);}
+}
+document.getElementById("loginBtn").addEventListener('click',async()=>{
+  const email=document.getElementById("loginEmail").value.trim(),password=document.getElementById("loginPass").value;
+  const {error}=await window.NC_SB.auth.signInWithPassword({email,password});
+  if(error){document.getElementById("loginErr").textContent=error.message;return;}
+  document.getElementById("userChip").textContent=email;showLogin(false);toast('Bienvenido');
+});
+document.getElementById("btnSave").addEventListener('click',saveLanding);
+document.getElementById("btnMine").addEventListener('click',()=>{document.getElementById("mineOverlay").style.display='grid';listLandings();});
+document.getElementById("mineClose").addEventListener('click',()=>document.getElementById("mineOverlay").style.display='none');
+document.getElementById("mineNew").addEventListener('click',newLanding);
+checkAuth();
+
+/* ---------- SEED ---------- */
+syncCustom();
+TEMPLATES["Captación · llamada"].forEach(t=>state.sections.push({id:nid(),type:t,props:LIB[t].def(),style:{}}));
+renderPalette();setTab("content");setDevice("desktop");renderRight();renderPreview();updHist();
+</script>
+</body>
+</html>
