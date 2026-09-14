@@ -110,6 +110,8 @@
     <input id="landingName" class="txt" style="max-width:180px" placeholder="Nombre de la landing" title="Nombre" autocomplete="off" name="nc_landing_name" data-lpignore="true" data-1p-ignore data-form-type="other">
     <button class="btn" id="btnSave" title="Guardar en la nube">💾 Guardar</button>
     <button class="btn" id="btnMine" title="Mis landings">☁ Mis landings</button>
+    <button class="btn" id="btnLorem" title="Rellenar textos con Lorem ipsum">¶ Lorem</button>
+    <button class="btn" id="btnImport" title="Importar HTML de cliente">⇱ Importar</button>
     <div class="spacer"></div>
     <span class="lbl" id="userChip"></span>
     <button class="btn icob" id="btnUndo" title="Deshacer (Ctrl+Z)">↺</button>
@@ -157,6 +159,16 @@
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- Importar HTML de cliente -->
+<div id="importOverlay" style="display:none;position:fixed;inset:0;z-index:195;background:rgba(9,11,16,.75);place-items:center">
+  <div style="width:560px;max-width:94vw;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><b>Importar HTML de cliente</b><button class="btn sm ghost" id="importClose">Cerrar</button></div>
+    <div class="note" style="margin:0 0 10px">Pega el HTML de la web del cliente (mejor con rutas absolutas, p. ej. el <b>-identico.html</b>). Se trocea en secciones editables y se carga su CSS real.</div>
+    <textarea id="importText" class="txt" style="width:100%;min-height:200px;font-family:monospace;font-size:11px" placeholder="&lt;!doctype html&gt;…"></textarea>
+    <div class="d-flex gap-2 mt-2" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn primary" id="translateDo">Traducir a bloques (editable)</button><button class="btn" id="importDo">Importar fiel (HTML)</button><span class="lbl" id="importInfo"></span></div>
+  </div>
+</div>
 
 <!-- Login compartido -->
 <div id="loginOverlay" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(9,11,16,.92);backdrop-filter:blur(4px);place-items:center">
@@ -426,7 +438,7 @@ const STYLEKITS={
 const STYLEKIT_LIST=[["none","Marca (sin capa)"],["soft","Soft UI"],["flat","Flat"],["swiss","Swiss / Minimal"],["monochrome","Monocromo B/N"],["editorial","Editorial / Revista"],["bento","Bento"],["materialyou","Material You"],["neumorphism","Neumorphism"],["glass","Glassmorphism"],["liquidglass","Liquid Glass"],["claymorphism","Claymorphism"],["organic","Orgánico / Biofílico"],["brutalism","Brutalism"],["neubrutalism","Neubrutalism"],["bauhaus","Bauhaus"],["y2k","Y2K"],["aurora","Aurora (animado)"],["gradientmesh","Gradient Mesh"],["dark","Dark OLED"],["cyberpunk","Cyberpunk"],["vaporwave","Vaporwave"],["retrofuturism","Retro-Futurism"]];
 
 /* ---------- ESTADO ---------- */
-const state={ settings:{brand:"nc",title:"",desc:"",tel:"",wa:"",endpoint:"",gtm:"",slug:"landing",ctaStyle:"brand",ctaAction:"scroll",popupTitle:"¿Necesitas ayuda?",popupImg:"",cookies:false,thanks:false,thanksText:"¡Gracias! Te llamamos enseguida.",styleKit:"none",motion:false},
+const state={ settings:{brand:"nc",title:"",desc:"",tel:"",wa:"",endpoint:"",gtm:"",slug:"landing",ctaStyle:"brand",ctaAction:"scroll",popupTitle:"¿Necesitas ayuda?",popupImg:"",cookies:false,thanks:false,thanksText:"¡Gracias! Te llamamos enseguida.",styleKit:"none",motion:false,importCSS:""},
   sections:[], selected:null, tab:"content", device:"desktop" };
 let uid=1; const nid=()=>"s"+(uid++);
 
@@ -910,20 +922,161 @@ const LIB={
   at_footer:{label:"AB Tasty · footer",ico:"",cat:"AB Tasty",raw:true,brand:"abtasty",
     def:()=>({company:"AB Tasty",cols:"Plataforma:Testing,Personalización|Empresa:Clientes,Empleo|Legal:Privacidad,Cookies"}),
     fields:[{k:"company",l:"Razón social"},{k:"cols",l:"Columnas: Título:enlace,enlace|…",t:"ta"}],
-    render:p=>`<footer style="background:#141327;color:#a9a7c4"><div class="container py-5"><div class="row g-4">${lines(p.cols).map(col=>{const pr=col.split(":");const it=(pr[1]||"").split(",");return `<div class="col-6 col-md-4"><div class="fw-bold mb-2" style="color:#00D1B2">${esc(pr[0]||"")}</div>${it.map(x=>`<div class="mb-1"><a href="#" style="color:#a9a7c4;text-decoration:none;font-size:14px">${esc(x.trim())}</a></div>`).join("")}</div>`}).join("")}</div><div class="pt-4 mt-4 small" style="border-top:1px solid rgba(255,255,255,.12)">© ${new Date().getFullYear()} ${esc(p.company)}</div></div></footer>`}
+    render:p=>`<footer style="background:#141327;color:#a9a7c4"><div class="container py-5"><div class="row g-4">${lines(p.cols).map(col=>{const pr=col.split(":");const it=(pr[1]||"").split(",");return `<div class="col-6 col-md-4"><div class="fw-bold mb-2" style="color:#00D1B2">${esc(pr[0]||"")}</div>${it.map(x=>`<div class="mb-1"><a href="#" style="color:#a9a7c4;text-decoration:none;font-size:14px">${esc(x.trim())}</a></div>`).join("")}</div>`}).join("")}</div><div class="pt-4 mt-4 small" style="border-top:1px solid rgba(255,255,255,.12)">© ${new Date().getFullYear()} ${esc(p.company)}</div></div></footer>`},
+
+  /* ===== JAZZTEL (bespoke — réplica de mijazztel.com) ===== */
+  jz_nav:{label:"Jazztel · nav",ico:"",cat:"Jazztel",raw:true,brand:"c_jazztel",
+    def:()=>({logo:"jazztel",links:"Fibra y móvil|Móvil|Fibra|Cobertura",cta:"Llamar al 91 924 80 83"}),
+    fields:[{k:"logo",l:"Logo (texto)"},{k:"links",l:"Enlaces (|)"},{k:"cta",l:"CTA teléfono"}],
+    render:p=>`<nav style="background:#fff;border-bottom:1px solid #dcecdc"><div class="container d-flex align-items-center justify-content-between py-2">
+      <span class="fw-bold h-font" style="color:#08A800;font-size:24px;letter-spacing:-.5px">${esc(p.logo)}</span>
+      <div class="d-none d-md-flex" style="gap:24px">${cells(p.links).map(l=>`<a href="#" style="color:#333;text-decoration:none;font-size:14px">${esc(l)}</a>`).join("")}</div>
+      <a href="${telHref()}" data-cta="call" class="btn btn-brand" style="background:#DA1884;border-color:#DA1884">📞 ${esc(p.cta)}</a></div></nav>`},
+  jz_hero:{label:"Jazztel · hero + callback",ico:"",cat:"Jazztel",brand:"c_jazztel",styleDef:{bg:"soft",pad:"L"},
+    def:()=>({eyebrow:"Últimos días",headline:"Fibra 600Mb + 2 Líneas Móviles Ilimitadas 80GB",sub:"El mejor precio en fibra y móvil, sin permanencia.",price:"29,95",priceNote:"€/mes",cta:"Solicitar llamada",consent:"Acepto la política de privacidad."}),
+    fields:[{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo"},{k:"price",l:"Precio"},{k:"priceNote",l:"Nota precio"},{k:"cta",l:"Botón callback"},{k:"consent",l:"Consentimiento"}],
+    render:p=>`<div class="row align-items-center g-4"><div class="col-lg-6">
+      ${p.eyebrow?`<span class="badge-soft" style="background:#fde3f0;color:#DA1884;border:0">${esc(p.eyebrow)}</span>`:""}
+      <h1 class="display-6 fw-bold h-font mt-3 mb-2" style="color:#1a1a1a">${esc(p.headline)}</h1>
+      <p class="lead mb-3" style="color:#555">${esc(p.sub)}</p>
+      <div class="d-flex align-items-end gap-2 mb-2"><span class="display-4 fw-bold h-font" style="color:#08A800">${esc(p.price)}</span><span class="mb-2" style="color:#777">${esc(p.priceNote)}</span></div>
+      <div class="d-flex flex-wrap gap-3 small" style="color:#555"><span>✓ Sin permanencia</span><span>✓ Instalación gratis</span></div></div>
+      <div class="col-lg-6"><div class="brandcard p-4" style="background:#fff;border-top:4px solid #08A800"><span id="form"></span>
+        <div class="fw-bold h-font mb-3" style="color:#1a1a1a">Te llamamos gratis</div>
+        <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
+          <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
+          <div class="col-12"><input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos" class="form-control form-control-lg" placeholder="Teléfono"></div>
+          <div class="col-12 form-check my-1"><input required class="form-check-input" type="checkbox" id="jzc"><label for="jzc" class="form-check-label small" style="color:#777">${esc(p.consent)}</label></div>
+          <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit">${esc(p.cta)}</button></div>
+        </form></div></div></div>`},
+  jz_ventajas:{label:"Jazztel · ventajas",ico:"",cat:"Jazztel",brand:"c_jazztel",styleDef:{bg:"white"},
+    def:()=>({title:"Ventajas de tu tarifa",items:"🌐|INTERNET|Fibra simétrica de 600Mb para toda la casa.\n💶|AHORRO GARANTIZADO|El mejor precio, sin subidas sorpresa.\n📱|MÓVIL|2 líneas con datos ilimitados a máxima velocidad."}),
+    fields:[{k:"title",l:"Título"},{k:"items",l:"Cards: icono|título|texto",t:"ta"}],
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:#1a1a1a">${esc(p.title)}</h2><div class="sec-title-line" style="background:linear-gradient(90deg,#08A800,#DA1884)"></div></div>
+      <div class="row g-4">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-md-4"><div class="brandcard h-100 p-4 text-center"><div class="ficon" style="margin:0 auto 14px;background:#eafbe8;border-color:#cdeecb;color:#08A800">${esc(c[0]||"")}</div><h3 class="h6 fw-bold h-font" style="color:#08A800;letter-spacing:.02em">${esc(c[1]||"")}</h3><p class="mb-0 small" style="color:#666">${esc(c[2]||"")}</p></div></div>`}).join("")}</div>`},
+  jz_tarifas:{label:"Jazztel · tarifas destacadas",ico:"",cat:"Jazztel",brand:"c_jazztel",styleDef:{bg:"soft"},
+    def:()=>({title:"Otras tarifas destacadas",plans:[{name:"Fibra 300Mb + Móvil",price:"24,95",feat:"1 línea · 40GB",cta:"Solicitar información"},{name:"Fibra 600Mb + 2 Móviles",price:"29,95",feat:"2 líneas ilimitadas · 80GB",cta:"Solicitar información"},{name:"Fibra 1Gb + 3 Móviles",price:"39,95",feat:"3 líneas ilimitadas · TV",cta:"Solicitar información"}]}),
+    fields:[{k:"title",l:"Título"},{k:"plans",l:"Tarifas",t:"repeater",addLabel:"Añadir tarifa",item:[{k:"name",l:"Nombre",def:"Tarifa"},{k:"price",l:"Precio",def:"00,00"},{k:"feat",l:"Detalle",def:"Detalle"},{k:"cta",l:"CTA",def:"Solicitar información"}]}],
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:#1a1a1a">${esc(p.title)}</h2><div class="sec-title-line" style="background:linear-gradient(90deg,#08A800,#DA1884)"></div></div>
+      <div class="row g-4 justify-content-center pt-2">${arr(p.plans).map((c,i)=>`<div class="col-md-4"><div class="brandcard h-100 p-4 text-center ${i===1?'featured':''}"><h3 class="h6 fw-bold h-font" style="color:#1a1a1a">${esc(c.name||"")}</h3><div class="display-6 fw-bold h-font my-2" style="color:#08A800">${esc(c.price||"")}<span style="font-size:1rem;color:#888"> €/mes</span></div><p class="d-inline-flex align-items-center gap-2" style="color:#666"><span class="chk" style="background:#eafbe8;color:#08A800">✓</span>${esc(c.feat||"")}</p><a href="#form" data-cta="form" class="btn btn-brand w-100 mt-2">${esc(c.cta||"Solicitar")}</a></div></div>`).join("")}</div>`},
+  jz_cobertura:{label:"Jazztel · comprobar cobertura",ico:"",cat:"Jazztel",brand:"c_jazztel",styleDef:{bg:"white",width:"narrow",align:"center"},
+    def:()=>({title:"Comprueba tu cobertura de fibra",sub:"Introduce tu dirección y comprobamos si tienes fibra Jazztel.",cta:"Comprobar cobertura"}),
+    fields:[{k:"title",l:"Título"},{k:"sub",l:"Subtítulo"},{k:"cta",l:"Botón"}],
+    render:p=>`<h2 class="fw-bold h-font mb-2" style="color:#1a1a1a">${esc(p.title)}</h2><p class="mb-4" style="color:#666">${esc(p.sub)}</p>
+      <div class="input-group input-group-lg" style="max-width:520px;margin:0 auto"><input class="form-control" placeholder="Calle, número, ciudad…"><a href="#form" data-cta="form" class="btn btn-brand" style="background:#DA1884;border-color:#DA1884">${esc(p.cta)}</a></div>`},
+  jz_footer:{label:"Jazztel · footer",ico:"",cat:"Jazztel",raw:true,brand:"c_jazztel",
+    def:()=>({company:"Jazztel",cols:"Fibra y móvil:Tarifas,Cobertura,Móvil|Ayuda:Área cliente,Contacto|Legal:Aviso legal,Privacidad,Cookies"}),
+    fields:[{k:"company",l:"Razón social"},{k:"cols",l:"Columnas: Título:enlace,enlace|…",t:"ta"}],
+    render:p=>`<footer style="background:#123312;color:#b7d6b7"><div class="container py-5"><div class="row g-4">${lines(p.cols).map(col=>{const pr=col.split(":");const it=(pr[1]||"").split(",");return `<div class="col-6 col-md-4"><div class="fw-bold mb-2" style="color:#fff">${esc(pr[0]||"")}</div>${it.map(x=>`<div class="mb-1"><a href="#" style="color:#b7d6b7;text-decoration:none;font-size:14px">${esc(x.trim())}</a></div>`).join("")}</div>`}).join("")}</div><div class="pt-4 mt-4 small" style="border-top:1px solid rgba(255,255,255,.14)">© ${new Date().getFullYear()} ${esc(p.company)}</div></div></footer>`},
+
+  /* ===== KIT TELCO (tokenizado — microsites NC, se usa vía plantillas de cliente) ===== */
+  tel_nav:{label:"Telco · nav",ico:"",cat:"Telco",raw:true,
+    def:()=>({logo:"Marca",links:"Fibra y móvil|Móvil|Fibra|Cobertura",cta:"Llámanos"}),
+    fields:[{k:"logo",l:"Logo"},{k:"links",l:"Enlaces (|)"},{k:"cta",l:"CTA teléfono"}],
+    render:p=>`<nav style="background:#fff;border-bottom:1px solid var(--line)"><div class="container d-flex align-items-center justify-content-between py-2">
+      <span class="fw-bold h-font" style="color:var(--bp);font-size:24px;letter-spacing:-.5px">${esc(p.logo)}</span>
+      <div class="d-none d-md-flex" style="gap:22px">${cells(p.links).map(l=>`<a href="#" style="color:var(--bink);text-decoration:none;font-size:14px">${esc(l)}</a>`).join("")}</div>
+      <a href="${telHref()}" data-cta="call" class="btn btn-brand" style="background:var(--ba);border-color:var(--ba)">📞 ${esc(p.cta)}</a></div></nav>`},
+  tel_hero:{label:"Telco · hero + callback",ico:"",cat:"Telco",styleDef:{bg:"soft",pad:"L"},
+    def:()=>({eyebrow:"Oferta",headline:"Fibra + Móvil al mejor precio",sub:"Sin permanencia e instalación gratis.",price:"29,90",priceNote:"€/mes",cta:"Solicitar información",consent:"Acepto la política de privacidad."}),
+    fields:[{k:"eyebrow",l:"Eyebrow"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo"},{k:"price",l:"Precio"},{k:"priceNote",l:"Nota precio"},{k:"cta",l:"Botón callback"},{k:"consent",l:"Consentimiento"}],
+    render:p=>`<div class="row align-items-center g-4"><div class="col-lg-6">
+      ${p.eyebrow?`<span class="badge-soft">${esc(p.eyebrow)}</span>`:""}
+      <h1 class="display-6 fw-bold h-font mt-3 mb-2" style="color:var(--headcol)">${esc(p.headline)}</h1>
+      <p class="lead mb-3" style="color:var(--txtmuted)">${esc(p.sub)}</p>
+      <div class="d-flex align-items-end gap-2 mb-2"><span class="display-4 fw-bold h-font" style="color:var(--bp)">${esc(p.price)}</span><span class="mb-2" style="color:var(--txtmuted)">${esc(p.priceNote)}</span></div>
+      <div class="d-flex flex-wrap gap-3 small" style="color:var(--txtmuted)"><span>✓ Sin permanencia</span><span>✓ Instalación gratis</span></div></div>
+      <div class="col-lg-6"><div class="brandcard p-4" style="background:#fff;border-top:4px solid var(--bp)"><span id="form"></span>
+        <div class="fw-bold h-font mb-3" style="color:var(--bink)">Te llamamos gratis</div>
+        <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
+          <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
+          <div class="col-12"><input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos" class="form-control form-control-lg" placeholder="Teléfono"></div>
+          <div class="col-12 form-check my-1"><input required class="form-check-input" type="checkbox" id="tlc"><label for="tlc" class="form-check-label small" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
+          <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit">${esc(p.cta)}</button></div>
+        </form></div></div></div>`},
+  tel_ventajas:{label:"Telco · ventajas",ico:"",cat:"Telco",styleDef:{bg:"white"},
+    def:()=>({title:"Sobran motivos para confiar",items:"🌐|Rapidez|Fibra simétrica para toda la casa.\n🎁|Instalación gratis|Sin coste de alta ni router.\n📶|Cobertura 5G|Datos ilimitados a máxima velocidad."}),
+    fields:[{k:"title",l:"Título"},{k:"items",l:"Cards: icono|título|texto",t:"ta"}],
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><div class="sec-title-line"></div></div>
+      <div class="row g-4">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-md-4"><div class="brandcard h-100 p-4 text-center"><div class="ficon" style="margin:0 auto 14px">${esc(c[0]||"")}</div><h3 class="h6 fw-bold h-font" style="color:var(--bp);letter-spacing:.02em">${esc(c[1]||"")}</h3><p class="mb-0 small" style="color:var(--bmuted)">${esc(c[2]||"")}</p></div></div>`}).join("")}</div>`},
+  tel_tarifas:{label:"Telco · tarifas destacadas",ico:"",cat:"Telco",styleDef:{bg:"soft"},
+    def:()=>({title:"Otras tarifas destacadas",plans:[{name:"Fibra 300Mb + Móvil",price:"24,90",feat:"1 línea",cta:"Solicitar información"},{name:"Fibra 600Mb + 2 Móviles",price:"29,90",feat:"2 líneas ilimitadas",cta:"Solicitar información"},{name:"Fibra 1Gb + 3 Móviles",price:"39,90",feat:"3 líneas · TV",cta:"Solicitar información"}]}),
+    fields:[{k:"title",l:"Título"},{k:"plans",l:"Tarifas",t:"repeater",addLabel:"Añadir tarifa",item:[{k:"name",l:"Nombre",def:"Tarifa"},{k:"price",l:"Precio",def:"00,00"},{k:"feat",l:"Detalle",def:"Detalle"},{k:"cta",l:"CTA",def:"Solicitar información"}]}],
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><div class="sec-title-line"></div></div>
+      <div class="row g-4 justify-content-center pt-2">${arr(p.plans).map((c,i)=>`<div class="col-md-4"><div class="brandcard h-100 p-4 text-center ${i===1?'featured':''}"><h3 class="h6 fw-bold h-font" style="color:var(--bink)">${esc(c.name||"")}</h3><div class="display-6 fw-bold h-font my-2" style="color:var(--bp)">${esc(c.price||"")}<span style="font-size:1rem;color:var(--bmuted)"> €/mes</span></div><p class="d-inline-flex align-items-center gap-2" style="color:var(--bmuted)"><span class="chk">✓</span>${esc(c.feat||"")}</p><a href="#form" data-cta="form" class="btn btn-brand w-100 mt-2">${esc(c.cta||"Solicitar")}</a></div></div>`).join("")}</div>`},
+  tel_cobertura:{label:"Telco · comprobar cobertura",ico:"",cat:"Telco",styleDef:{bg:"white",width:"narrow",align:"center"},
+    def:()=>({title:"Comprueba tu cobertura de fibra",sub:"Introduce tu dirección y comprobamos si tienes fibra.",cta:"Comprobar cobertura"}),
+    fields:[{k:"title",l:"Título"},{k:"sub",l:"Subtítulo"},{k:"cta",l:"Botón"}],
+    render:p=>`<h2 class="fw-bold h-font mb-2" style="color:var(--headcol)">${esc(p.title)}</h2><p class="mb-4" style="color:var(--txtmuted)">${esc(p.sub)}</p>
+      <div class="input-group input-group-lg" style="max-width:520px;margin:0 auto"><input class="form-control" placeholder="Calle, número, ciudad…"><a href="#form" data-cta="form" class="btn btn-brand" style="background:var(--ba);border-color:var(--ba)">${esc(p.cta)}</a></div>`},
+  tel_footer:{label:"Telco · footer",ico:"",cat:"Telco",raw:true,
+    def:()=>({company:"Marca",cols:"Fibra y móvil:Tarifas,Cobertura,Móvil|Ayuda:Área cliente,Contacto|Legal:Aviso legal,Privacidad,Cookies"}),
+    fields:[{k:"company",l:"Razón social"},{k:"cols",l:"Columnas: Título:enlace,enlace|…",t:"ta"}],
+    render:p=>`<footer style="background:var(--bink);color:rgba(255,255,255,.72)"><div class="container py-5"><div class="row g-4">${lines(p.cols).map(col=>{const pr=col.split(":");const it=(pr[1]||"").split(",");return `<div class="col-6 col-md-4"><div class="fw-bold mb-2" style="color:#fff">${esc(pr[0]||"")}</div>${it.map(x=>`<div class="mb-1"><a href="#" style="color:rgba(255,255,255,.72);text-decoration:none;font-size:14px">${esc(x.trim())}</a></div>`).join("")}</div>`}).join("")}</div><div class="pt-4 mt-4 small" style="border-top:1px solid rgba(255,255,255,.14)">© ${new Date().getFullYear()} ${esc(p.company)}</div></div></footer>`},
+
+  /* ===== KIT ALARMAS (tokenizado — clientes de seguridad) ===== */
+  al_nav:{label:"Alarmas · nav",ico:"",cat:"Alarmas",raw:true,
+    def:()=>({logo:"Marca",cta:"Llamar gratis",wa:"WhatsApp"}),
+    fields:[{k:"logo",l:"Logo"},{k:"cta",l:"CTA teléfono"},{k:"wa",l:"CTA WhatsApp"}],
+    render:p=>`<nav style="background:#fff;border-bottom:1px solid var(--line)"><div class="container d-flex align-items-center justify-content-between py-2">
+      <span class="fw-bold h-font" style="color:var(--bp);font-size:22px">${esc(p.logo)}</span>
+      <div class="d-flex gap-2"><a href="${telHref()}" data-cta="call" class="btn btn-brand">📞 ${esc(p.cta)}</a><a href="${waHref()}" data-cta="whatsapp" target="_blank" rel="noopener" class="btn btn-ghost">💬 ${esc(p.wa)}</a></div></div></nav>`},
+  al_hero:{label:"Alarmas · hero oferta+regalo",ico:"",cat:"Alarmas",styleDef:{bg:"soft",pad:"L"},
+    def:()=>({gift:"CÁMARA 360º GRATIS",headline:"Protege tu hogar con la alarma más avanzada",sub:"Instalación en 24 h y conexión con Central Receptora de Alarmas.",cta:"¡La quiero!",consent:"Acepto la política de privacidad."}),
+    fields:[{k:"gift",l:"Etiqueta regalo"},{k:"headline",l:"Titular"},{k:"sub",l:"Subtítulo"},{k:"cta",l:"Botón callback"},{k:"consent",l:"Consentimiento"}],
+    render:p=>`<div class="row align-items-center g-4"><div class="col-lg-6">
+      ${p.gift?`<span class="badge-soft" style="background:var(--ba);color:#fff;border:0">🎁 ${esc(p.gift)}</span>`:""}
+      <h1 class="display-5 fw-bold h-font mt-3 mb-3" style="color:var(--headcol)">${esc(p.headline)}</h1>
+      <p class="lead mb-3" style="color:var(--txtmuted)">${esc(p.sub)}</p>
+      <div class="d-flex flex-wrap gap-3 small" style="color:var(--txtmuted)"><span>✓ Aviso a policía</span><span>✓ App móvil</span><span>✓ Sin permanencia</span></div></div>
+      <div class="col-lg-6"><div class="brandcard p-4" style="background:#fff;border-top:4px solid var(--bp)"><span id="form"></span>
+        <div class="fw-bold h-font mb-3" style="color:var(--bink)">Te llamamos gratis</div>
+        <form data-callback action="${ph(state.settings.endpoint,'ENDPOINT_FORMULARIO')}" method="post" class="row g-2">
+          <div class="col-12"><input required name="nombre" class="form-control form-control-lg" placeholder="Nombre"></div>
+          <div class="col-12"><input required name="telefono" type="tel" pattern="[0-9]{9}" title="9 dígitos" class="form-control form-control-lg" placeholder="Teléfono"></div>
+          <div class="col-12 form-check my-1"><input required class="form-check-input" type="checkbox" id="alc"><label for="alc" class="form-check-label small" style="color:var(--bmuted)">${esc(p.consent)}</label></div>
+          <div class="col-12"><button class="btn btn-brand btn-lg w-100" type="submit">${esc(p.cta)}</button></div>
+        </form></div></div></div>`},
+  al_porque:{label:"Alarmas · por qué elegirnos",ico:"",cat:"Alarmas",styleDef:{bg:"white"},
+    def:()=>({title:"¿Por qué elegir nuestra seguridad?",items:"🛰️|Vigilancia 24/7|Central receptora conectada con las autoridades.\n📷|Equipamiento de última generación|Cámaras inteligentes y detección avanzada.\n📱|Control total|Gestiona tu alarma desde el móvil."}),
+    fields:[{k:"title",l:"Título"},{k:"items",l:"Cards: icono|título|texto",t:"ta"}],
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><div class="sec-title-line"></div></div>
+      <div class="row g-4">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-md-4"><div class="brandcard h-100 p-4 text-center"><div class="ficon" style="margin:0 auto 14px">${esc(c[0]||"")}</div><h3 class="h6 fw-bold h-font" style="color:var(--bink)">${esc(c[1]||"")}</h3><p class="mb-0 small" style="color:var(--bmuted)">${esc(c[2]||"")}</p></div></div>`}).join("")}</div>`},
+  al_garantias:{label:"Alarmas · garantías",ico:"",cat:"Alarmas",styleDef:{bg:"tint"},
+    def:()=>({title:"Nuestras garantías",items:"🛡️|Garantía antirrobo|Cubrimos los daños en caso de intrusión.\n🏠|Garantía anti-ocupación|Protección frente a okupación.\n🤝|Compromiso cliente|Atención personal y sin letra pequeña."}),
+    fields:[{k:"title",l:"Título"},{k:"items",l:"Cards: icono|título|texto",t:"ta"}],
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><div class="sec-title-line"></div></div>
+      <div class="row g-4">${lines(p.items).map(l=>{const c=cells(l);return `<div class="col-md-4"><div class="brandcard h-100 p-4 d-flex gap-3 align-items-start"><div class="ficon" style="width:48px;height:48px;font-size:22px;flex:0 0 auto">${esc(c[0]||"")}</div><div><h3 class="h6 fw-bold h-font mb-1" style="color:var(--bink)">${esc(c[1]||"")}</h3><p class="mb-0 small" style="color:var(--bmuted)">${esc(c[2]||"")}</p></div></div></div>`}).join("")}</div>`},
+  al_footer:{label:"Alarmas · footer",ico:"",cat:"Alarmas",raw:true,
+    def:()=>({company:"Marca",cols:"Seguridad:Alarma hogar,Alarma negocio|Ayuda:Contacto,Área cliente|Legal:Aviso legal,Privacidad,Cookies"}),
+    fields:[{k:"company",l:"Razón social"},{k:"cols",l:"Columnas: Título:enlace,enlace|…",t:"ta"}],
+    render:p=>`<footer style="background:var(--bink);color:rgba(255,255,255,.72)"><div class="container py-5"><div class="row g-4">${lines(p.cols).map(col=>{const pr=col.split(":");const it=(pr[1]||"").split(",");return `<div class="col-6 col-md-4"><div class="fw-bold mb-2" style="color:#fff">${esc(pr[0]||"")}</div>${it.map(x=>`<div class="mb-1"><a href="#" style="color:rgba(255,255,255,.72);text-decoration:none;font-size:14px">${esc(x.trim())}</a></div>`).join("")}</div>`}).join("")}</div><div class="pt-4 mt-4 small" style="border-top:1px solid rgba(255,255,255,.14)">© ${new Date().getFullYear()} ${esc(p.company)}</div></div></footer>`},
+  imported:{label:"Sección importada",ico:"⇱",cat:"Importado",raw:true,
+    def:()=>({html:"<section style='padding:48px;text-align:center'>Sección importada — pega HTML</section>"}),
+    fields:[{k:"html",l:"HTML de la sección (editable)",t:"ta"}],
+    render:p=>p.html||""}
 };
-const ORDER=["topbar","navbar","hero_split","hero_center","hero_form","hero_video","logos","marquee","stats","testimonials","trust","security","counters","logowall","features","imagetext","steps","gallery","pricing","comparison","countdown","faq","video","richtext","form","cal","calc","quiz","ctaband","stickycall","footer","apple_nav","apple_hero","apple_bento","apple_showcase","apple_footer","mov_nav","mov_hero","mov_tarifas","mov_footer","tmo_nav","tmo_hero","tmo_plans","tmo_footer","o2_nav","o2_hero","o2_tiles","o2_footer","mt_nav","mt_hero","mt_kpi","mt_footer","at_nav","at_hero","at_features","at_footer"];
+const ORDER=["topbar","navbar","hero_split","hero_center","hero_form","hero_video","logos","marquee","stats","testimonials","trust","security","counters","logowall","features","imagetext","steps","gallery","pricing","comparison","countdown","faq","video","richtext","form","cal","calc","quiz","ctaband","stickycall","footer","apple_nav","apple_hero","apple_bento","apple_showcase","apple_footer","mov_nav","mov_hero","mov_tarifas","mov_footer","tmo_nav","tmo_hero","tmo_plans","tmo_footer","o2_nav","o2_hero","o2_tiles","o2_footer","mt_nav","mt_hero","mt_kpi","mt_footer","at_nav","at_hero","at_features","at_footer","jz_nav","jz_hero","jz_ventajas","jz_tarifas","jz_cobertura","jz_footer","imported"];
 
 /* ---------- PLANTILLAS ---------- */
 const TEMPLATES={
-  "Conversión (CRO)":["topbar","navbar","hero_form","trust","features","counters","security","testimonials","form","faq","stickycall","footer"],
-  "Confianza (seguridad)":["navbar","hero_split","logowall","security","counters","steps","testimonials","form","faq","footer"],
+  "Landing completa":["topbar","navbar","hero_split","logos","trust","features","imagetext","counters","steps","pricing","testimonials","security","gallery","faq","form","ctaband","stickycall","footer"],
+  "Conversión (CRO)":["topbar","navbar","hero_form","logos","trust","features","imagetext","counters","security","testimonials","pricing","form","faq","ctaband","stickycall","footer"],
+  "Confianza (seguridad)":["navbar","hero_split","logowall","security","counters","features","steps","testimonials","imagetext","form","faq","footer"],
   "Apple (literal)":["apple_nav","apple_hero","apple_bento","apple_showcase","apple_footer"],
   "Movistar (literal)":["mov_nav","mov_hero","mov_tarifas","stats","faq","mov_footer"],
   "T-Mobile (literal)":["tmo_nav","tmo_hero","tmo_plans","trust","faq","tmo_footer"],
   "O2 (literal)":["o2_nav","o2_hero","o2_tiles","stats","faq","o2_footer"],
   "MyTraffic (literal)":["mt_nav","mt_hero","mt_kpi","form","mt_footer"],
   "AB Tasty (literal)":["at_nav","at_hero","at_features","form","at_footer"],
+  "Cliente · Jazztel":["jz_nav","jz_hero","jz_ventajas","jz_tarifas","jz_cobertura","faq","jz_footer"],
+  "Cliente · MásMóvil":[{type:"tel_nav",props:{logo:"MÁSMÓVIL",cta:"Llámanos 91 922 96 00"}},{type:"tel_hero",props:{eyebrow:"Fibra y móvil",headline:"Fibra 500Mb + 2 Líneas Móviles con 50GB",sub:"El mejor precio en fibra y móvil, sin permanencia.",price:"34,90",cta:"Solicitar información"}},{type:"tel_ventajas",props:{title:"Sobran motivos para confiar en MásMóvil",items:"⚡|Rapidez|Fibra de alta velocidad para toda la casa.\n🎁|Instalación gratis|Sin coste de alta ni de router.\n📶|Cobertura 5G|Datos a máxima velocidad estés donde estés."}},{type:"tel_tarifas",props:{title:"Otras tarifas destacadas",plans:[{name:"Fibra + Móvil",price:"14,90",feat:"Oferta de entrada",cta:"Solicitar información"},{name:"Fibra 500Mb + 2 Móviles",price:"34,90",feat:"2 líneas · 50GB",cta:"Solicitar información"},{name:"Fibra 1Gb + Móvil",price:"39,90",feat:"Máxima velocidad",cta:"Ver más tarifas"}]}},{type:"tel_cobertura",props:{title:"Elige cómo comprobar tu cobertura de fibra"}},"faq",{type:"tel_footer",props:{company:"MásMóvil"}}],
+  "Cliente · Simyo":[{type:"tel_nav",props:{logo:"simyo",cta:"Contactar"}},{type:"tel_hero",props:{eyebrow:"Oferta Especial simyo",headline:"Fibra + Móvil y Smartphone ¿Qué más quieres?",sub:"Configura tu tarifa a tu medida, sin líos.",price:"",priceNote:"",cta:"Quiero esta tarifa"}},{type:"tel_ventajas",props:{title:"Con simyo, más opciones y menos líos",items:"📺|TV incluida|Series, cine, infantil, deporte y más.\n🛠️|Tú la configuras|Crea tu propia tarifa de fibra y móvil.\n📶|Cobertura|Comprueba tu fibra en segundos."}},{type:"tel_tarifas",props:{title:"Tarifas destacadas",plans:[{name:"Fibra + Móvil",price:"—",feat:"Configúrala a tu medida",cta:"Quiero esta tarifa"},{name:"Fibra + Móvil + TV",price:"—",feat:"Con contenidos incluidos",cta:"Quiero esta tarifa"},{name:"Solo Móvil",price:"—",feat:"Sin permanencia",cta:"Solicitar información"}]}},{type:"tel_cobertura",props:{title:"Compruébalo",sub:"Introduce tu dirección y comprobamos tu cobertura de fibra."}},"faq",{type:"tel_footer",props:{company:"simyo"}}],
+  "Cliente · Yoigo":[{type:"tel_nav",props:{logo:"Yoigo",cta:"Contactar"}},{type:"tel_hero",props:{eyebrow:"Fibra 1 Gb",headline:"La fibra óptica más rápida de Yoigo",sub:"Con 1 Gb, vuela. La fibra más rápida al mejor precio.",price:"29,90",cta:"Quiero esta tarifa"}},{type:"tel_ventajas",props:{title:"Motivos para elegir Yoigo",items:"⚡|La más rápida|Fibra de 1 Gb simétrica.\n🎁|Router sin coste|Te lo enviamos gratis.\n📶|Fibra o ADSL|Cobertura donde la necesites."}},{type:"tel_tarifas",props:{title:"Tarifas destacadas",plans:[{name:"Fibra + Móvil",price:"29,90",feat:"1 línea",cta:"La quiero"},{name:"Fibra 1Gb + 2 Móviles",price:"39,90",feat:"Máxima velocidad",cta:"Esta me encaja"},{name:"Línea extra",price:"1,75",feat:"Añade líneas",cta:"Solicitar información"}]}},{type:"tel_cobertura",props:{title:"Consultar cobertura",sub:"Comprueba si tienes fibra o ADSL de Yoigo."}},"faq",{type:"tel_footer",props:{company:"Yoigo"}}],
+  "Cliente · Vodafone":[{type:"tel_nav",props:{logo:"Vodafone",cta:"Llama Gratis"}},{type:"tel_hero",props:{eyebrow:"Fibra, Móvil y TV",headline:"Fibra 600MB, 2 líneas móviles ilimitadas y TV",sub:"Con todo el entretenimiento incluido. ¡Te llamamos gratis!",price:"",priceNote:"",cta:"¡Te llamamos Gratis!"}},{type:"tel_ventajas",props:{title:"Detalles que marcan la diferencia",items:"📺|Entretenimiento incluido|Los mejores contenidos hasta 2027.\n📶|Cobertura Vodafone|Comprueba tu cobertura en casa.\n📱|Líneas ilimitadas|Datos ilimitados a máxima velocidad."}},{type:"tel_tarifas",props:{title:"Otras tarifas destacadas",plans:[{name:"Fibra + Móvil",price:"—",feat:"2 líneas ilimitadas",cta:"Llamadme"},{name:"Fibra + Móvil + TV",price:"—",feat:"Entretenimiento incluido",cta:"Llamadme"},{name:"Solo Fibra",price:"—",feat:"Alta velocidad",cta:"Solicitar información"}]}},{type:"tel_cobertura",props:{title:"Comprueba si tienes cobertura Vodafone en tu casa"}},"faq",{type:"tel_footer",props:{company:"Vodafone"}}],
+  "Cliente · Lowi":[{type:"tel_nav",props:{logo:"Lowi",cta:"Llámanos"}},{type:"tel_hero",props:{eyebrow:"Fibra y móvil",headline:"Fibra y móvil de Lowi al mejor precio",sub:"Sencillo, sin permanencia y con la red de Vodafone.",price:"",priceNote:"",cta:"Lo quiero"}},{type:"tel_ventajas",props:{title:"Por qué Lowi",items:"💶|Precio simple|Sin sorpresas ni permanencia.\n📶|Red Vodafone|Cobertura de primer nivel.\n🛠️|A tu medida|Configura tu fibra y móvil."}},{type:"tel_tarifas",props:{title:"Tarifas destacadas",plans:[{name:"Fibra + Móvil",price:"—",feat:"Sin permanencia",cta:"Lo quiero"},{name:"Fibra + 2 Móviles",price:"—",feat:"Para toda la familia",cta:"Lo quiero"},{name:"Solo Móvil",price:"—",feat:"Datos a tu gusto",cta:"Solicitar información"}]}},{type:"tel_cobertura",props:{title:"Comprueba tu cobertura"}},"faq",{type:"tel_footer",props:{company:"Lowi"}}],
+  "Cliente · MásAhorro":[{type:"tel_nav",props:{logo:"MásAhorro",cta:"Llámanos"}},{type:"tel_hero",props:{eyebrow:"Fibra y móvil",headline:"Más Fibra, Más Móvil, Más Ahorro",sub:"Fibra 500Mb y 2 líneas con 50GB al mejor precio.",price:"",priceNote:"",cta:"¡Lo quiero!"}},{type:"tel_ventajas",props:{title:"Por qué MásAhorro",items:"💶|Máximo ahorro|El mejor precio en fibra y móvil.\n📶|Cobertura|Comprueba la velocidad en tu hogar.\n📱|Fibra + Móvil + TV|Todo lo que necesitas junto."}},{type:"tel_tarifas",props:{title:"Tarifas destacadas",plans:[{name:"Fibra + Móvil",price:"—",feat:"500Mb · 50GB",cta:"¡Lo quiero!"},{name:"Fibra + 2 Móviles",price:"—",feat:"Para la familia",cta:"¡Lo quiero!"},{name:"Solo Fibra",price:"—",feat:"Alta velocidad",cta:"Solicitar información"}]}},{type:"tel_cobertura",props:{title:"Comprueba tu cobertura"}},"faq",{type:"tel_footer",props:{company:"MásAhorro"}}],
+  "Cliente · Prosegur":[{type:"al_nav",props:{logo:"Prosegur",cta:"Llamar gratis",wa:"WhatsApp"}},{type:"al_hero",props:{gift:"Cámara 360º gratis",headline:"Contrata ahora y llévate una SuperCámara Inteligente sin coste para siempre",sub:"Alarma conectada con Central Receptora y aviso a las autoridades.",cta:"¡La quiero!"}},{type:"al_porque",props:{title:"¿Por qué elegir nuestra SuperSeguridad?",items:"🛰️|Vigilancia 24/7|Central receptora conectada con la policía.\n📷|Equipamiento de última generación|SuperCámara y detección inteligente.\n📱|Control desde el móvil|Gestiona tu alarma esté donde estés."}},{type:"al_garantias",props:{title:"Nuestras garantías",items:"🛡️|Garantía antirrobo|Te cubrimos ante una intrusión.\n🏠|Garantía anti-ocupación|Protección frente a okupación.\n🤝|Compromiso cliente|El cliente en el centro, sin letra pequeña."}},"faq",{type:"al_footer",props:{company:"Prosegur"}}],
   "Captación · llamada":["navbar","hero_split","logos","features","steps","stats","form","faq","ctaband","stickycall","footer"],
   "Captación · formulario arriba":["topbar","navbar","hero_form","hero_video","logos","features","testimonials","imagetext","faq","footer"],
   "Oferta / urgencia":["topbar","navbar","hero_center","pricing","stats","testimonials","form","faq","stickycall","footer"]
@@ -999,10 +1152,12 @@ function renderSection(s){
   if(lib.raw) return inner;
   return secOpen(styleOf(s))+inner+secClose();
 }
+function importedPreviewHtml(html){try{const r=ncParse(html);r.querySelectorAll('[data-nctext]').forEach(el=>{el.setAttribute('contenteditable','true');el.setAttribute('data-nce','1');});r.querySelectorAll('[data-ncimg]').forEach(el=>el.setAttribute('data-nce-img','1'));return r.innerHTML;}catch(e){return html;}}
 function sectionsHTML(forExport){return state.sections.map(s=>{
   const sel=(!forExport&&s.id===state.selected);
   const tb=sel?`<div class="nc-tb"><button data-act="up" data-actid="${s.id}" title="Subir">↑</button><button data-act="down" data-actid="${s.id}" title="Bajar">↓</button><button data-act="dup" data-actid="${s.id}" title="Duplicar">⧉</button><button data-act="del" data-actid="${s.id}" title="Eliminar">🗑</button></div>`:"";
-  return `<div data-sec="${s.id}" ${forExport?'':'draggable="true"'} class="${sel?'sel':''}">${tb}${renderSection(s)}</div>`;
+  const inner=(!forExport&&s.type==="imported")?importedPreviewHtml(s.props.html):renderSection(s);
+  return `<div data-sec="${s.id}" ${forExport?'':'draggable="true"'} class="${sel?'sel':''}">${tb}${inner}</div>`;
 }).join("\n");}
 
 function collectFonts(b){
@@ -1045,14 +1200,22 @@ function buildDoc(forExport){
     .nc-tb{position:absolute;top:8px;right:8px;z-index:30;display:flex;gap:4px;background:#111826;border:1px solid #2a3345;border-radius:8px;padding:3px}
     .nc-tb button{background:transparent;border:0;color:#dfe6f0;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:5px}
     .nc-tb button:hover{background:#232d40}
+    [data-nce="1"]{outline:1px dashed transparent;transition:outline .12s;border-radius:3px}
+    [data-nce="1"]:hover{outline:1px dashed color-mix(in srgb,var(--bp) 60%,#8888ff);cursor:text}
+    [data-nce="1"]:focus{outline:2px solid var(--bp);background:color-mix(in srgb,var(--bp) 6%,transparent)}
+    [data-nce-img="1"]:hover{outline:2px solid var(--bp);outline-offset:2px;cursor:pointer}
   </style><script>
     document.body.addEventListener('click',function(e){
       var a=e.target.closest('[data-act]');
       if(a){e.preventDefault();e.stopPropagation();parent.postMessage({nc:'act',act:a.getAttribute('data-act'),id:a.getAttribute('data-actid')},'*');return;}
+      var im=e.target.closest('[data-nce-img="1"]');
+      if(im){e.preventDefault();e.stopPropagation();var si=im.closest('[data-sec]');parent.postMessage({nc:'editimg',id:si.getAttribute('data-sec'),k:im.getAttribute('data-ncimg')},'*');return;}
+      if(e.target.closest('[contenteditable="true"]'))return;
       if(e.target.closest('[data-live]'))return;
       var lk=e.target.closest('a,button');if(lk)e.preventDefault();
       var s=e.target.closest('[data-sec]');if(s)parent.postMessage({nc:'sel',id:s.getAttribute('data-sec')},'*');
     },true);
+    document.body.addEventListener('input',function(e){var t=e.target.closest&&e.target.closest('[data-nce="1"]');if(t){var s=t.closest('[data-sec]');if(s)parent.postMessage({nc:'edit',id:s.getAttribute('data-sec'),k:t.getAttribute('data-nctext'),val:t.textContent},'*');}});
     document.body.addEventListener('submit',function(e){e.preventDefault();},true);
     (function(){var dragId=null,ind=null;
       function clearInd(){if(ind&&ind.parentNode)ind.parentNode.removeChild(ind);ind=null;}
@@ -1085,7 +1248,7 @@ function buildDoc(forExport){
 <link rel="canonical" href="{{URL_CANONICA}}">
 <meta property="og:title" content="${esc(ph(state.settings.title,"TITULO_SEO"))}"><meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="${collectFonts(b)}" rel="stylesheet"><link href="${bsCSS}" rel="stylesheet">
+<link href="${collectFonts(b)}" rel="stylesheet"><link href="${bsCSS}" rel="stylesheet">${st.importCSS||""}
 <style>:root{${b.vars}--fhead:${b.fhead};--fbody:${b.fbody}}${baseCSS()}${b.profileCSS||''}${STYLEKITS[st.styleKit]||''}</style>
 ${gtmHead}</head><body class="cta-${st.ctaStyle||'brand'}${st.motion?' nc-motion':''}" data-ctaaction="${st.ctaAction||'scroll'}" data-thanks="${st.thanks?'1':''}" data-thankstext="${esc(st.thanksText||'')}" data-tel="${esc(ph(st.tel,'TELEFONO').replace(/\s/g,''))}" data-wa="${esc(ph(st.wa,'WHATSAPP').replace(/[^0-9]/g,''))}">
 ${gtmBody}
@@ -1199,6 +1362,7 @@ function renderRight(){
   const s=state.sections.find(x=>x.id===state.selected);
   const cf=document.getElementById("contentFields");
   if(!s){cf.innerHTML=`<div class="empty">Selecciona una sección (en el preview o en Estructura) para editar su contenido.</div>`;}
+  else if(s.type==="imported"){renderImportedFields(cf,s);}
   else{cf.innerHTML=`<div class="paneltitle" style="padding:0 0 8px">${LIB[s.type].label}</div>`+LIB[s.type].fields.map(f=>`<div class="fld"><label>${f.l}</label>${fieldHTML(f,s.props)}</div>`).join("");
     bindContentFields(cf,s.props,()=>patchSection(s.id),LIB[s.type].fields);}
   const sf=document.getElementById("styleFields");
@@ -1344,14 +1508,140 @@ function exportZip(){
 function exportHTML(){const html=buildDoc(true);const kb=Math.round(html.length/1024);
   const blob=new Blob([html],{type:"text/html;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(state.settings.slug||"landing")+".html";document.body.appendChild(a);a.click();a.remove();
   toast("HTML exportado ✓ ("+kb+" KB)");}
-const TEMPLATE_BRAND={"Apple (literal)":"apple","Movistar (literal)":"movistar","T-Mobile (literal)":"tmobile","O2 (literal)":"o2","MyTraffic (literal)":"mytraffic","AB Tasty (literal)":"abtasty"};
+const TEMPLATE_BRAND={"Apple (literal)":"apple","Movistar (literal)":"movistar","T-Mobile (literal)":"tmobile","O2 (literal)":"o2","MyTraffic (literal)":"mytraffic","AB Tasty (literal)":"abtasty","Cliente · Jazztel":"c_jazztel","Cliente · MásMóvil":"c_masmovil","Cliente · Simyo":"c_simyo","Cliente · Yoigo":"c_yoigo","Cliente · Vodafone":"c_vodafone","Cliente · Lowi":"c_lowi","Cliente · MásAhorro":"c_masahorro","Cliente · Prosegur":"c_prosegur"};
+/* ---------- LOREM IPSUM ---------- */
+const LOREM_W="lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo consequat duis aute irure voluptate velit esse cillum eu fugiat nulla pariatur excepteur sint occaecat cupidatat".split(" ");
+function lipW(n){let o=[];for(let i=0;i<n;i++)o.push(LOREM_W[Math.floor(Math.random()*LOREM_W.length)]);return o.join(" ");}
+function lipTitle(a,b){const n=a+Math.floor(Math.random()*(b-a+1));const s=lipW(n);return s.charAt(0).toUpperCase()+s.slice(1);}
+function lipS(a,b){return lipTitle(a,b)+".";}
+const LOREM_SKIP=new Set(["links","cols","legal","slots","logos","options","href","url","name","num","suf","pct","end","video","image","logoimg","bgimg","popupImg","focus","pos","overlay","pad","align","width","bg","divider","theme","icon","company","logo","price","priceNote","unit"]);
+function isEmojiCell(c){return c.length<=3&&/[^\x00-\x7F]/.test(c);}
+function loremLine(l){
+  if(l.indexOf("|")>-1){return l.split("|").map(c=>{c=c.trim();if(!c)return c;if(isEmojiCell(c))return c;if(/\d/.test(c))return c;return lipTitle(2,4);}).join(" | ");}
+  if(!l.trim())return l;
+  const n=l.split(/\s+/).length;
+  return n<=4?lipTitle(2,4):lipS(6,12);
+}
+function loremVal(v){if(!v||typeof v!=="string")return v;return v.indexOf("\n")>-1?v.split("\n").map(loremLine).join("\n"):loremLine(v);}
+function fillLorem(){
+  if(state.sections.length&&!confirm("¿Rellenar TODOS los textos con Lorem ipsum? (respeta emojis, precios e imágenes)"))return;
+  commit();
+  state.sections.forEach(s=>{(LIB[s.type].fields||[]).forEach(f=>{
+    if(LOREM_SKIP.has(f.k)||f.t==="image"||f.t==="images"||f.t==="select"||f.t==="elements")return;
+    if(f.t==="repeater"){arr(s.props[f.k]).forEach(it=>{(f.item||[]).forEach(sf=>{if(LOREM_SKIP.has(sf.k)||sf.t==="image"||sf.t==="select")return;if(typeof it[sf.k]==="string"&&it[sf.k])it[sf.k]=loremVal(it[sf.k]);});});return;}
+    if(typeof s.props[f.k]==="string"&&s.props[f.k])s.props[f.k]=loremVal(s.props[f.k]);
+  });});
+  state.selected=null;renderPreview();renderRight();toast("Textos en Lorem ipsum ✓");
+}
+/* ---------- IMPORTAR HTML DE CLIENTE ---------- */
+function annotateImported(htmlStr){
+  try{const d=new DOMParser().parseFromString('<div id="R">'+htmlStr+'</div>','text/html');const root=d.getElementById("R");
+    let ii=0,ti=0;
+    root.querySelectorAll('img').forEach(img=>img.setAttribute('data-ncimg',ii++));
+    root.querySelectorAll('*').forEach(el=>{if(['SCRIPT','STYLE','IMG','BR','HR','INPUT','SVG','PATH'].includes(el.tagName))return;if(el.children.length===0){const t=el.textContent.replace(/\s+/g,' ').trim();if(t)el.setAttribute('data-nctext',ti++);}});
+    return root.innerHTML;
+  }catch(e){return htmlStr;}
+}
+function ncParse(html){const d=new DOMParser().parseFromString('<div id="R">'+html+'</div>','text/html');return d.getElementById("R");}
+function updImportedText(s,k,val){const r=ncParse(s.props.html);const el=r.querySelector('[data-nctext="'+k+'"]');if(el){el.textContent=val;s.props.html=r.innerHTML;}}
+function updImportedImg(s,k,url){const r=ncParse(s.props.html);const el=r.querySelector('[data-ncimg="'+k+'"]');if(el){el.setAttribute('src',url);el.removeAttribute('srcset');s.props.html=r.innerHTML;}}
+function renderImportedFields(cf,s){
+  const r=ncParse(s.props.html);
+  let h=`<div class="paneltitle" style="padding:0 0 8px">Sección importada (editable)</div>`;
+  const imgs=r.querySelectorAll('[data-ncimg]'),txts=r.querySelectorAll('[data-nctext]');
+  if(!imgs.length&&!txts.length)h+=`<div class="help">Sin campos detectados. Edita el HTML crudo abajo.</div>`;
+  imgs.forEach(img=>{const k=img.getAttribute('data-ncimg');const src=img.getAttribute('src')||'';h+=`<div class="fld"><label>Imagen ${+k+1}</label><div class="up"><input type="file" accept="image/*" data-ncfile="${k}" style="display:none"><div class="thumbrow">${src?`<img class="thumb" src="${esc(src)}">`:''}<button type="button" class="btn sm" data-ncup="${k}">${src?'Cambiar':'Subir'}</button></div></div></div>`;});
+  txts.forEach(el=>{const k=el.getAttribute('data-nctext');const t=el.textContent.replace(/\s+/g,' ').trim();h+=t.length>55?`<div class="fld"><label>Texto ${+k+1}</label><textarea data-nctxt="${k}">${esc(t)}</textarea></div>`:`<div class="fld"><input data-nctxt="${k}" value="${esc(t)}" placeholder="Texto ${+k+1}"></div>`;});
+  h+=`<details style="margin-top:10px"><summary style="cursor:pointer;color:var(--muted2);font-size:11.5px">HTML crudo</summary><textarea data-ncraw style="min-height:120px;font-family:monospace;font-size:10.5px;margin-top:6px">${esc(s.props.html)}</textarea></details>`;
+  cf.innerHTML=h;
+  cf.querySelectorAll('[data-nctxt]').forEach(inp=>inp.addEventListener('input',()=>{commitDebounced();updImportedText(s,inp.dataset.nctxt,inp.value);patchSection(s.id);}));
+  cf.querySelectorAll('[data-ncup]').forEach(b=>b.addEventListener('click',()=>cf.querySelector('[data-ncfile="'+b.dataset.ncup+'"]').click()));
+  cf.querySelectorAll('[data-ncfile]').forEach(inp=>inp.addEventListener('change',e=>readImg(e.target.files[0],url=>{commit();updImportedImg(s,inp.dataset.ncfile,url);renderRight();renderPreview();})));
+  const raw=cf.querySelector('[data-ncraw]');if(raw)raw.addEventListener('input',()=>{commitDebounced();s.props.html=raw.value;patchSection(s.id);});
+}
+function _txt(el){return el?(el.textContent||'').replace(/\s+/g,' ').trim():'';}
+function _img(el){const i=el.querySelector('img');return i?(i.getAttribute('src')||''):'';}
+function translateSection(el){
+  const tag=el.tagName;const t=_txt(el);
+  const heads=[...el.querySelectorAll('h1,h2,h3')].map(_txt).filter(Boolean);
+  const btns=[...el.querySelectorAll('a,button')].map(_txt).filter(x=>x&&x.length<30);
+  const prices=(t.match(/\d{1,3}[.,]\d{2}\s?€/g)||[]);
+  const pcta=b=>b||'Solicitar información';
+  const form=el.querySelector('form');
+  if(form){const fields=[...form.querySelectorAll('input,select,textarea')].filter(i=>!['hidden','checkbox','submit','button'].includes((i.getAttribute('type')||'').toLowerCase())).map(i=>({label:i.getAttribute('placeholder')||i.getAttribute('name')||'Campo',name:i.getAttribute('name')||'campo',type:i.tagName==='TEXTAREA'?'textarea':(i.getAttribute('type')==='tel'?'tel':(i.getAttribute('type')==='email'?'email':'text')),required:i.hasAttribute('required')?'si':'no',options:''}));
+    return {type:'form',props:{title:heads[0]||'Te llamamos gratis',subtitle:'',cta:btns.find(b=>/llam|solicit|quiero|enviar|pide/i.test(b))||'Enviar',consent:'Acepto la política de privacidad.',fields:fields.length?fields:undefined}};}
+  const details=el.querySelectorAll('details,.accordion-item,[class*=accordion]');const qs=heads.filter(h=>/\?/.test(h));
+  if(details.length>=2||qs.length>=2){let items;
+    if(details.length>=2){items=[...details].map(d=>{const q=_txt(d.querySelector('summary,h2,h3,button,.accordion-button,.accordion-header'))||'Pregunta';let a=_txt(d);if(q&&a.startsWith(q))a=a.slice(q.length).trim();return q+'|'+(a||'Respuesta.');});}
+    else{items=qs.map(q=>q+'|Respuesta.');}
+    return {type:'faq',props:{title:heads.find(h=>/frecuent|faq|dudas|preguntas/i.test(h))||'Preguntas frecuentes',items:items.slice(0,8).join('\n')}};}
+  if(prices.length>=2){const plans=prices.slice(0,4).map((pr,i)=>({name:heads[i+1]||heads[i]||('Tarifa '+(i+1)),price:pr.replace(/\s?€/,''),feat:'',cta:pcta(btns[i])}));
+    return {type:'tel_tarifas',props:{title:heads[0]||'Tarifas destacadas',plans}};}
+  if(tag==='NAV'||tag==='HEADER'||(el.querySelector('nav')&&t.length<220)){const links=[...el.querySelectorAll('a')].map(_txt).filter(x=>x&&x.length<20&&!/\d{6,}/.test(x)).slice(0,5);const cta=btns.find(b=>/llam|contact|express/i.test(b))||'Llámanos';
+    return {type:'tel_nav',props:{logo:heads[0]||'Marca',links:links.join('|')||'Inicio|Tarifas|Ayuda',cta}};}
+  if(tag==='FOOTER'){return {type:'tel_footer',props:{company:heads[0]||'Marca',cols:'Enlaces:Aviso legal,Privacidad,Cookies'}};}
+  if(heads.length&&btns.length){const eb=[...el.querySelectorAll('[class*=badge],[class*=oferta],[class*=eyebrow],small')].map(_txt).find(x=>x&&x.length<40)||'';
+    return {type:'hero_split',props:{eyebrow:eb,headline:heads[0],sub:(el.querySelector('p')?_txt(el.querySelector('p')).slice(0,140):''),cta:btns.find(b=>/quiero|solicit|llam|contrat|pide/i.test(b))||btns[0],cta2:'Llamar',image:_img(el)}};}
+  if(heads.length>=3){const items=heads.slice(0,6).map(h=>'✅|'+h+'|');return {type:'features',props:{title:'Ventajas',subtitle:'',items:items.join('\n')}};}
+  if(t.length>15)return {type:'richtext',props:{title:heads[0]||'',body:t.slice(0,500)}};
+  return null;
+}
+function getImportSections(){
+  const txt=(document.getElementById("importText").value||"").trim();
+  if(!txt){toast("Pega el HTML primero");return null;}
+  let doc;try{doc=new DOMParser().parseFromString(txt,"text/html");}catch(e){toast("HTML no válido");return null;}
+  try{
+    doc.querySelectorAll('[class*="cookie" i],[id*="cookie" i],.acepta_cookies,.rechaza_cookies,.guarda_cookies').forEach(el=>{const m=el.closest('.modal,[class*="modal" i],[role="dialog"]');(m||el).remove();});
+    doc.querySelectorAll('.modal-backdrop,.modal.show,.modal.in,.offcanvas.show,[class*="consent" i],[id*="consent" i],[class*="cmp" i],[id*="cmp" i],[class*="gdpr" i],[id*="gdpr" i]').forEach(el=>el.remove());
+    [...doc.querySelectorAll('div,section,aside')].forEach(el=>{const tt=el.textContent||"";if(/cookies/i.test(tt)&&/(aceptar|rechazar|configurar)/i.test(tt)&&el.querySelector('a,button')&&tt.length<1500){el.remove();}});
+  }catch(e){}
+  let container=doc.body;const blockKids=[...doc.body.children].filter(e=>["SECTION","DIV","HEADER","FOOTER","MAIN","NAV","ARTICLE"].includes(e.tagName));
+  if(blockKids.length<=2){const main=doc.querySelector("main")||blockKids.sort((a,b)=>b.innerHTML.length-a.innerHTML.length)[0];if(main)container=main;}
+  return {doc,els:[...container.children].filter(el=>!["SCRIPT","NOSCRIPT","STYLE","LINK","TEMPLATE"].includes(el.tagName)&&(_txt(el).length>15||(el.querySelector&&el.querySelector('img'))))};
+}
+function doTranslate(){
+  const r=getImportSections();if(!r)return;
+  const blocks=r.els.map(translateSection).filter(Boolean);
+  if(!blocks.length){toast("No pude traducir");return;}
+  commit();state.settings.importCSS="";
+  state.sections=blocks.map(b=>({id:nid(),type:b.type,props:Object.assign(LIB[b.type].def(),b.props),style:{}}));
+  state.selected=null;document.getElementById("importOverlay").style.display="none";
+  renderPalette();renderPreview();renderRight();toast("Traducido a "+blocks.length+" bloques nativos");
+}
+function doImport(){
+  const txt=(document.getElementById("importText").value||"").trim();
+  if(!txt){toast("Pega el HTML primero");return;}
+  let doc;try{doc=new DOMParser().parseFromString(txt,"text/html");}catch(e){toast("HTML no válido");return;}
+  // quitar overlays de cookies/consentimiento y modales abiertos (dependen de JS que no se importa)
+  try{
+    doc.querySelectorAll('[class*="cookie" i],[id*="cookie" i],.acepta_cookies,.rechaza_cookies,.guarda_cookies').forEach(el=>{const m=el.closest('.modal,[class*="modal" i],[role="dialog"]');(m||el).remove();});
+    doc.querySelectorAll('.modal-backdrop,.modal.show,.modal.in,.offcanvas.show,[class*="consent" i],[id*="consent" i],[class*="cmp" i],[id*="cmp" i],[class*="gdpr" i],[id*="gdpr" i]').forEach(el=>el.remove());
+    [...doc.querySelectorAll('div,section,aside')].forEach(el=>{const t=el.textContent||"";if(/cookies/i.test(t)&&/(aceptar|rechazar|configurar)/i.test(t)&&el.querySelector('a,button')&&t.length<1500){el.remove();}});
+  }catch(e){}
+  // CSS real (links + styles)
+  let css="";doc.querySelectorAll('link[rel="stylesheet"],style').forEach(el=>{css+=el.outerHTML+"\n";});
+  // localizar contenedor con las secciones
+  let container=doc.body;
+  const blockKids=[...doc.body.children].filter(e=>["SECTION","DIV","HEADER","FOOTER","MAIN","NAV","ARTICLE"].includes(e.tagName));
+  if(blockKids.length<=2){const main=doc.querySelector("main")||blockKids.sort((a,b)=>b.innerHTML.length-a.innerHTML.length)[0];if(main)container=main;}
+  const secs=[...container.children].filter(el=>!["SCRIPT","NOSCRIPT","STYLE","LINK","TEMPLATE"].includes(el.tagName)).map(el=>el.outerHTML.trim()).filter(h=>h.length>25);
+  if(!secs.length){toast("No pude trocear secciones");return;}
+  commit();
+  state.settings.importCSS=css;
+  state.sections=secs.map(h=>({id:nid(),type:"imported",props:{html:annotateImported(h)},style:{}}));
+  state.selected=null;document.getElementById("importOverlay").style.display="none";
+  renderPalette();renderPreview();renderRight();toast("Importado: "+secs.length+" secciones");
+}
 function loadTemplate(name){const t=TEMPLATES[name];if(!t)return;if(state.sections.length&&!confirm("¿Reemplazar la landing actual por la plantilla “"+name+"”?"))return;
   commit();const bk=TEMPLATE_BRAND[name];if(bk&&BRANDS[bk]){state.settings.brand=bk;const bt=document.getElementById("brandTop");if(bt)bt.value=bk;}
-  state.sections=t.map(ty=>({id:nid(),type:ty,props:LIB[ty].def(),style:{}}));state.selected=null;renderPalette();renderPreview();renderRight();toast("Plantilla cargada");}
+  state.sections=t.map(ty=>{const type=(typeof ty==="string")?ty:ty.type;const props=Object.assign(LIB[type].def(),(typeof ty==="object"&&ty.props)||{});return {id:nid(),type,props,style:(typeof ty==="object"&&ty.style)||{}};});state.selected=null;renderPalette();renderPreview();renderRight();toast("Plantilla cargada");}
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2100);}
 
 /* ---------- LISTENERS ---------- */
-window.addEventListener("message",e=>{if(!e.data)return;if(e.data.nc==="sel")select(e.data.id);if(e.data.nc==="act")rowAction(e.data.id,e.data.act);if(e.data.nc==="reorder")canvasReorder(e.data);});
+window.addEventListener("message",e=>{if(!e.data)return;if(e.data.nc==="sel")select(e.data.id);if(e.data.nc==="act")rowAction(e.data.id,e.data.act);if(e.data.nc==="reorder")canvasReorder(e.data);
+  if(e.data.nc==="edit"){const s=state.sections.find(x=>x.id===e.data.id);if(s){commitDebounced();updImportedText(s,e.data.k,e.data.val);}}
+  if(e.data.nc==="editimg"){const s=state.sections.find(x=>x.id===e.data.id);if(!s)return;const inp=document.createElement("input");inp.type="file";inp.accept="image/*";inp.onchange=ev=>readImg(ev.target.files[0],url=>{commit();updImportedImg(s,e.data.k,url);renderPreview();});inp.click();}
+});
 function canvasReorder(d){const from=state.sections.findIndex(x=>x.id===d.dragId);if(from<0||d.dragId===d.refId)return;commit();const m=state.sections.splice(from,1)[0];let to=state.sections.findIndex(x=>x.id===d.refId);if(to<0){state.sections.splice(from,0,m);return;}if(!d.before)to=to+1;state.sections.splice(to,0,m);renderPreview();renderRight();renderPalette();toast("Sección movida");}
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 document.querySelectorAll('#devSeg button').forEach(b=>b.addEventListener('click',()=>setDevice(b.dataset.dev)));
@@ -1439,6 +1729,11 @@ document.getElementById("loginBtn").addEventListener('click',async()=>{
 });
 document.getElementById("btnSave").addEventListener('click',saveLanding);
 document.getElementById("btnMine").addEventListener('click',()=>{document.getElementById("mineOverlay").style.display='grid';listLandings();});
+document.getElementById("btnLorem").addEventListener('click',fillLorem);
+document.getElementById("btnImport").addEventListener('click',()=>{document.getElementById("importOverlay").style.display="grid";});
+document.getElementById("importClose").addEventListener('click',()=>{document.getElementById("importOverlay").style.display="none";});
+document.getElementById("importDo").addEventListener('click',doImport);
+document.getElementById("translateDo").addEventListener('click',doTranslate);
 document.getElementById("mineClose").addEventListener('click',()=>document.getElementById("mineOverlay").style.display='none');
 document.getElementById("mineNew").addEventListener('click',newLanding);
 checkAuth();
