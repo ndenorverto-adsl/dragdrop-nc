@@ -1002,7 +1002,7 @@ function renderSection(s){
 function sectionsHTML(forExport){return state.sections.map(s=>{
   const sel=(!forExport&&s.id===state.selected);
   const tb=sel?`<div class="nc-tb"><button data-act="up" data-actid="${s.id}" title="Subir">↑</button><button data-act="down" data-actid="${s.id}" title="Bajar">↓</button><button data-act="dup" data-actid="${s.id}" title="Duplicar">⧉</button><button data-act="del" data-actid="${s.id}" title="Eliminar">🗑</button></div>`:"";
-  return `<div data-sec="${s.id}" class="${sel?'sel':''}">${tb}${renderSection(s)}</div>`;
+  return `<div data-sec="${s.id}" ${forExport?'':'draggable="true"'} class="${sel?'sel':''}">${tb}${renderSection(s)}</div>`;
 }).join("\n");}
 
 function collectFonts(b){
@@ -1039,6 +1039,9 @@ function buildDoc(forExport){
     [data-sec]{position:relative}
     [data-sec]:hover{outline:1px dashed color-mix(in srgb,var(--bp) 55%,transparent);outline-offset:-1px;cursor:pointer}
     [data-sec].sel{outline:2px solid var(--bp);outline-offset:-2px}
+    [data-sec][draggable=true]:hover{cursor:grab}
+    [data-sec].nc-dragging{opacity:.4}
+    .nc-drop-ind{height:5px;border-radius:5px;background:var(--bp);box-shadow:0 0 10px color-mix(in srgb,var(--bp) 60%,transparent);margin:0}
     .nc-tb{position:absolute;top:8px;right:8px;z-index:30;display:flex;gap:4px;background:#111826;border:1px solid #2a3345;border-radius:8px;padding:3px}
     .nc-tb button{background:transparent;border:0;color:#dfe6f0;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:5px}
     .nc-tb button:hover{background:#232d40}
@@ -1051,6 +1054,15 @@ function buildDoc(forExport){
       var s=e.target.closest('[data-sec]');if(s)parent.postMessage({nc:'sel',id:s.getAttribute('data-sec')},'*');
     },true);
     document.body.addEventListener('submit',function(e){e.preventDefault();},true);
+    (function(){var dragId=null,ind=null;
+      function clearInd(){if(ind&&ind.parentNode)ind.parentNode.removeChild(ind);ind=null;}
+      document.querySelectorAll('[data-sec]').forEach(function(s){
+        s.addEventListener('dragstart',function(e){dragId=s.getAttribute('data-sec');s.classList.add('nc-dragging');try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragId);}catch(_){}});
+        s.addEventListener('dragend',function(){dragId=null;s.classList.remove('nc-dragging');clearInd();});
+        s.addEventListener('dragover',function(e){if(!dragId)return;e.preventDefault();if(s.getAttribute('data-sec')===dragId){clearInd();return;}var r=s.getBoundingClientRect();var before=e.clientY<r.top+r.height/2;clearInd();ind=document.createElement('div');ind.className='nc-drop-ind';if(before)s.parentNode.insertBefore(ind,s);else s.parentNode.insertBefore(ind,s.nextSibling);});
+        s.addEventListener('drop',function(e){if(!dragId)return;e.preventDefault();var refId=s.getAttribute('data-sec');if(refId===dragId){clearInd();return;}var r=s.getBoundingClientRect();var before=e.clientY<r.top+r.height/2;parent.postMessage({nc:'reorder',dragId:dragId,refId:refId,before:before},'*');dragId=null;clearInd();});
+      });
+    })();
   <\/script>`;
   const track=`<script>window.dataLayer=window.dataLayer||[];function nctrack(ev,ex){try{window.dataLayer.push(Object.assign({event:ev},ex||{}))}catch(e){}}
     document.querySelectorAll('[data-cta]').forEach(function(el){el.addEventListener('click',function(){nctrack('cta_click',{cta:el.getAttribute('data-cta')})})});
@@ -1339,7 +1351,8 @@ function loadTemplate(name){const t=TEMPLATES[name];if(!t)return;if(state.sectio
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2100);}
 
 /* ---------- LISTENERS ---------- */
-window.addEventListener("message",e=>{if(!e.data)return;if(e.data.nc==="sel")select(e.data.id);if(e.data.nc==="act")rowAction(e.data.id,e.data.act);});
+window.addEventListener("message",e=>{if(!e.data)return;if(e.data.nc==="sel")select(e.data.id);if(e.data.nc==="act")rowAction(e.data.id,e.data.act);if(e.data.nc==="reorder")canvasReorder(e.data);});
+function canvasReorder(d){const from=state.sections.findIndex(x=>x.id===d.dragId);if(from<0||d.dragId===d.refId)return;commit();const m=state.sections.splice(from,1)[0];let to=state.sections.findIndex(x=>x.id===d.refId);if(to<0){state.sections.splice(from,0,m);return;}if(!d.before)to=to+1;state.sections.splice(to,0,m);renderPreview();renderRight();renderPalette();toast("Sección movida");}
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 document.querySelectorAll('#devSeg button').forEach(b=>b.addEventListener('click',()=>setDevice(b.dataset.dev)));
 document.getElementById("btnExport").addEventListener('click',exportZip);
