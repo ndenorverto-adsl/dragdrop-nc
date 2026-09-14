@@ -397,8 +397,36 @@ const BRAND_GROUPS=[
 ];
 function brandOptions(sel){return BRAND_GROUPS.filter(g=>g[1].some(k=>BRANDS[k])).map(g=>`<optgroup label="${g[0]}">`+g[1].filter(k=>BRANDS[k]).map(k=>`<option value="${k}" ${k===sel?'selected':''}>${BRANDS[k].name}</option>`).join("")+`</optgroup>`).join("");}
 
+/* ===== Estilos visuales (ui-ux-pro-max) — capa que se combina con la marca ===== */
+const STYLEKITS={
+  none:"",
+  swiss:`.brandcard{box-shadow:none!important;border-radius:0!important;border:1px solid #e5e5e5;transform:none!important}.btn-brand,.btn-ghost{border-radius:0!important;box-shadow:none!important}.sec-title-line{display:none}.badge-soft{border-radius:0}`,
+  flat:`.brandcard{box-shadow:none!important;border-radius:4px;border:1px solid var(--line);transform:none!important}.brandcard:hover{transform:none!important}.btn-brand{border-radius:4px;box-shadow:none!important}`,
+  soft:`.brandcard{border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06),0 14px 34px rgba(0,0,0,.08)!important;border:1px solid rgba(0,0,0,.04)}`,
+  neumorphism:`section{background:#e8ebf0!important}.brandcard{background:#e8ebf0!important;border:none!important;border-radius:16px!important;box-shadow:-6px -6px 14px rgba(255,255,255,.9),6px 6px 14px rgba(0,0,0,.12)!important;transform:none!important}.btn-brand{border-radius:14px;box-shadow:-4px -4px 10px rgba(255,255,255,.85),4px 4px 10px rgba(0,0,0,.18);border:none}.form-control,.form-select{background:#e8ebf0;box-shadow:inset 3px 3px 7px rgba(0,0,0,.10),inset -3px -3px 7px rgba(255,255,255,.85);border:none}`,
+  glass:`section{--headcol:#0e1116}.brandcard{background:rgba(255,255,255,.16)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.30)!important;box-shadow:0 8px 32px rgba(0,0,0,.14)!important}.badge-soft{background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4)}`,
+  liquidglass:`section{--headcol:#0e1116}.brandcard{background:rgba(255,255,255,.14)!important;-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid rgba(255,255,255,.4)!important;border-radius:26px!important;box-shadow:0 12px 44px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.55)!important}.btn-brand{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 8px 24px color-mix(in srgb,var(--bp) 35%,transparent)}.badge-soft{background:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.5)}`,
+  claymorphism:`.brandcard{border-radius:24px!important;box-shadow:inset -3px -3px 8px rgba(0,0,0,.06),10px 10px 22px rgba(0,0,0,.10)!important;border:none}.btn-brand,.btn-ghost{border-radius:18px;box-shadow:inset -2px -2px 6px rgba(0,0,0,.18),5px 5px 14px rgba(0,0,0,.22)}.ficon{border-radius:22px;box-shadow:inset -2px -2px 6px rgba(0,0,0,.08),5px 5px 12px rgba(0,0,0,.10)}`,
+  brutalism:`*{transition:none!important}.brandcard{border-radius:0!important;border:3px solid #000!important;box-shadow:7px 7px 0 #000!important;transform:none!important}.brandcard.featured::before{border-radius:0}.btn-brand{border-radius:0!important;border:3px solid #000!important;box-shadow:5px 5px 0 #000;background:var(--ba);color:#000}.badge-soft{border-radius:0;border:2px solid #000;background:#fff;color:#000}.sec-title-line{display:none}`,
+  neubrutalism:`.brandcard{border-radius:14px!important;border:3px solid #000!important;box-shadow:6px 6px 0 #000!important;transform:none!important}.btn-brand{border-radius:12px;border:3px solid #000;box-shadow:4px 4px 0 #000}.btn-brand:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 #000}.badge-soft{border:2px solid #000;box-shadow:3px 3px 0 #000}`,
+  bento:`.brandcard{border-radius:24px!important;box-shadow:0 4px 6px rgba(0,0,0,.05),0 20px 40px rgba(0,0,0,.06)!important}.brandcard:hover{transform:scale(1.02)}`,
+  materialyou:`.btn-brand,.btn-ghost{border-radius:999px!important;font-weight:600}.brandcard{border-radius:24px!important;box-shadow:0 1px 3px rgba(0,0,0,.10),0 6px 16px rgba(0,0,0,.06)!important;border:none}.badge-soft{border-radius:999px}.form-control,.form-select{border-radius:16px}`,
+  monochrome:`section{--headcol:#000}.brandcard{border-radius:0!important;box-shadow:none!important;border:1.5px solid #000!important;transform:none!important}.btn-brand{border-radius:0!important;background:#000!important;border-color:#000!important;color:#fff!important;box-shadow:none}.btn-ghost{border-radius:0;border:1.5px solid #000;color:#000}.badge-soft{border-radius:0;border:1px solid #000;background:#fff;color:#000}.sec-title-line{background:#000}`,
+  bauhaus:`.brandcard{border-radius:0!important;box-shadow:4px 4px 0 #121212!important;border:2px solid #121212!important;transform:none!important}.btn-brand{border-radius:999px;box-shadow:4px 4px 0 #121212}.btn-brand:active{transform:translate(2px,2px);box-shadow:none}.ficon{border-radius:0;border:2px solid #121212}`,
+  editorial:`body{font-family:Georgia,'Merriweather',serif}p,.lead{font-family:Georgia,'Merriweather',serif}.brandcard{border-radius:2px;box-shadow:none!important;border:1px solid #e2e2e2}.sec-title-line{display:none}h1,h2,h3{letter-spacing:-.01em}`,
+  organic:`.brandcard{border-radius:28px 28px 28px 8px!important;box-shadow:0 8px 32px rgba(0,0,0,.08)!important;border:none}.btn-brand,.btn-ghost{border-radius:999px}.ficon{border-radius:60% 40% 55% 45%}`,
+  dark:`section{background:#0d0d0d!important;--headcol:#ffffff;--txtmuted:rgba(255,255,255,.72)}.brandcard{background:#161616!important;border-color:#2a2a2a!important;color:#eaeaea!important;box-shadow:0 10px 30px rgba(0,0,0,.5)!important}.form-control,.form-select{background:#1e1e1e;border-color:#333;color:#eee}.accordion-item{background:#161616;border-color:#2a2a2a!important}.accordion-button{background:#161616!important;color:#eee}nav,footer{background:#0d0d0d!important}`,
+  aurora:`@keyframes ncaurora{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}section{background:linear-gradient(120deg,color-mix(in srgb,var(--bp) 55%,#fff),color-mix(in srgb,var(--ba) 45%,#fff),color-mix(in srgb,var(--bp) 40%,#fff))!important;background-size:220% 220%!important;animation:ncaurora 12s ease infinite;--headcol:#111;--txtmuted:#333}.brandcard{background:rgba(255,255,255,.72)!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.5)!important}`,
+  gradientmesh:`section{background:radial-gradient(at 20% 20%,color-mix(in srgb,var(--bp) 45%,#fff),transparent 45%),radial-gradient(at 80% 30%,color-mix(in srgb,var(--ba) 45%,#fff),transparent 45%),radial-gradient(at 50% 80%,color-mix(in srgb,var(--bp) 30%,#fff),transparent 45%),#fff!important;--headcol:#111}.brandcard{background:rgba(255,255,255,.8)!important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}`,
+  cyberpunk:`section{background:#0d0d0d!important;--headcol:#00ff9c;--txtmuted:#8affd6}h1,h2,h3{text-shadow:0 0 10px rgba(0,255,156,.5)}.brandcard{background:#0f1512!important;border:1px solid #1f3b30!important;color:#c8ffe6!important;box-shadow:0 0 22px rgba(0,255,156,.12)!important}.btn-brand{background:#00ff9c;border-color:#00ff9c;color:#04120b;box-shadow:0 0 16px rgba(0,255,156,.5)}nav,footer{background:#0d0d0d!important}`,
+  vaporwave:`section{background:linear-gradient(180deg,#2a1152,#0b1e5b)!important;--headcol:#ffffff;--txtmuted:#e6d6ff}h1,h2,h3{text-shadow:0 0 12px rgba(255,113,206,.6)}.brandcard{background:rgba(255,255,255,.08)!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,113,206,.4)!important;color:#fbe9ff!important}.btn-brand{background:linear-gradient(135deg,#ff71ce,#01cdfe);border:none;color:#160a2e}nav,footer{background:#160a2e!important}`,
+  retrofuturism:`section{background:#12122a!important;--headcol:#00e5ff;--txtmuted:#b7c4ff}.brandcard{background:#181835!important;border:1px solid #2a2a5a!important;color:#dfe6ff!important;box-shadow:0 0 22px rgba(0,229,255,.12)!important}.btn-brand{background:#ff2e88;border-color:#ff2e88;color:#fff;box-shadow:0 0 16px rgba(255,46,136,.5)}nav,footer{background:#12122a!important}`,
+  y2k:`.brandcard{border-radius:22px!important;background:linear-gradient(180deg,#ffffff,#eef4ff)!important;border:1px solid #cfe0ff!important}.btn-brand{background:linear-gradient(180deg,#ffffff 0%,var(--bp) 45%);border:none;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.25);box-shadow:0 6px 16px rgba(0,0,0,.2)}.ficon{border-radius:50%}`
+};
+const STYLEKIT_LIST=[["none","Marca (sin capa)"],["soft","Soft UI"],["flat","Flat"],["swiss","Swiss / Minimal"],["monochrome","Monocromo B/N"],["editorial","Editorial / Revista"],["bento","Bento"],["materialyou","Material You"],["neumorphism","Neumorphism"],["glass","Glassmorphism"],["liquidglass","Liquid Glass"],["claymorphism","Claymorphism"],["organic","Orgánico / Biofílico"],["brutalism","Brutalism"],["neubrutalism","Neubrutalism"],["bauhaus","Bauhaus"],["y2k","Y2K"],["aurora","Aurora (animado)"],["gradientmesh","Gradient Mesh"],["dark","Dark OLED"],["cyberpunk","Cyberpunk"],["vaporwave","Vaporwave"],["retrofuturism","Retro-Futurism"]];
+
 /* ---------- ESTADO ---------- */
-const state={ settings:{brand:"nc",title:"",desc:"",tel:"",wa:"",endpoint:"",gtm:"",slug:"landing",ctaStyle:"brand",ctaAction:"scroll",popupTitle:"¿Necesitas ayuda?",popupImg:"",cookies:false,thanks:false,thanksText:"¡Gracias! Te llamamos enseguida."},
+const state={ settings:{brand:"nc",title:"",desc:"",tel:"",wa:"",endpoint:"",gtm:"",slug:"landing",ctaStyle:"brand",ctaAction:"scroll",popupTitle:"¿Necesitas ayuda?",popupImg:"",cookies:false,thanks:false,thanksText:"¡Gracias! Te llamamos enseguida.",styleKit:"none",motion:false},
   sections:[], selected:null, tab:"content", device:"desktop" };
 let uid=1; const nid=()=>"s"+(uid++);
 
@@ -686,6 +714,19 @@ const LIB={
     fields:[{k:"logos",l:"Logos (imágenes)",t:"images"}],
     render:p=>{const L=arr(p.logos);const seq=L.concat(L);return `<div style="overflow:hidden">${L.length?`<div class="ncmarq">${seq.map(s=>`<img src="${s}" loading="lazy" alt="">`).join("")}</div>`:`<div class="text-center" style="color:var(--txtmuted)">Sube logos en el panel derecho →</div>`}</div>`}},
 
+  security:{label:"Sellos de seguridad",ico:"🛡️",cat:"Confianza",
+    def:()=>({title:"Tu seguridad, garantizada",items:[{icon:"🛡️",t:"Empresa homologada",d:"Autorizada por el Ministerio del Interior."},{icon:"🔒",t:"Datos cifrados",d:"Tu información viaja segura (SSL)."},{icon:"✅",t:"Garantía 30 días",d:"Sin permanencia ni letra pequeña."}]}),
+    fields:[{k:"title",l:"Título"},{k:"items",l:"Sellos",t:"repeater",addLabel:"Añadir sello",item:[{k:"icon",l:"Icono",def:"🛡️"},{k:"t",l:"Título",def:"Sello"},{k:"d",l:"Texto",def:"Descripción"}]}],
+    render:p=>`<div class="text-center mb-5"><h2 class="fw-bold h-font" style="color:var(--headcol)">${esc(p.title)}</h2><div class="sec-title-line"></div></div><div class="row g-4">${arr(p.items).map(c=>`<div class="col-md-4"><div class="brandcard h-100 p-4 text-center"><div class="ficon" style="margin-left:auto;margin-right:auto">${esc(c.icon||"")}</div><h3 class="h6 fw-bold h-font" style="color:var(--bink)">${esc(c.t||"")}</h3><p class="mb-0 small" style="color:var(--bmuted)">${esc(c.d||"")}</p></div></div>`).join("")}</div>`},
+  logowall:{label:"Muro de logos",ico:"▤",cat:"Confianza",styleDef:{bg:"soft",pad:"M"},
+    def:()=>({title:"Confían en nosotros",logos:[]}),
+    fields:[{k:"title",l:"Título"},{k:"logos",l:"Logos (imágenes)",t:"images"}],
+    render:p=>{const L=arr(p.logos);return `<div class="text-center mb-4"><span class="sec-kicker">${esc(p.title)}</span></div><div class="logowall row g-4 align-items-center justify-content-center">${L.length?L.map(s=>`<div class="col-4 col-md-2 text-center"><img src="${s}" loading="lazy" alt=""></div>`).join(""):`<div class="col-12 text-center" style="color:var(--txtmuted)">Sube logos en el panel derecho →</div>`}</div>`}},
+  counters:{label:"Contadores (count-up)",ico:"№",cat:"Confianza",styleDef:{bg:"tint",align:"center"},
+    def:()=>({items:[{num:"10000",suf:"+",label:"clientes"},{num:"24",suf:"h",label:"respuesta media"},{num:"98",suf:"%",label:"satisfacción"}]}),
+    fields:[{k:"items",l:"Contadores",t:"repeater",addLabel:"Añadir",item:[{k:"num",l:"Número (sin puntos)",def:"100"},{k:"suf",l:"Sufijo",def:"+"},{k:"label",l:"Etiqueta",def:"Métrica"}]}],
+    render:p=>`<div class="row g-4 text-center justify-content-center">${arr(p.items).map(c=>`<div class="col-6 col-md"><div class="display-4 stat-num h-font" data-countup="${esc(c.num||"0")}" data-suf="${esc(c.suf||"")}">0</div><div class="small text-uppercase mt-1" style="color:var(--txtmuted);letter-spacing:.06em">${esc(c.label||"")}</div></div>`).join("")}</div>`},
+
   /* ==== Módulos LITERALES de Apple (solo visibles con marca Apple) ==== */
   apple_nav:{label:"Apple · barra nav",ico:"",cat:"Apple",raw:true,brand:"apple",
     def:()=>({logo:"",links:"Store|Mac|iPhone|iPad|Watch|Soporte"}),
@@ -871,10 +912,12 @@ const LIB={
     fields:[{k:"company",l:"Razón social"},{k:"cols",l:"Columnas: Título:enlace,enlace|…",t:"ta"}],
     render:p=>`<footer style="background:#141327;color:#a9a7c4"><div class="container py-5"><div class="row g-4">${lines(p.cols).map(col=>{const pr=col.split(":");const it=(pr[1]||"").split(",");return `<div class="col-6 col-md-4"><div class="fw-bold mb-2" style="color:#00D1B2">${esc(pr[0]||"")}</div>${it.map(x=>`<div class="mb-1"><a href="#" style="color:#a9a7c4;text-decoration:none;font-size:14px">${esc(x.trim())}</a></div>`).join("")}</div>`}).join("")}</div><div class="pt-4 mt-4 small" style="border-top:1px solid rgba(255,255,255,.12)">© ${new Date().getFullYear()} ${esc(p.company)}</div></div></footer>`}
 };
-const ORDER=["topbar","navbar","hero_split","hero_center","hero_form","hero_video","logos","marquee","stats","testimonials","trust","features","imagetext","steps","gallery","pricing","comparison","countdown","faq","video","richtext","form","cal","calc","quiz","ctaband","stickycall","footer","apple_nav","apple_hero","apple_bento","apple_showcase","apple_footer","mov_nav","mov_hero","mov_tarifas","mov_footer","tmo_nav","tmo_hero","tmo_plans","tmo_footer","o2_nav","o2_hero","o2_tiles","o2_footer","mt_nav","mt_hero","mt_kpi","mt_footer","at_nav","at_hero","at_features","at_footer"];
+const ORDER=["topbar","navbar","hero_split","hero_center","hero_form","hero_video","logos","marquee","stats","testimonials","trust","security","counters","logowall","features","imagetext","steps","gallery","pricing","comparison","countdown","faq","video","richtext","form","cal","calc","quiz","ctaband","stickycall","footer","apple_nav","apple_hero","apple_bento","apple_showcase","apple_footer","mov_nav","mov_hero","mov_tarifas","mov_footer","tmo_nav","tmo_hero","tmo_plans","tmo_footer","o2_nav","o2_hero","o2_tiles","o2_footer","mt_nav","mt_hero","mt_kpi","mt_footer","at_nav","at_hero","at_features","at_footer"];
 
 /* ---------- PLANTILLAS ---------- */
 const TEMPLATES={
+  "Conversión (CRO)":["topbar","navbar","hero_form","trust","features","counters","security","testimonials","form","faq","stickycall","footer"],
+  "Confianza (seguridad)":["navbar","hero_split","logowall","security","counters","steps","testimonials","form","faq","footer"],
   "Apple (literal)":["apple_nav","apple_hero","apple_bento","apple_showcase","apple_footer"],
   "Movistar (literal)":["mov_nav","mov_hero","mov_tarifas","stats","faq","mov_footer"],
   "T-Mobile (literal)":["tmo_nav","tmo_hero","tmo_plans","trust","faq","tmo_footer"],
@@ -923,6 +966,14 @@ function baseCSS(){return `
   .cal-day span{display:block;font-size:11px;color:var(--bmuted)} .cal-day strong{font-size:17px;color:var(--bink)}
   .cal-day.on{background:var(--bp);border-color:var(--bp)} .cal-day.on span,.cal-day.on strong{color:#fff}
   [data-opt]{transition:.15s} [data-opt].on{background:var(--bp);border-color:var(--bp);color:#fff}
+  .logowall img{filter:grayscale(1);opacity:.62;transition:filter .2s,opacity .2s;max-height:40px;max-width:100%;object-fit:contain}
+  .logowall img:hover{filter:none;opacity:1}
+  .nc-reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+  .nc-reveal.in{opacity:1;transform:none}
+  body.nc-motion .btn-brand,body.nc-motion .btn-ghost,body.nc-motion [data-cta]{transition:transform .14s ease,filter .14s ease,box-shadow .14s ease}
+  body.nc-motion .btn-brand:hover,body.nc-motion .btn-ghost:hover{transform:translateY(-1px)}
+  body.nc-motion .btn-brand:active,body.nc-motion .btn-ghost:active{transform:scale(.97)}
+  @media(prefers-reduced-motion:reduce){.nc-reveal{opacity:1!important;transform:none!important}}
   /* Estilos de botonazo (se activan por clase en <body>) */
   .cta-apple .btn-brand{border-radius:999px;font-weight:500;min-height:46px;padding:.55rem 1.5rem;box-shadow:none}
   .cta-instagram .btn-brand{background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);border:0;color:#fff;border-radius:12px;font-weight:700;box-shadow:0 8px 22px rgba(220,39,67,.32)}
@@ -1012,6 +1063,8 @@ function buildDoc(forExport){
     (function(){var body=document.body;var act=body.getAttribute('data-ctaaction')||'scroll';var tel=body.getAttribute('data-tel')||'';var wa=body.getAttribute('data-wa')||'';document.querySelectorAll('[data-cta="form"]').forEach(function(el){if(act==='call'){el.setAttribute('href','tel:'+tel);}else if(act==='whatsapp'){el.setAttribute('href','https://wa.me/'+wa);el.setAttribute('target','_blank');}else if(act==='popup'||act==='popupimg'){el.addEventListener('click',function(e){e.preventDefault();var m=document.getElementById('ncContact');if(m&&window.bootstrap){bootstrap.Modal.getOrCreateInstance(m).show();}});}});})();
     var ck=document.getElementById('ncCookies');if(ck){var ok=false;try{ok=localStorage.getItem('nc_cookies')==='1'}catch(e){}if(!ok)ck.style.display='block';var cy=document.getElementById('ncCookieYes'),cn=document.getElementById('ncCookieNo');function ckhide(){ck.style.display='none';try{localStorage.setItem('nc_cookies','1')}catch(e){}}if(cy)cy.addEventListener('click',ckhide);if(cn)cn.addEventListener('click',ckhide);}
     (function(){var body=document.body;if(body.getAttribute('data-thanks')!=='1')return;var txt=body.getAttribute('data-thankstext')||'¡Gracias!';document.querySelectorAll('form[data-callback]').forEach(function(f){f.addEventListener('submit',function(e){e.preventDefault();var url=f.getAttribute('action')||'';function done(){var d=document.createElement('div');d.className='text-center py-4';d.innerHTML='<div style="font-size:38px">✅</div><div class="h5 fw-bold mt-2" style="color:var(--bink)">'+txt+'</div>';f.parentNode.replaceChild(d,f);}try{if(url&&url.indexOf('{{')<0){fetch(url,{method:'POST',mode:'no-cors',body:new FormData(f)}).then(done).catch(function(){try{f.submit();}catch(_){done();}});}else{done();}}catch(err){done();}});});})();
+    (function(){var body=document.body;if(body.classList.contains('nc-motion')&&('IntersectionObserver' in window)&&!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)){var els=[].slice.call(document.querySelectorAll('[data-sec]'));els.forEach(function(el){el.classList.add('nc-reveal');});var io=new IntersectionObserver(function(ents){ents.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});els.forEach(function(el){io.observe(el);});}})();
+    document.querySelectorAll('[data-countup]').forEach(function(el){var to=parseFloat(el.getAttribute('data-countup'))||0;var suf=el.getAttribute('data-suf')||'';var dur=1300;function run(){var t0=null;function step(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/dur,1);el.textContent=Math.floor(p*to).toLocaleString('es-ES')+suf;if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);}if('IntersectionObserver' in window){var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){run();io.disconnect();}});io.observe(el);}else run();});
   })();<\/script>`;
   return `<!doctype html><html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1021,8 +1074,8 @@ function buildDoc(forExport){
 <meta property="og:title" content="${esc(ph(state.settings.title,"TITULO_SEO"))}"><meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="${collectFonts(b)}" rel="stylesheet"><link href="${bsCSS}" rel="stylesheet">
-<style>:root{${b.vars}--fhead:${b.fhead};--fbody:${b.fbody}}${baseCSS()}${b.profileCSS||''}</style>
-${gtmHead}</head><body class="cta-${st.ctaStyle||'brand'}" data-ctaaction="${st.ctaAction||'scroll'}" data-thanks="${st.thanks?'1':''}" data-thankstext="${esc(st.thanksText||'')}" data-tel="${esc(ph(st.tel,'TELEFONO').replace(/\s/g,''))}" data-wa="${esc(ph(st.wa,'WHATSAPP').replace(/[^0-9]/g,''))}">
+<style>:root{${b.vars}--fhead:${b.fhead};--fbody:${b.fbody}}${baseCSS()}${b.profileCSS||''}${STYLEKITS[st.styleKit]||''}</style>
+${gtmHead}</head><body class="cta-${st.ctaStyle||'brand'}${st.motion?' nc-motion':''}" data-ctaaction="${st.ctaAction||'scroll'}" data-thanks="${st.thanks?'1':''}" data-thankstext="${esc(st.thanksText||'')}" data-tel="${esc(ph(st.tel,'TELEFONO').replace(/\s/g,''))}" data-wa="${esc(ph(st.wa,'WHATSAPP').replace(/[^0-9]/g,''))}">
 ${gtmBody}
 ${sectionsHTML(forExport)}
 ${modal}${cookie}
@@ -1171,6 +1224,8 @@ function renderGlobal(){
     <div class="fld"><label>WhatsApp (con prefijo)</label><input id="gWa" value="${esc(state.settings.wa)}" placeholder="{{WHATSAPP}}"></div>
     <div class="fld"><label>Endpoint del formulario</label><input id="gEp" value="${esc(state.settings.endpoint)}" placeholder="{{ENDPOINT_FORMULARIO}}"></div>
     <div class="paneltitle" style="padding:10px 0 4px">Botones y acciones</div>
+    <div class="fld"><label>Estilo visual (UI)</label><select id="gStyleKit">${STYLEKIT_LIST.map(o=>`<option value="${o[0]}" ${state.settings.styleKit===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Capa de diseño (glass, neumorphism, brutalism…) sobre la marca.</div></div>
+    <div class="fld inline"><label>Animaciones (reveal + micro-interacciones)</label><input type="checkbox" id="gMotion" ${state.settings.motion?'checked':''}></div>
     <div class="fld"><label>Estilo de botón (CTA)</label><select id="gCtaStyle">${[["brand","Marca"],["apple","Apple (pill azul)"],["instagram","Instagram (degradado)"],["ncgreen","Verde NC (botonazo)"],["neon","Neón"],["outline","Contorno"],["dark","Oscuro"],["pill","Pastilla marca"]].map(o=>`<option value="${o[0]}" ${state.settings.ctaStyle===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select></div>
     <div class="fld"><label>Acción del CTA principal</label><select id="gCtaAction">${[["scroll","Ir al formulario"],["popup","Abrir popup de contacto"],["popupimg","Popup de contacto con imagen"],["call","Llamar (tel:)"],["whatsapp","WhatsApp"]].map(o=>`<option value="${o[0]}" ${state.settings.ctaAction===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Aplica a todos los botones “Ir al formulario”.</div></div>
     ${(state.settings.ctaAction==='popup'||state.settings.ctaAction==='popupimg')?`<div class="fld"><label>Título del popup</label><input id="gPopTitle" value="${esc(state.settings.popupTitle)}" placeholder="¿Necesitas ayuda?"></div>${state.settings.ctaAction==='popupimg'?`<div class="fld"><label>Imagen del popup</label>${fieldHTML({k:"popupImg",l:"",t:"image"},state.settings)}</div>`:''}`:''}
@@ -1194,6 +1249,8 @@ function renderGlobal(){
   bindG("gTel","tel",true);bindG("gWa","wa",true);bindG("gEp","endpoint",true);
   bindG("gTitle","title",false);bindG("gDesc","desc",false);bindG("gGtm","gtm",false);bindG("gSlug","slug",false);
   const cs=document.getElementById("gCtaStyle");if(cs)cs.addEventListener('change',()=>{commit();state.settings.ctaStyle=cs.value;renderPreview();});
+  const sk=document.getElementById("gStyleKit");if(sk)sk.addEventListener('change',()=>{commit();state.settings.styleKit=sk.value;renderPreview();});
+  const mo=document.getElementById("gMotion");if(mo)mo.addEventListener('change',()=>{commit();state.settings.motion=mo.checked;renderPreview();});
   const ca=document.getElementById("gCtaAction");if(ca)ca.addEventListener('change',()=>{commit();state.settings.ctaAction=ca.value;renderPreview();renderGlobal();});
   const pt=document.getElementById("gPopTitle");if(pt)pt.addEventListener('input',()=>{commitDebounced();state.settings.popupTitle=pt.value;renderPreview();});
   const co=document.getElementById("gCookies");if(co)co.addEventListener('change',()=>{commit();state.settings.cookies=co.checked;renderPreview();});
