@@ -112,6 +112,7 @@
     <button class="btn" id="btnMine" title="Mis landings">☁ Mis landings</button>
     <button class="btn" id="btnLorem" title="Rellenar textos con Lorem ipsum">¶ Lorem</button>
     <button class="btn" id="btnImport" title="Importar HTML de cliente">⇱ Importar</button>
+    <button class="btn" id="btnFigma" title="Importar desde Figma">◆ Figma</button>
     <div class="spacer"></div>
     <span class="lbl" id="userChip"></span>
     <button class="btn icob" id="btnUndo" title="Deshacer (Ctrl+Z)">↺</button>
@@ -161,10 +162,21 @@
 <div class="toast" id="toast"></div>
 
 <!-- Importar HTML de cliente -->
+<!-- Importar desde Figma -->
+<div id="figOverlay" style="display:none;position:fixed;inset:0;z-index:196;background:rgba(9,11,16,.75);place-items:center">
+  <div style="width:560px;max-width:94vw;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><b>Importar desde Figma</b><button class="btn sm ghost" id="figClose">Cerrar</button></div>
+    <div class="note" style="margin:0 0 10px">Pega la <b>URL de un frame</b> (con <code>node-id</code>) y tu <b>token personal</b> de Figma (Settings → Personal access tokens). Trae el frame como <b>SVG exacto</b>. Requiere el proxy <code>/api/figma</code> desplegado en tu Vercel.</div>
+    <div class="fld"><label>URL del frame</label><input id="figUrl" class="txt" style="width:100%" placeholder="https://www.figma.com/design/KEY/...?node-id=123-456"></div>
+    <div class="fld"><label>Token de Figma</label><input id="figToken" class="txt" style="width:100%" type="password" placeholder="figd_..." autocomplete="off"></div>
+    <div style="display:flex;gap:8px;margin-top:6px"><button class="btn primary" id="figDo">Importar frame</button><span class="lbl" id="figInfo"></span></div>
+  </div>
+</div>
 <div id="importOverlay" style="display:none;position:fixed;inset:0;z-index:195;background:rgba(9,11,16,.75);place-items:center">
   <div style="width:560px;max-width:94vw;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><b>Importar HTML de cliente</b><button class="btn sm ghost" id="importClose">Cerrar</button></div>
     <div class="note" style="margin:0 0 10px">Pega el HTML de la web del cliente (mejor con rutas absolutas, p. ej. el <b>-identico.html</b>). Se trocea en secciones editables y se carga su CSS real.</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input type="file" id="zipFile" accept=".zip" style="display:none"><button class="btn" id="zipBtn">📦 Subir ZIP de cliente</button><span class="lbl" id="zipInfo">o pega el HTML abajo</span></div>
     <textarea id="importText" class="txt" style="width:100%;min-height:200px;font-family:monospace;font-size:11px" placeholder="&lt;!doctype html&gt;…"></textarea>
     <div class="d-flex gap-2 mt-2" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn primary" id="translateDo">Traducir a bloques (editable)</button><button class="btn" id="importDo">Importar fiel (HTML)</button><span class="lbl" id="importInfo"></span></div>
   </div>
@@ -1586,6 +1598,39 @@ function translateSection(el){
   if(t.length>15)return {type:'richtext',props:{title:heads[0]||'',body:t.slice(0,500)}};
   return null;
 }
+function _norm(p){const o=[];p.split('/').forEach(s=>{if(s===''||s==='.')return;if(s==='..')o.pop();else o.push(s);});return o.join('/');}
+function _resolve(ref,baseDir){ref=ref.trim().replace(/^\.\//,'');if(ref.startsWith('/'))return _norm(ref.slice(1));return _norm((baseDir||'')+ref);}
+const _MIME={webp:'image/webp',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',svg:'image/svg+xml',gif:'image/gif',ico:'image/x-icon',avif:'image/avif',woff:'font/woff',woff2:'font/woff2',ttf:'font/ttf',otf:'font/otf',bin:'application/octet-stream',mp4:'video/mp4'};
+async function zipImport(file){
+  if(!window.JSZip){toast("JSZip no cargó (prueba en tu Vercel)");return;}
+  const info=document.getElementById("zipInfo");info.textContent="Descomprimiendo…";
+  try{
+    const zip=await JSZip.loadAsync(file);
+    const paths=Object.keys(zip.files).filter(p=>!zip.files[p].dir);
+    // assets -> dataURL
+    const assets={};
+    for(const p of paths){const ext=(p.split('.').pop()||'').toLowerCase();if(_MIME[ext]&&ext!=='html'&&ext!=='css'&&ext!=='js'&&ext!=='json'){const b64=await zip.files[p].async("base64");assets[_norm(p)]='data:'+_MIME[ext]+';base64,'+b64;}}
+    // html principal (page.html preferido, evitar source)
+    let htmlPath=paths.find(p=>/(^|\/)page\.html$/i.test(p))||paths.find(p=>/\.html$/i.test(p)&&!/source/i.test(p))||paths.find(p=>/\.html$/i.test(p));
+    if(!htmlPath){info.textContent="No encontré HTML en el ZIP";return;}
+    let html=await zip.files[htmlPath].async("string");
+    const baseDir=htmlPath.includes('/')?htmlPath.slice(0,htmlPath.lastIndexOf('/')+1):'';
+    info.textContent="Incrustando estilos e imágenes…";
+    const repUrl=(css,cssDir)=>css.replace(/url\((["']?)([^)"']+)\1\)/g,(m,q,u)=>{if(/^data:|^https?:|^\/\//.test(u.trim()))return m;const key=_resolve(u.split('#')[0].split('?')[0],cssDir);return assets[key]?`url(${assets[key]})`:m;});
+    // inline <link ... .css>
+    const linkRe=/<link[^>]+href=(["'])([^"']+\.css)\1[^>]*>/gi;let mm;const links=[];while((mm=linkRe.exec(html)))links.push(mm);
+    for(const lm of links){const cssKey=_resolve(lm[2].split('?')[0],baseDir);const cf=zip.files[cssKey];if(cf){let css=await cf.async("string");css=repUrl(css,cssKey.includes('/')?cssKey.slice(0,cssKey.lastIndexOf('/')+1):'');html=html.replace(lm[0],'<style>\n'+css+'\n</style>');}}
+    // procesar <style> inline (url())
+    html=html.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi,(m,c)=>'<style>'+repUrl(c,baseDir)+'</style>');
+    // src/href/poster -> dataURL
+    html=html.replace(/\b(src|href|poster|data-src)=(["'])([^"']+)\2/gi,(m,a,q,u)=>{if(/^data:|^https?:|^\/\/|^#|^mailto:|^tel:|^javascript:/.test(u.trim()))return m;const key=_resolve(u.split('#')[0].split('?')[0],baseDir);return assets[key]?`${a}=${q}${assets[key]}${q}`:m;});
+    // srcset
+    html=html.replace(/srcset=(["'])([^"']+)\1/gi,(m,q,v)=>{const out=v.split(',').map(part=>{const seg=part.trim().split(/\s+/);const key=_resolve((seg[0]||'').split('#')[0].split('?')[0],baseDir);if(assets[key])seg[0]=assets[key];return seg.join(' ');});return `srcset=${q}${out.join(', ')}${q}`;});
+    document.getElementById("importText").value=html;
+    info.textContent="ZIP listo ✓ — pulsa “Importar fiel” o “Traducir a bloques”";
+    toast("ZIP procesado (autocontenido). Elige Importar fiel o Traducir.");
+  }catch(e){info.textContent="Error leyendo el ZIP";toast("No pude leer el ZIP");}
+}
 function getImportSections(){
   const txt=(document.getElementById("importText").value||"").trim();
   if(!txt){toast("Pega el HTML primero");return null;}
@@ -1733,6 +1778,31 @@ document.getElementById("btnLorem").addEventListener('click',fillLorem);
 document.getElementById("btnImport").addEventListener('click',()=>{document.getElementById("importOverlay").style.display="grid";});
 document.getElementById("importClose").addEventListener('click',()=>{document.getElementById("importOverlay").style.display="none";});
 document.getElementById("importDo").addEventListener('click',doImport);
+document.getElementById("zipBtn").addEventListener('click',()=>document.getElementById("zipFile").click());
+document.getElementById("zipFile").addEventListener('change',e=>{if(e.target.files[0])zipImport(e.target.files[0]);});
+function figmaImport(){
+  const url=(document.getElementById("figUrl").value||"").trim();
+  const token=(document.getElementById("figToken").value||"").trim();
+  const info=document.getElementById("figInfo");
+  if(!url||!token){toast("Pon la URL del frame y tu token");return;}
+  const key=(url.match(/\/(?:file|design|proto)\/([a-zA-Z0-9]+)/)||[])[1];
+  let node=(url.match(/node-id=([0-9]+[-:][0-9]+)/)||[])[1];
+  if(node)node=node.replace("-",":");
+  if(!key||!node){toast("URL no válida (necesita /design/KEY y node-id)");return;}
+  info.textContent="Conectando con Figma…";
+  fetch("/api/figma?kind=svg&fileKey="+key+"&nodeId="+encodeURIComponent(node),{headers:{"x-figma-token":token}})
+    .then(r=>r.json()).then(j=>{
+      if(!j.svg){info.textContent="Figma: "+(j.error||"sin SVG");return;}
+      commit();state.settings.importCSS="";
+      const wrap='<section style="padding:0"><div style="max-width:1280px;margin:0 auto">'+j.svg.replace('<svg','<svg style="width:100%;height:auto;display:block"')+'</div></section>';
+      state.sections=[{id:nid(),type:"imported",props:{html:annotateImported(wrap)},style:{}}];
+      state.selected=null;document.getElementById("figOverlay").style.display="none";info.textContent="";
+      renderPalette();renderPreview();renderRight();toast("Frame de Figma importado (SVG)");
+    }).catch(e=>{info.textContent="Sin conexión al proxy /api/figma (despliega api/figma.js en Vercel)";});
+}
+document.getElementById("btnFigma").addEventListener('click',()=>{document.getElementById("figOverlay").style.display="grid";});
+document.getElementById("figClose").addEventListener('click',()=>{document.getElementById("figOverlay").style.display="none";});
+document.getElementById("figDo").addEventListener('click',figmaImport);
 document.getElementById("translateDo").addEventListener('click',doTranslate);
 document.getElementById("mineClose").addEventListener('click',()=>document.getElementById("mineOverlay").style.display='none');
 document.getElementById("mineNew").addEventListener('click',newLanding);
