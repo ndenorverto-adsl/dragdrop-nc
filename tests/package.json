@@ -1,0 +1,19 @@
+{
+  "name": "nc-landing-builder-tests",
+  "private": true,
+  "description": "Tests locales del NC Landing Builder (no se despliegan en Vercel)",
+  "scripts": {
+    "smoke": "node smoke.js ..",
+    "e2e": "node e2e-export.js ..",
+    "snapshot": "node snapshot.js .. out/snapshot.json",
+    "validate": "html-validate out/landing.html",
+    "test": "node smoke.js .. && node e2e-export.js .. && html-validate out/landing.html"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "bootstrap": "5.3.3",
+    "html-validate": "^9.0.0",
+    "jszip": "3.10.1",
+    "playwright": "^1.47.0"
+  }
+}

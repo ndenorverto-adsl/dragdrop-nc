@@ -1,0 +1,7 @@
+# No publicar en Vercel (solo repo)
+tests/
+legacy/
+nc-landing-builder.html
+supabase-schema.sql
+README.md
+*.md

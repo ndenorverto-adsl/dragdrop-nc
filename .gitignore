@@ -1,0 +1,13 @@
+# Dependencias y artefactos de tests
+node_modules/
+tests/node_modules/
+tests/out/
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+# Vercel CLI
+.vercel
+# Variables locales (nunca subir claves secretas)
+.env
+.env.*

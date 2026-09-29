@@ -1,60 +1,69 @@
 # NC Landing Builder
 
-Herramienta drag & drop para crear landings de conversión (Bootstrap 5.3.3) y exportarlas como HTML listo para FTP/Vercel. Frontend estático (`index.html`) + **Supabase** como backend (login de equipo, guardado de landings, imágenes en Storage). Despliegue en **Vercel** desde **GitHub**.
+Herramienta drag & drop para crear landings de conversión (Bootstrap 5.3.3) y exportarlas como HTML listo para FTP/Vercel. Frontend estático **sin build** + **Supabase** (login, guardado de landings, imágenes) + funciones de **Vercel** en `api/`. Despliegue automático en Vercel con cada push a `main`.
 
 ## Estructura
 
-- `index.html` — la aplicación completa (builder).
-- `config.js` — tus claves de Supabase (créalo a partir de `config.example.js`).
-- `config.example.js` — plantilla de configuración.
-- `supabase-schema.sql` — tablas, RLS y bucket de imágenes.
-- `vercel.json`, `.gitignore`.
+```
+index.html            # estructura del editor (sin lógica)
+css/app.css           # estilos del editor
+js/                   # lógica, cargada en este orden (scripts clásicos, sin bundler)
+  brands.js           #   marcas, fuentes y style kits
+  core.js             #   estado, ajustes por defecto y helpers
+  blocks.js           #   librería de bloques (LIB)
+  templates.js        #   plantillas
+  render.js           #   genera el documento HTML (preview y export)
+  export-pro.js       #   formularios, consentimiento, tracking, SEO y checklist
+  editor.js           #   preview, paneles, historial, export ZIP/HTML
+  lorem.js · import.js · listeners.js · cloud.js · boot.js
+api/figma.js          # proxy a la API de Figma (función de Vercel)
+config.js             # claves públicas de Supabase (a partir de config.example.js)
+supabase-schema.sql   # tablas, RLS y bucket
+tests/                # tests locales (no se despliegan)
+vercel.json · .vercelignore · .gitignore
+```
 
----
+> Para añadir un archivo JS nuevo: créalo en `js/` y añade su `<script>` en `index.html` en el orden correcto.
 
-## Puesta en marcha (≈10 min)
+## Qué genera el export
+
+- **Un único HTML** (botón `HTML ↓`, ideal para FTP) o **ZIP** con `index.html + css/ + js/ + README` (botón `ZIP ↓`).
+- Antes de exportar se abre el **checklist**: bloqueantes (teléfono, WhatsApp, endpoint, GTM, URLs legales, título) y avisos (SEO, peso, placeholders). `✓ Revisar` lo abre sin exportar.
+- **Formularios**: campos ocultos de atribución (`utm_*`, `gclid`, `gbraid`, `wbraid`, `fbclid`, `msclkid`, `ttclid`, `li_fat_id`, `landing_url`, `referrer`, `form_id`), casilla RGPD `acepta_privacidad`, primera capa informativa, honeypot `nc_website`, teléfono español normalizado a 9 cifras, estado “Enviando…” y aviso de error real.
+- **Consentimiento**: banner propio con Consent Mode v2 (todo denegado por defecto, Aceptar/Rechazar al mismo nivel, Configurar) o CMP externa en GTM.
+- **dataLayer**: `click_to_call`, `whatsapp_click`, `cta_click`, `form_start`, `generate_lead` (con `user_data` para Enhanced Conversions), `form_error`, `consent_update`, `quiz_complete`, `schedule`.
+- **SEO/rendimiento**: robots (noindex por defecto), canonical y og:url desde la URL final, Open Graph/Twitter, favicon, theme-color, FAQPage, imagen del hero con prioridad (LCP).
+
+### Envío del formulario
+POST `multipart/form-data` al endpoint. Si el endpoint responde con CORS (`Access-Control-Allow-Origin`), los errores HTTP se detectan y se avisa al usuario; si no, el lead se marca `delivery: unconfirmed` en el dataLayer (nunca se reenvía para evitar duplicados).
+
+## Puesta en marcha
 
 ### 1. Supabase
-1. Entra en https://supabase.com → **New project**. Anota la contraseña de la base de datos.
-2. Cuando esté listo, ve a **Project Settings → API** y copia:
-   - **Project URL** (`https://xxxx.supabase.co`)
-   - **anon public** key (la `anon`, no la `service_role`).
-3. Ve a **SQL Editor → New query**, pega **todo** el contenido de `supabase-schema.sql` y pulsa **Run**. Esto crea la tabla `landings`, su RLS y el bucket público `landings-assets`.
-4. Crea el **usuario de equipo** (login compartido): **Authentication → Users → Add user** → email + contraseña. Ese email/contraseña es el que usaréis todos para entrar.
-   - Si aparece pidiendo confirmación de email, desactiva la confirmación en **Authentication → Providers → Email → Confirm email = off**, o confirma el usuario manualmente.
+1. Proyecto en https://supabase.com → **Project Settings → API**: copia la URL y la clave **publishable/anon** (nunca la secreta).
+2. **SQL Editor**: ejecuta `supabase-schema.sql`.
+3. **Authentication → Users → Add user**: usuario del equipo.
 
 ### 2. Configuración
-1. Copia `config.example.js` a **`config.js`**.
-2. Pega tu **Project URL** y tu **anon key**. Deja `BUCKET: "landings-assets"`.
-   - La anon key es **pública por diseño** (RLS protege los datos): es correcto commitearla. **Nunca** pongas aquí la `service_role`.
+Copia `config.example.js` a `config.js` y rellénalo. La clave publishable es pública por diseño (RLS protege los datos).
 
-### 3. GitHub
-1. Crea un repositorio nuevo en GitHub (privado recomendado).
-2. Sube estos archivos (incluido tu `config.js` ya relleno):
-   ```bash
-   git init
-   git add .
-   git commit -m "NC Landing Builder"
-   git branch -M main
-   git remote add origin https://github.com/TU-USUARIO/TU-REPO.git
-   git push -u origin main
-   ```
+### 3. GitHub + Vercel
+Cada push a `main` despliega en el proyecto `dragdrop-nc` (Framework Preset: **Other**, sin build).
+- Opcional: variable de entorno `FIGMA_TOKEN` en Vercel para no tener que pegar el token en el importador de Figma.
+- **Acceso del equipo**: el proyecto tiene *Vercel Authentication* activa, así que solo entran miembros del equipo de Vercel. Si los gestores no son miembros, desactívala en **Settings → Deployment Protection** (el login de Supabase ya protege los datos) o usa un dominio propio.
 
-### 4. Vercel
-1. Entra en https://vercel.com → **Add New → Project** → importa el repo de GitHub.
-2. **Framework Preset: Other** (es estático, sin build). Deploy.
-3. Abre la URL que te da Vercel, entra con el **usuario de equipo** y listo.
+## Tests (local)
 
----
+```bash
+cd tests
+npm install
+npx playwright install chromium   # solo la primera vez
+npm test                          # smoke del editor + E2E de la landing exportada + validación HTML
+```
 
-## Uso
+`snapshot.js` + `compare.js` sirven para comprobar que un refactor no cambia el HTML exportado.
 
-- **Guardar / Mis landings:** guarda el proyecto actual en Supabase y recupera cualquiera desde “☁ Mis landings”.
-- **Imágenes:** se suben al bucket `landings-assets` y se referencian por URL (HTML exportado ligero).
-- **Exportar HTML:** genera el `.html` autocontenido (Bootstrap por CDN) listo para FTP.
-- **Sin `config.js`** (p. ej. abriendo el archivo en local sin claves): funciona en **modo local** — sin nube y con imágenes en Base64.
-
-## Notas de seguridad
-
-- Login **compartido de equipo**: todos usan la misma cuenta; con RLS `authenticated`. Si en el futuro quieres separar por usuario, se cambia la policy a `user_id = auth.uid()` y se añade la columna.
-- El bucket es **público en lectura** (necesario para que las imágenes se vean en las landings publicadas). La escritura requiere estar autenticado.
+## Seguridad
+- Login compartido con RLS `authenticated`. Para usuarios individuales: policy `user_id = auth.uid()` + columna (roadmap Fase 4).
+- Bucket público en lectura (necesario para las imágenes de las landings); escritura solo autenticado.
+- Cabeceras de seguridad en `vercel.json`. `.vercelignore` evita publicar tests, SQL y documentación.
