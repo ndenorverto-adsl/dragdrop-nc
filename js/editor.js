@@ -28,7 +28,7 @@ function renderPalette(){
 function renderOutline(){const o=document.getElementById("outline");
   document.getElementById("secCount").textContent="· "+state.sections.length;
   if(!state.sections.length){o.innerHTML=`<div class="empty">Vacío. Arrastra un bloque o haz clic en la izquierda.</div>`;return;}
-  o.innerHTML=state.sections.map((s,i)=>`<div class="oitem ${s.id===state.selected?'sel':''}" draggable="true" data-id="${s.id}" data-i="${i}"><span class="grip">⋮⋮</span><span class="nm">${LIB[s.type].label}</span><button class="mini" data-act="up">↑</button><button class="mini" data-act="down">↓</button><button class="mini" data-act="dup">⧉</button><button class="mini" data-act="del">🗑</button></div>`).join("");
+  o.innerHTML=state.sections.map((s,i)=>`<div class="oitem ${s.id===state.selected?'sel':''} ${s.hidden?'hid':''}" draggable="true" data-id="${s.id}" data-i="${i}"><span class="grip">⋮⋮</span><span class="nm">${LIB[s.type].label}${s.hidden?' <span class="tag">oculta</span>':''}</span><button class="mini" data-act="hide" title="${s.hidden?'Mostrar':'Ocultar (no se exporta)'}">${s.hidden?'◌':'👁'}</button><button class="mini" data-act="up">↑</button><button class="mini" data-act="down">↓</button><button class="mini" data-act="dup">⧉</button><button class="mini" data-act="del">🗑</button></div>`).join("");
   o.querySelectorAll('.oitem').forEach(el=>{const id=el.dataset.id;
     el.addEventListener('click',e=>{if(e.target.dataset.act)return;select(id);});
     el.querySelectorAll('.mini').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();rowAction(id,btn.dataset.act);}));
@@ -199,11 +199,12 @@ function addSection(type,index){commit();const s={id:nid(),type,props:LIB[type].
   if(index==null||index<0||index>state.sections.length)state.sections.push(s);else state.sections.splice(index,0,s);
   state.selected=s.id;renderPreview();renderRight();toast(LIB[type].label+" añadido");}
 function select(id){state.selected=id;setTab("content");pendingScrollId=id;renderPreview();renderRight();}
-function rowAction(id,act){const i=state.sections.findIndex(x=>x.id===id);if(i<0)return;commit();
+function rowAction(id,act){if(act==="copy"){wsCopy(id);return;}const i=state.sections.findIndex(x=>x.id===id);if(i<0)return;commit();
   if(act==="up"&&i>0){const t=state.sections[i-1];state.sections[i-1]=state.sections[i];state.sections[i]=t;}
   if(act==="down"&&i<state.sections.length-1){const t=state.sections[i+1];state.sections[i+1]=state.sections[i];state.sections[i]=t;}
   if(act==="dup"){const c=JSON.parse(JSON.stringify(state.sections[i]));c.id=nid();state.sections.splice(i+1,0,c);state.selected=c.id;}
   if(act==="del"){state.sections.splice(i,1);if(state.selected===id)state.selected=null;}
+  if(act==="hide"){const s=state.sections[i];s.hidden=!s.hidden;toast(s.hidden?"Sección oculta: no se exporta":"Sección visible");}
   renderPreview();renderRight();renderPalette();}
 let dragId=null,dragType=null;
 function dropOnIndex(t){if(dragType){addSection(dragType,t);dragType=null;return;}
@@ -217,9 +218,9 @@ window.addEventListener('mouseup',()=>{ if(dragType||dragId) resetDrag(); });
 /* ---------- HISTORIAL ---------- */
 let past=[],future=[];
 const snap=()=>JSON.stringify({s:state.sections,g:state.settings,c:CUSTOM,u:uid});
-function commit(){past.push(snap());if(past.length>50)past.shift();future=[];updHist();}
+function commit(){past.push(snap());if(past.length>50)past.shift();future=[];updHist();ncDirty();}
 let cdArmed=true,cdT=null;
-function commitDebounced(){if(cdArmed){commit();cdArmed=false;}clearTimeout(cdT);cdT=setTimeout(()=>cdArmed=true,700);}
+function commitDebounced(){ncDirty();if(cdArmed){commit();cdArmed=false;}clearTimeout(cdT);cdT=setTimeout(()=>cdArmed=true,700);}
 function restore(str){const o=JSON.parse(str);state.sections=o.s;state.settings=o.g;Object.assign(CUSTOM,o.c);uid=o.u;syncCustom();}
 function undo(){if(!past.length)return;future.push(snap());restore(past.pop());state.selected=null;document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();renderPalette();updHist();}
 function redo(){if(!future.length)return;past.push(snap());restore(future.pop());state.selected=null;document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();renderPalette();updHist();}

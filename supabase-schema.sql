@@ -38,3 +38,20 @@ create policy "assets_auth_update" on storage.objects
   for update to authenticated using ( bucket_id = 'landings-assets' );
 create policy "assets_auth_delete" on storage.objects
   for delete to authenticated using ( bucket_id = 'landings-assets' );
+
+-- 5) Historial de versiones (v3.1)
+create table if not exists public.landing_versions (
+  id          uuid primary key default gen_random_uuid(),
+  landing_id  uuid not null references public.landings(id) on delete cascade,
+  nombre      text,
+  data        jsonb not null,
+  created_by  text,
+  created_at  timestamptz default now()
+);
+create index if not exists landing_versions_landing_idx
+  on public.landing_versions (landing_id, created_at desc);
+
+alter table public.landing_versions enable row level security;
+drop policy if exists "team_all_versions" on public.landing_versions;
+create policy "team_all_versions" on public.landing_versions
+  for all to authenticated using (true) with check (true);

@@ -5,9 +5,10 @@
   "scripts": {
     "smoke": "node smoke.js ..",
     "e2e": "node e2e-export.js ..",
+    "workspace": "node e2e-workspace.js ..",
     "snapshot": "node snapshot.js .. out/snapshot.json",
     "validate": "html-validate out/landing.html",
-    "test": "node smoke.js .. && node e2e-export.js .. && html-validate out/landing.html"
+    "test": "node smoke.js .. && node e2e-export.js .. && node e2e-workspace.js .. && html-validate out/landing.html"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.45.0",

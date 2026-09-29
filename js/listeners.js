@@ -1,5 +1,5 @@
 /* ---------- LISTENERS ---------- */
-window.addEventListener("message",e=>{if(!e.data)return;if(e.data.nc==="sel")select(e.data.id);if(e.data.nc==="act")rowAction(e.data.id,e.data.act);if(e.data.nc==="reorder")canvasReorder(e.data);
+window.addEventListener("message",e=>{if(!e.data)return;if(e.data.nc==="key"){wsKey(e.data);return;}if(e.data.nc==="sel")select(e.data.id);if(e.data.nc==="act")rowAction(e.data.id,e.data.act);if(e.data.nc==="reorder")canvasReorder(e.data);
   if(e.data.nc==="edit"){const s=state.sections.find(x=>x.id===e.data.id);if(s){commitDebounced();updImportedText(s,e.data.k,e.data.val);}}
   if(e.data.nc==="move"){const s=state.sections.find(x=>x.id===e.data.id);if(s&&s.freeHtml){commitDebounced();s.freeHtml=_freeSetT(s.freeHtml,e.data.ncid,e.data.transform);}}
   if(e.data.nc==="delel"){const s=state.sections.find(x=>x.id===e.data.id);if(s&&s.freeHtml){commit();s.freeHtml=_freeDel(s.freeHtml,e.data.ncid);}}
@@ -23,6 +23,4 @@ document.getElementById("dropZone").addEventListener('drop',e=>{e.preventDefault
 (function(){const t=document.getElementById("tplSel");t.innerHTML='<option value="">Plantilla…</option>'+Object.keys(CLIENT_HTML).map(n=>`<option>${n}</option>`).join("")+Object.keys(TEMPLATES).map(n=>`<option>${n}</option>`).join("");
   Object.entries(CLIENT_HTML).forEach(([n,u])=>{fetch(u,{method:'HEAD'}).then(r=>{if(!r.ok)throw 0;}).catch(()=>{[...t.options].forEach(o=>{if(o.text===n)o.remove();});});});
   t.addEventListener('change',e=>{const v=e.target.value;if(v){if(CLIENT_HTML[v])loadClientHtml(v);else loadTemplate(v);}e.target.value="";});})();
-document.addEventListener('keydown',e=>{const tag=(e.target.tagName||"");if(tag==="INPUT"||tag==="TEXTAREA")return;
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"&&!e.shiftKey){e.preventDefault();undo();}
-  else if((e.ctrlKey||e.metaKey)&&(e.key.toLowerCase()==="y"||(e.shiftKey&&e.key.toLowerCase()==="z"))){e.preventDefault();redo();}});
+/* atajos de teclado: ver js/workspace.js */

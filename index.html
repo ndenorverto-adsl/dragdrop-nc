@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NC Landing Builder — v3</title>
+<title>NC Landing Builder — v3.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,9 +15,10 @@
 <body>
 <div class="app">
   <div class="topbar">
-    <div class="brandmark"><span class="dot"></span> NC Landing Builder <small>· v3</small></div>
+    <div class="brandmark"><span class="dot"></span> NC Landing Builder <small>· v3.1</small></div>
     <input id="landingName" class="txt" style="max-width:180px" placeholder="Nombre de la landing" title="Nombre" autocomplete="off" name="nc_landing_name" data-lpignore="true" data-1p-ignore data-form-type="other">
-    <button class="btn" id="btnSave" title="Guardar en la nube">💾 Guardar</button>
+    <span class="savechip" id="saveChip"></span>
+    <button class="btn" id="btnSave" title="Guardar en la nube (Ctrl+S)">💾 Guardar</button>
     <button class="btn" id="btnMine" title="Mis landings">☁ Mis landings</button>
     <button class="btn" id="btnLorem" title="Rellenar textos con Lorem ipsum">¶ Lorem</button>
     <button class="btn" id="btnImport" title="Importar HTML de cliente">⇱ Importar</button>
@@ -27,6 +28,7 @@
     <span class="lbl" id="userChip"></span>
     <button class="btn icob" id="btnUndo" title="Deshacer (Ctrl+Z)">↺</button>
     <button class="btn icob" id="btnRedo" title="Rehacer (Ctrl+Y)">↻</button>
+    <button class="btn icob" id="btnKeys" title="Atajos de teclado (?)">⌨</button>
     <select class="sel" id="tplSel" title="Cargar plantilla"><option value="">Plantilla…</option></select>
     <span class="lbl">Marca</span>
     <select class="sel" id="brandTop"></select>
@@ -52,7 +54,7 @@
           <iframe id="pv" title="preview"></iframe>
         </div>
       </div>
-      <div class="hint">Arrastra bloques al lienzo · clic en una sección para editar · en el preview aparecen ↑↓⧉🗑 sobre la sección activa · reordena en “Estructura”.</div>
+      <div class="hint">Arrastra bloques al lienzo · clic en una sección para editar · en el preview aparecen ↑↓⧉🗑 sobre la sección activa · reordena en “Estructura” · pulsa <b>?</b> para ver los atajos.</div>
     </div>
 
     <div class="col right">
@@ -113,6 +115,8 @@
       <b>Mis landings</b>
       <span><button class="btn sm" id="mineNew">+ Nueva</button> <button class="btn sm ghost" id="mineClose">Cerrar</button></span>
     </div>
+    <div class="mine-tools"><input class="txt" id="mineSearch" type="search" placeholder="Buscar por nombre…" autocomplete="off" data-lpignore="true" data-1p-ignore><select class="sel" id="mineBrand"><option value="">Todas las marcas</option></select></div>
+    <div class="mine-tools"><button class="btn sm" id="mineJsonOut" title="Descarga la landing abierta como archivo .nc.json">⤓ Descargar .json</button><button class="btn sm" id="mineJsonIn" title="Carga un .nc.json en el editor">⤒ Cargar .json</button><input type="file" id="mineJsonFile" accept=".json,application/json" style="display:none"></div>
     <div id="mineList"><div class="empty">Cargando…</div></div>
   </div>
 </div>
@@ -128,6 +132,7 @@
 <script src="js/import.js"></script>
 <script src="js/listeners.js"></script>
 <script src="js/cloud.js"></script>
+<script src="js/workspace.js"></script>
 <script src="js/boot.js"></script>
 </body>
 </html>

@@ -1,5 +1,17 @@
 # Changelog
 
+## v3.1 — 2026-09-29 · Fase 2 (UX del editor)
+- Autoguardado: borrador local continuo con recuperación al abrir + sincronización en la nube a los 15 s si la landing ya existe. Indicador de estado y aviso al cerrar con cambios sin subir.
+- Historial de versiones en Supabase (`landing_versions`, máx. 30 por landing) con restaurar. Requiere `supabase-migration-v3.1.sql`; sin ella todo sigue funcionando y avisa.
+- Atajos: Ctrl+S, Ctrl+D, Ctrl+C/V de secciones entre landings, Supr, Alt+↑/↓, H, Esc, ? (también con el foco dentro del preview).
+- Ocultar sección sin borrarla (se ve atenuada en el preview y no se exporta).
+- Exportar / importar el proyecto como `.nc.json`.
+- Mis landings: buscador, filtro por marca, fecha relativa, marca la abierta y acceso a versiones.
+- Seguridad: los nombres de landing se escapan (antes permitían inyectar HTML).
+- “Nueva landing” ya no arrastra teléfono, endpoint ni GTM del cliente anterior.
+- Corrección: lo que se guarda es una copia congelada del estado en el momento de pulsar Guardar.
+- Tests: `tests/e2e-workspace.js` con un Supabase simulado.
+
 ## v3.0 — 2026-09-29 · Fase 0 + Fase 1
 
 ### Fase 0 · Cimientos

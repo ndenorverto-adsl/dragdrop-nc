@@ -73,16 +73,16 @@ function ensureNcIds(){let n=0;state.sections.forEach(s=>{if(s.type!=="imported"
 function updImportedStyle(s,ncid,st){const r=ncParse(s.props.html);const el=r.querySelector('[data-ncid="'+ncid+'"]');if(el){for(const k in st){el.style[k]=st[k];}s.props.html=r.innerHTML;}}
 function bakeIds(html){try{const r=ncParse(html);let i=0;r.querySelectorAll('*').forEach(el=>el.setAttribute('data-ncid','f'+(i++)));return r.innerHTML;}catch(e){return html;}}
 function freePreview(html){try{const r=ncParse(html);r.querySelectorAll('*').forEach(el=>{el.setAttribute('data-ncmove','1');el.setAttribute('draggable','false');});return r.innerHTML;}catch(e){return html;}}
-function sectionsHTML(forExport){return state.sections.map(s=>{
+function sectionsHTML(forExport){return state.sections.filter(s=>!(forExport&&s.hidden)).map(s=>{
   const sel=(!forExport&&s.id===state.selected);
-  const tb=sel?`<div class="nc-tb"><button data-act="up" data-actid="${s.id}" title="Subir">↑</button><button data-act="down" data-actid="${s.id}" title="Bajar">↓</button><button data-act="dup" data-actid="${s.id}" title="Duplicar">⧉</button><button data-act="del" data-actid="${s.id}" title="Eliminar sección">🗑</button></div>`:"";
+  const tb=sel?`<div class="nc-tb"><button data-act="up" data-actid="${s.id}" title="Subir">↑</button><button data-act="down" data-actid="${s.id}" title="Bajar">↓</button><button data-act="dup" data-actid="${s.id}" title="Duplicar">⧉</button><button data-act="hide" data-actid="${s.id}" title="${s.hidden?'Mostrar':'Ocultar (no se exporta)'}">${s.hidden?'◌':'👁'}</button><button data-act="copy" data-actid="${s.id}" title="Copiar (Ctrl+C)">⎘</button><button data-act="del" data-actid="${s.id}" title="Eliminar sección">🗑</button></div>`:"";
   let inner;
   if(s.freeHtml){inner=(!forExport&&state.freeMode)?freePreview(s.freeHtml):s.freeHtml;}
   else if(!forExport&&state.freeMode){s.freeHtml=bakeIds((s.type==="imported")?s.props.html:renderSection(s));inner=freePreview(s.freeHtml);}
   else if(!forExport&&s.type==="imported"){inner=importedPreviewHtml(s.props.html);}
   else{inner=(s.type==="imported")?s.props.html:renderSection(s);}
   const drag=(forExport||(!forExport&&state.freeMode))?'':'draggable="true"';
-  return `<div data-sec="${s.id}" ${drag} class="${sel?'sel':''}">${tb}${inner}</div>`;
+  return `<div data-sec="${s.id}" ${drag} class="${sel?'sel':''}${(!forExport&&s.hidden)?' nc-hid':''}">${tb}${inner}</div>`;
 }).join("\n");}
 function _freeSetT(html,ncid,t){try{const r=ncParse(html);const el=r.querySelector('[data-ncid="'+ncid+'"]');if(el){el.style.transform=t;return r.innerHTML;}}catch(e){}return html;}
 function _freeDel(html,ncid){try{const r=ncParse(html);const el=r.querySelector('[data-ncid="'+ncid+'"]');if(el)el.remove();return r.innerHTML;}catch(e){}return html;}
@@ -122,6 +122,8 @@ function buildDoc(forExport){
     [data-sec].sel{outline:2px solid var(--bp);outline-offset:-2px}
     [data-sec][draggable=true]:hover{cursor:grab}
     [data-sec].nc-dragging{opacity:.4}
+    [data-sec].nc-hid>*:not(.nc-tb){opacity:.28;filter:grayscale(1)}
+    [data-sec].nc-hid::after{content:'Oculta · no se exporta';position:absolute;top:8px;left:8px;z-index:29;background:#111826;color:#dfe6f0;font:600 11px system-ui;padding:4px 8px;border-radius:6px}
     .nc-drop-ind{height:5px;border-radius:5px;background:var(--bp);box-shadow:0 0 10px color-mix(in srgb,var(--bp) 60%,transparent);margin:0}
     .nc-tb{position:absolute;top:8px;right:8px;z-index:30;display:flex;gap:4px;background:#111826;border:1px solid #2a3345;border-radius:8px;padding:3px}
     .nc-tb button{background:transparent;border:0;color:#dfe6f0;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:5px}
@@ -147,6 +149,9 @@ function buildDoc(forExport){
     },true);
     document.body.addEventListener('input',function(e){var t=e.target.closest&&e.target.closest('[data-nce="1"]');if(t){var s=t.closest('[data-sec]');if(s)parent.postMessage({nc:'edit',id:s.getAttribute('data-sec'),k:t.getAttribute('data-nctext'),val:t.textContent},'*');}});
     document.body.addEventListener('submit',function(e){e.preventDefault();},true);
+    document.addEventListener('keydown',function(e){var t=e.target;var inF=t&&(t.isContentEditable||/INPUT|TEXTAREA|SELECT/.test(t.tagName||''));var k=(e.key||'').toLowerCase();var c=e.ctrlKey||e.metaKey;
+      if(inF&&!(c&&k==='s'))return;if(window.__free&&!c)return;
+      if((c&&['s','z','y','d','c','v'].indexOf(k)>-1)||(!c&&['delete','backspace','h','escape','?'].indexOf(k)>-1)||(e.altKey&&/arrow(up|down)/.test(k))){e.preventDefault();parent.postMessage({nc:'key',key:e.key,ctrl:c,shift:e.shiftKey,alt:e.altKey},'*');}});
     if(window.__free){var _mv=null,_moved=false,_sx,_sy,_bx,_by,_sel=null;
       var xbtn=document.createElement('div');xbtn.textContent='🗑';xbtn.style.cssText='position:fixed;z-index:100000;display:none;width:26px;height:26px;line-height:26px;text-align:center;background:#e5484d;color:#fff;border-radius:6px;cursor:pointer;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.35)';document.body.appendChild(xbtn);
       function _curT(el){var m=(el.style.transform||'').match(/translate\(\s*(-?[0-9.]+)px\s*,\s*(-?[0-9.]+)px\s*\)/);return m?[parseFloat(m[1]),parseFloat(m[2])]:[0,0];}

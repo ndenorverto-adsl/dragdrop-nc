@@ -26,9 +26,10 @@ async function open(root, opts = {}) {
   await ctx.route('**/*', route => {
     const u = route.request().url();
     if (u.startsWith('http://localhost:' + port)) {
-      if (!opts.cloud && /\/config\.js$/.test(u)) return route.fulfill({ body: '/* test: sin nube */', contentType: 'application/javascript' });
+      if (!opts.cloud && /\/config\.js$/.test(u)) return route.fulfill({ body: opts.fake ? '/* config en fake */' : '/* test: sin nube */', contentType: 'application/javascript' });
       return route.continue();
     }
+    if (opts.fake && /supabase-js/.test(u)) return route.fulfill({ body: opts.fake, contentType: 'application/javascript' });
     for (const [re, file, ct] of MAP) if (re.test(u)) return route.fulfill({ body: fs.readFileSync(file), contentType: ct });
     if (/fonts\.(googleapis|gstatic)/.test(u)) return route.fulfill({ body: '', contentType: 'text/css' });
     return route.fulfill({ status: 204, body: '' }); // resto de red externa: vacío
@@ -40,6 +41,6 @@ async function open(root, opts = {}) {
   page.on('dialog', d => d.accept());
   await page.goto(`http://localhost:${port}/${opts.file || 'index.html'}`);
   await page.waitForTimeout(opts.wait || 1200);
-  return { page, errors, port, close: async () => { await browser.close(); srv.close(); } };
+  return { page, ctx, errors, port, close: async () => { await browser.close(); srv.close(); } };
 }
 module.exports = { open, serve };

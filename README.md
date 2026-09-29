@@ -15,15 +15,27 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   render.js           #   genera el documento HTML (preview y export)
   export-pro.js       #   formularios, consentimiento, tracking, SEO y checklist
   editor.js           #   preview, paneles, historial, export ZIP/HTML
-  lorem.js · import.js · listeners.js · cloud.js · boot.js
+  cloud.js            #   Supabase: guardar, Mis landings, login
+  workspace.js        #   autoguardado, atajos, copiar/pegar, versiones, .json
+  lorem.js · import.js · listeners.js · boot.js
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 config.js             # claves públicas de Supabase (a partir de config.example.js)
-supabase-schema.sql   # tablas, RLS y bucket
+supabase-schema.sql   # esquema completo (instalación nueva)
+supabase-migration-v3.1.sql  # añade el historial de versiones a una instalación existente
 tests/                # tests locales (no se despliegan)
 vercel.json · .vercelignore · .gitignore
 ```
 
 > Para añadir un archivo JS nuevo: créalo en `js/` y añade su `<script>` en `index.html` en el orden correcto.
+
+## Trabajo en el editor
+
+- **Autoguardado**: cada cambio se guarda como borrador en el navegador; al volver a abrir la herramienta ofrece recuperarlo. Si la landing ya está en la nube, se sincroniza sola a los 15 s de dejar de editar.
+- **Estado** junto al nombre: *✓ Guardado*, *● Sin guardar*, *Guardando…*. Al cerrar la pestaña con cambios sin subir, el navegador avisa.
+- **Versiones**: cada guardado manual (💾 o Ctrl+S) crea una versión (máx. 30 por landing). En *Mis landings* → 🕘 → Restaurar.
+- **Atajos** (pulsa `?`): Ctrl+S, Ctrl+Z/Y, Ctrl+D duplicar, Ctrl+C/V copiar y pegar secciones (también entre landings), Supr, Alt+↑/↓, `H` ocultar sección (no se exporta), Esc.
+- **Proyecto .json**: en *Mis landings* puedes descargar la landing abierta o cargar un `.nc.json`, también sin nube.
+- **Nueva landing** reinicia teléfono, WhatsApp, endpoint, GTM y URLs legales para no arrastrar datos de otro cliente (conserva la marca).
 
 ## Qué genera el export
 
@@ -43,6 +55,7 @@ POST `multipart/form-data` al endpoint. Si el endpoint responde con CORS (`Acces
 1. Proyecto en https://supabase.com → **Project Settings → API**: copia la URL y la clave **publishable/anon** (nunca la secreta).
 2. **SQL Editor**: ejecuta `supabase-schema.sql`.
 3. **Authentication → Users → Add user**: usuario del equipo.
+4. Si ya tenías la base creada antes de la v3.1, ejecuta además `supabase-migration-v3.1.sql` (historial de versiones).
 
 ### 2. Configuración
 Copia `config.example.js` a `config.js` y rellénalo. La clave publishable es pública por diseño (RLS protege los datos).
