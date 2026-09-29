@@ -115,3 +115,20 @@ iframe#pv{border:0;display:block;width:100%;height:calc(100vh - 150px);backgroun
 .kbd-list{display:grid;gap:7px}
 .kbd-list div{display:flex;gap:12px;align-items:center;font-size:12.5px;color:var(--muted)}
 .kbd-list kbd{min-width:150px;font:600 11.5px/1 'Inter',system-ui;color:var(--ink);background:var(--panel2);border:1px solid var(--line2);border-bottom-width:2px;border-radius:6px;padding:6px 8px}
+
+/* ---- Galería de plantillas (v4) ---- */
+.tpl-box{width:1180px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column}
+.tpl-filters{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;align-items:center}
+.tpl-filters .sep{width:1px;height:20px;background:var(--line);margin:0 6px}
+.chipf{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:6px 12px;font-size:12px;cursor:pointer}
+.chipf.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));grid-auto-rows:max-content;gap:14px;overflow:auto;padding:2px;min-height:0;flex:1}
+.tpl-card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.tpl-card.legacy{opacity:.72}
+.tpl-thumb{height:230px;flex:0 0 230px;overflow:hidden;position:relative;background:#fff}
+.tpl-thumb iframe{width:1280px;height:1150px;border:0;transform:scale(.2);transform-origin:0 0;position:absolute;left:0;top:0}
+.tpl-meta{padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.tpl-meta b{font-size:13.5px}
+.tpl-meta p{color:var(--muted);font-size:11.5px;line-height:1.45;margin:0;flex:1}
+.tpl-tags{display:flex;flex-wrap:wrap;gap:4px}.tpl-tags .tag{margin:0}
+.tpl-meta .btn{align-self:flex-start}

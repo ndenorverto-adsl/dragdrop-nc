@@ -8,7 +8,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok  ' : 'FAIL') + ' ' + 
 (async () => {
   const app = await open(path.resolve(process.argv[2]));
   const html = await app.page.evaluate(() => {
-    loadTemplate('Conversión (CRO)');
+    loadTemplate('Oferta con precio'); state.sections.find(x => x.type === 'da_faq').props.items = '¿Hay permanencia?|No, ninguna.\n¿Cuánto tarda?|Menos de una semana.';
     Object.assign(state.settings, { tel: '910 000 000', wa: '34600000000', endpoint: 'https://leads.example.test/submit', gtm: 'GTM-TEST123',
       urlPrivacy: 'https://example.test/privacidad', urlCookies: 'https://example.test/cookies', legalOwner: 'Cliente Demo SL',
       pageUrl: 'https://ofertas.example.test/fibra', title: 'Fibra 1Gb al mejor precio | Demo', desc: 'Contrata fibra 1Gb sin permanencia. Te llamamos gratis en menos de 24 horas.', thanks: true });

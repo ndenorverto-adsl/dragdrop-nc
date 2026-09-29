@@ -14,7 +14,7 @@ function renderPalette(){
   const ps=document.getElementById("palSearch");
   let q=(ps&&ps.value||"").toLowerCase();
   if(q.indexOf("@")>-1){ q=""; if(ps)ps.value=""; }   // el navegador autocompleta el email: lo descartamos
-  const cats={};ORDER.forEach(t=>{const b=LIB[t];if(b.brand&&b.brand!==state.settings.brand)return;if(q&&!(b.label.toLowerCase().includes(q)||b.cat.toLowerCase().includes(q)))return;(cats[b.cat]=cats[b.cat]||[]).push(t);});
+  const cats={};ORDER.forEach(t=>{const b=LIB[t];if(!b||b.hidden)return;if(b.brand&&b.brand!==state.settings.brand)return;if(q&&!(b.label.toLowerCase().includes(q)||b.cat.toLowerCase().includes(q)))return;(cats[b.cat]=cats[b.cat]||[]).push(t);});
   let h="";Object.keys(cats).forEach(cat=>{h+=`<div class="paneltitle">${cat}</div><div class="cat">`;
     cats[cat].forEach(t=>{const b=LIB[t];h+=`<div class="chip" draggable="true" data-add="${t}"><span class="ico">${b.ico}</span> ${b.label}<span class="k">+</span></div>`;});h+="</div>";});
   const p=document.getElementById("palette");p.innerHTML=h||`<div class="empty">Sin resultados</div>`;

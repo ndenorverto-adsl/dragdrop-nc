@@ -1,5 +1,19 @@
 # Changelog
 
+## v3.2 — 2026-09-29 · Plantillas nuevas (entrega 1)
+- 3 direcciones visuales como familias de bloques, adaptadas a la marca cargada:
+  - **A · Oferta directa** (`da_*`): topbar de urgencia, nav con teléfono, hero con precio, confianza, tarifas, ventajas, FAQ, CTA final, footer y barra fija móvil.
+  - **B · Confianza editorial** (`db_*`): nav, hero con multipaso de 2 pasos, sellos, pasos, comparativa, opiniones, FAQ, CTA final, footer y barra fija móvil.
+  - **C · Premium producto** (`dc_*`): nav glass, hero oscuro con buscador, logos, bento, FAQ, CTA final, footer y barra fija móvil.
+- Cada hero y cada barra fija tienen **canal principal** (formulario / llamada / WhatsApp). El formulario de callback se mantiene siempre.
+- 6 plantillas por arquetipo: Oferta con precio · Click-to-call · Tarifas y comparador · Confianza + multipaso · Autoridad y prueba social · Premium producto.
+- **Galería de plantillas** con miniaturas reales y filtros (arquetipo / sector / cliente / dirección) en lugar del desplegable.
+- Fuera las plantillas literales (Apple, Movistar, T-Mobile, O2, MyTraffic, AB Tasty) y las 6 genéricas antiguas. Sus bloques ya no salen en la paleta, pero las landings guardadas siguen funcionando.
+- Las marcas de referencia pasan a llamarse **estilos visuales** sin marca de terceros ("Minimal producto", "Telco bold", "SaaS").
+- Accesibilidad: con marcas de primario claro (p. ej. amarillo) los textos de acento usan la tinta de la marca para mantener el contraste.
+- Corrección: el bloque "Multipaso" mostraba todas las opciones en un único botón (separaba por "|" en vez de por comas).
+- Tests: galería en el smoke test y `tests/shots-v4.js` para capturar todas las plantillas en escritorio y móvil.
+
 ## v3.1 — 2026-09-29 · Fase 2 (UX del editor)
 - Autoguardado: borrador local continuo con recuperación al abrir + sincronización en la nube a los 15 s si la landing ya existe. Indicador de estado y aviso al cerrar con cambios sin subir.
 - Historial de versiones en Supabase (`landing_versions`, máx. 30 por landing) con restaurar. Requiere `supabase-migration-v3.1.sql`; sin ella todo sigue funcionando y avisa.

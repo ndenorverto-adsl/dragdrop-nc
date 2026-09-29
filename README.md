@@ -11,10 +11,12 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   brands.js           #   marcas, fuentes y style kits
   core.js             #   estado, ajustes por defecto y helpers
   blocks.js           #   librería de bloques (LIB)
+  blocks-v4.js        #   familias A/B/C (da_ / db_ / dc_) + su CSS
   templates.js        #   plantillas
   render.js           #   genera el documento HTML (preview y export)
   export-pro.js       #   formularios, consentimiento, tracking, SEO y checklist
   editor.js           #   preview, paneles, historial, export ZIP/HTML
+  templates-v4.js     #   catálogo de plantillas + galería
   cloud.js            #   Supabase: guardar, Mis landings, login
   workspace.js        #   autoguardado, atajos, copiar/pegar, versiones, .json
   lorem.js · import.js · listeners.js · boot.js
@@ -36,6 +38,15 @@ vercel.json · .vercelignore · .gitignore
 - **Atajos** (pulsa `?`): Ctrl+S, Ctrl+Z/Y, Ctrl+D duplicar, Ctrl+C/V copiar y pegar secciones (también entre landings), Supr, Alt+↑/↓, `H` ocultar sección (no se exporta), Esc.
 - **Proyecto .json**: en *Mis landings* puedes descargar la landing abierta o cargar un `.nc.json`, también sin nube.
 - **Nueva landing** reinicia teléfono, WhatsApp, endpoint, GTM y URLs legales para no arrastrar datos de otro cliente (conserva la marca).
+
+## Plantillas
+
+Galería (▦ Plantillas) con tres formas de encontrar punto de partida: **Arquetipo**, **Sector** y **Cliente**, filtrables por dirección visual:
+- **A · Oferta directa**: precio y llamada primero (telco, energía).
+- **B · Confianza editorial**: prueba social y multipaso (alarmas, seguros, salud, legal).
+- **C · Premium producto**: hero oscuro y formulario tipo buscador (lanzamientos).
+
+Los bloques toman colores y tipografías de la marca activa. Los datos de negocio van como `{{PLACEHOLDER}}` y el checklist los señala antes de exportar.
 
 ## Qué genera el export
 

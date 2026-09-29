@@ -182,7 +182,7 @@ const LIB={
       <div class="mb-4" style="height:6px;background:var(--bsoft);border-radius:50rem;overflow:hidden"><div data-quiz-bar style="height:100%;width:0;background:var(--bp);transition:width .3s"></div></div>
       ${Q.map((q,i)=>`<div data-step style="display:none">
         <div class="fw-semibold mb-3 text-center" style="color:var(--bink)">${esc(q.q||"")}</div>
-        <div class="d-grid gap-2">${cells(q.options||"").map(o=>`<button type="button" class="btn btn-ghost" data-opt="${esc(o)}" data-q="q${i}">${esc(o)}</button>`).join("")}</div>
+        <div class="d-grid gap-2">${String(q.options||"").split(/[|,]/).map(o=>o.trim()).filter(Boolean).map(o=>`<button type="button" class="btn btn-ghost" data-opt="${esc(o)}" data-q="q${i}">${esc(o)}</button>`).join("")}</div>
         ${i>0?`<button type="button" class="btn btn-sm w-100 mt-3" data-quiz-back style="color:var(--bmuted)">← Atrás</button>`:""}
       </div>`).join("")}
       <div data-step style="display:none">

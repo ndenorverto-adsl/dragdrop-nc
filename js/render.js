@@ -192,7 +192,7 @@ ${forExport?ncHeadMeta(secs):''}
 <meta property="og:title" content="${esc(ph(state.settings.title,"TITULO_SEO"))}"><meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="${collectFonts(b)}" rel="stylesheet"><link href="${bsCSS}" rel="stylesheet">${st.importCSS||""}
-<style>:root{${b.vars}--fhead:${b.fhead};--fbody:${b.fbody}}${baseCSS()}${ncProCSS()}${b.profileCSS||''}${STYLEKITS[st.styleKit]||''}</style>
+<style>:root{${b.vars}--fhead:${b.fhead};--fbody:${b.fbody}}${baseCSS()}${ncProCSS()}${ncDirCSS()}${b.profileCSS||''}${STYLEKITS[st.styleKit]||''}</style>
 ${gtmHead}</head><body class="cta-${st.ctaStyle||'brand'}${st.motion?' nc-motion':''}" data-ctaaction="${st.ctaAction||'scroll'}" data-nc="${esc(JSON.stringify(ncRuntimeConfig()))}" data-tel="${esc(ph(st.tel,'TELEFONO').replace(/\s/g,''))}" data-wa="${esc(ph(st.wa,'WHATSAPP').replace(/[^0-9]/g,''))}">
 ${gtmBody}
 ${secs}

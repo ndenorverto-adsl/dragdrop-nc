@@ -12,7 +12,7 @@ const { open } = require('./harness');
   await step('dispositivo móvil', () => p.locator('[data-dev="mobile"]').click());
   await step('duplicar/borrar', () => p.evaluate(() => { const id = state.sections[0].id; rowAction(id, 'dup'); rowAction(state.sections[0].id, 'del'); }));
   await step('undo/redo', () => p.evaluate(() => { undo(); redo(); }));
-  await step('plantilla desde select', async () => { const v = await p.locator('#tplSel option').nth(3).getAttribute('value'); await p.selectOption('#tplSel', v); });
+  await step('galería de plantillas', async () => { await p.locator('#btnTpl').click(); await p.waitForSelector('#tplGrid .tpl-card'); await p.waitForSelector('#tplGrid iframe', { timeout: 5000 }); await p.locator('#tplGrid [data-use="Confianza + multipaso"]').click(); await p.waitForTimeout(300); const t = await p.evaluate(() => state.sections[0].type); if (t !== 'db_nav') throw new Error('no cargó: ' + t); });
   await step('cambio de marca', async () => { const v = await p.locator('#brandTop option').nth(5).getAttribute('value'); await p.selectOption('#brandTop', v); });
   await step('importar HTML', () => p.evaluate(() => importFromText('<section><h1>Hola</h1><p>Texto</p></section><section><h2>Otra</h2></section>')));
   await step('exportar ZIP', async () => { await p.evaluate(()=>{state.settings.tel='600111222';}); const [d] = await Promise.all([p.waitForEvent('download', { timeout: 5000 }), p.evaluate(()=>exportZip())]); log.push('    zip: ' + d.suggestedFilename()); });

@@ -20,7 +20,5 @@ document.getElementById("dropZone").addEventListener('dragover',e=>e.preventDefa
 document.getElementById("dropZone").addEventListener('drop',e=>{e.preventDefault();showDrop(false);if(dragType){addSection(dragType);dragType=null;}});
 (function(){const sel=document.getElementById("brandTop");sel.innerHTML=brandOptions(state.settings.brand);sel.value=state.settings.brand;
   sel.addEventListener('change',e=>{commit();state.settings.brand=e.target.value;renderPalette();renderPreview();renderRight();});})();
-(function(){const t=document.getElementById("tplSel");t.innerHTML='<option value="">Plantilla…</option>'+Object.keys(CLIENT_HTML).map(n=>`<option>${n}</option>`).join("")+Object.keys(TEMPLATES).map(n=>`<option>${n}</option>`).join("");
-  Object.entries(CLIENT_HTML).forEach(([n,u])=>{fetch(u,{method:'HEAD'}).then(r=>{if(!r.ok)throw 0;}).catch(()=>{[...t.options].forEach(o=>{if(o.text===n)o.remove();});});});
-  t.addEventListener('change',e=>{const v=e.target.value;if(v){if(CLIENT_HTML[v])loadClientHtml(v);else loadTemplate(v);}e.target.value="";});})();
+document.getElementById("btnTpl").addEventListener("click",openTplGallery);
 /* atajos de teclado: ver js/workspace.js */

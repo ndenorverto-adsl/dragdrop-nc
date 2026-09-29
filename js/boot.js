@@ -1,6 +1,6 @@
 /* ---------- SEED ---------- */
 syncCustom();
-TEMPLATES["Captación · llamada"].forEach(t=>state.sections.push({id:nid(),type:t,props:LIB[t].def(),style:{}}));
+tplSections("Oferta con precio").forEach(s=>{s.id=nid();state.sections.push(s);});
 renderPalette();setTab("content");setDevice("desktop");renderRight();renderPreview();updHist();
 ncInitWorkspace();
 checkAuth();
