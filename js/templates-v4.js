@@ -59,7 +59,7 @@ const V4_SECTORS={
 const V4_SEC_ILLUS={"Telco":"wifi","Energía":"bolt","Alarmas":"shield","Seguros":"umbrella","Salud":"heart","Legal":"scale","Agua":"water"};
 function v4SectorSections(sec,canal,over){
   const S=V4_SECTORS[sec],o=over||{};const h=Object.assign({illus:V4_SEC_ILLUS[sec]||"spark"},S.hero,{canal},o.hero||{});
-  if(!h.badge){const src=S.dir==="A"?S.trust:h.proof;const first=String(src||"").split("\n")[0];if(first)h.badge=first;}
+
   if(S.dir==="A"){
     if(canal==="call"){h.eyebrow=h.eyebrow||"Atención inmediata";h.cardSub="Un asesor te atiende ahora y te confirma el precio final.";}
     if(canal==="wa")h.cardSub="Te respondemos por WhatsApp en minutos.";

@@ -64,7 +64,9 @@ function baseCSS(){return `
 
 function styleOf(s){return Object.assign({},STYLE_DEF,LIB[s.type].styleDef||{},s.style||{});}
 function renderSection(s){
-  const lib=LIB[s.type]; const inner=lib.render(s.props||{});
+  const lib=LIB[s.type];
+  if(lib.raw&&/^d[abc]_/.test(s.type)){const st=v4Style(s);return ncEnhanceHTML(v4Wrap(s,lib.render(Object.assign({},s.props||{},{_st:st}))),s);}
+  const inner=lib.render(s.props||{});
   if(lib.raw) return ncEnhanceHTML(inner,s);
   return ncEnhanceHTML(secOpen(styleOf(s))+inner+secClose(),s);
 }
@@ -193,12 +195,12 @@ ${forExport?ncHeadMeta(secs):''}
 <meta property="og:title" content="${esc(ph(state.settings.title,"TITULO_SEO"))}"><meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="${collectFonts(b)}" rel="stylesheet"><link href="${bsCSS}" rel="stylesheet">${st.importCSS||""}
-<style>:root{${b.vars}--fhead:${b.fhead};--fbody:${b.fbody}}${ncLookFontVars()}${baseCSS()}${ncProCSS()}${ncDirCSS()}${ncLookCSS()}${b.profileCSS||''}${STYLEKITS[st.styleKit]||''}${forExport?'':NC_PH_PREVIEW_CSS}</style>
-${gtmHead}</head><body class="cta-${st.ctaStyle||'brand'}${st.motion?' nc-motion':''}${ncLook()!=='base'?' lk-'+ncLook():''}" data-ctaaction="${st.ctaAction||'scroll'}" data-nc="${esc(JSON.stringify(ncRuntimeConfig()))}" data-tel="${esc(ph(st.tel,'TELEFONO').replace(/\s/g,''))}" data-wa="${esc(ph(st.wa,'WHATSAPP').replace(/[^0-9]/g,''))}">
+<style>:root{${b.vars}--fhead:${b.fhead};--fbody:${b.fbody}}${ncLookFontVars()}${ncMobileVars()}${baseCSS()}${ncProCSS()}${ncDirCSS()}${ncLookCSS()}${ncSecCSS()}${b.profileCSS||''}${STYLEKITS[st.styleKit]||''}${forExport?'':NC_PH_PREVIEW_CSS}</style>
+${gtmHead}</head><body class="cta-${st.ctaStyle||'brand'}${st.motion?' nc-motion':''}${ncLook()!=='base'?' lk-'+ncLook():''}${ncBodyMobileClasses()}" data-ctaaction="${st.ctaAction||'scroll'}" data-nc="${esc(JSON.stringify(ncRuntimeConfig()))}" data-tel="${esc(ph(st.tel,'TELEFONO').replace(/\s/g,''))}" data-wa="${esc(ph(st.wa,'WHATSAPP').replace(/[^0-9]/g,''))}">
 ${gtmBody}
 ${forExport?secs:ncPhChips(secs)}
 ${modalPro}${cookie}
 <script src="${bsJS}"><\/script>
-${forExport?'<script>'+ncRuntimeJS()+'<\/script>':''}${widgets}${editor}
+${forExport?'<script>'+ncRuntimeJS()+'<\/script>':''}<script>${NC_STICKY_JS}<\/script>${widgets}${editor}
 </body></html>`;
 }

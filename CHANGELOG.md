@@ -1,5 +1,14 @@
 # Changelog
 
+## v3.5 — 2026-09-29 · Menos "IA" y móvil rehecho
+- **Fuera los tics de web generada**: sin ilustración abstracta de degradado, sin sello de estrella por defecto, sin iconos de purpurina, sin titulares con degradado; etiquetas sin "píldora" y brillos de la dirección C más sobrios. En Suave orgánico, subrayado dibujado en lugar de texto con degradado.
+- **Mockups de producto** dibujados con los datos de la landing: router y tarjeta de tarifa (telco), factura con curva de precios por horas (energía), app de alarma (seguridad), póliza (seguros), tarjeta sanitaria y cita (salud), expediente con sello y fases (legal), agua filtrada. Cada estilo los viste a su manera.
+- **Imagen protagonista**: automática, mockup, foto, solo tipografía o sin imagen. Tratamiento de foto: natural, duotono con el color de la marca, blanco y negro o cálido. En Brutalista y Retro el sello muestra el precio real del bloque.
+- **Variantes automáticas por estilo**: Ventajas (tarjetas, numeradas, filas) y Barra de confianza (fila, cifras grandes, cinta en movimiento). También se eligen a mano.
+- **Móvil rehecho**: formulario por encima del pliegue en todos los heros (orden configurable), botones a ancho completo de 52 px, campos de 52 px, tarifas y opiniones en carrusel deslizable, ventajas y pasos en lista, comparativa convertida en tarjetas con etiquetas, márgenes de 20 px y espaciado coherente.
+- **Controles de móvil por bloque** (pestaña Estilo de los bloques A/B/C): orden del hero, mostrar u ocultar la imagen, composición (carrusel/lista/cuadrícula), tamaño de titulares, espaciado y alineación. Más fondo, espaciado y alineación para escritorio.
+- **Ajustes globales de móvil**: tamaño de titulares, espaciado entre secciones y barra fija (aparece al dejar atrás el formulario o siempre; barra, flotante o un solo botón).
+
 ## v3.4 — 2026-09-29 · Estilos de diseño
 - **8 estilos de diseño** (panel Global → "Estilo de diseño"): Editorial, Swiss grid, Brutalista táctil, Suave orgánico, Tech aurora, Corporativo premium, Retro cálido y Minimal lujo, además de Base. Cambian tipografía, formas, sombras, fondos, texturas y adornos de todos los bloques A/B/C a la vez. **Los colores siguen siendo los de la marca.**
 - Interruptor **"Usar tipografía de la marca"**: mantiene las fuentes del cliente con la forma y la profundidad del estilo.

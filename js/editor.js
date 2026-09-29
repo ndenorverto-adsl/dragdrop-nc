@@ -111,6 +111,9 @@ function renderRight(){
     bindContentFields(cf,s.props,()=>patchSection(s.id),LIB[s.type].fields);}
   const sf=document.getElementById("styleFields");
   if(!s){sf.innerHTML=`<div class="empty">Selecciona una sección para editar su estilo.</div>`;}
+  else if(LIB[s.type].raw&&/^d[abc]_/.test(s.type)){const st=Object.assign(v4Style(s),{_type:s.type});s.style=s.style||{};
+    sf.innerHTML=V4_STYLE_FIELDS.filter(f=>!f.when||f.when(st)).map(f=>f.t==="head"?`<div class="paneltitle" style="padding:12px 0 4px">${f.l}</div>`:`<div class="fld"><label>${f.l}</label>${fieldHTML(f,st)}</div>`).join("")+`<div class="help">Los ajustes de móvil se aplican por debajo de 768 px. Revisa el resultado con el botón “Móvil”.</div>`;
+    sf.querySelectorAll('select[data-fk]').forEach(inp=>inp.addEventListener('change',()=>{commit();s.style[inp.dataset.fk]=inp.value;renderPreview();}));}
   else if(LIB[s.type].raw){sf.innerHTML=`<div class="empty">Esta sección estructural no usa controles de estilo (formato fijo).</div>`;}
   else{const st=styleOf(s);s.style=s.style||{};
     sf.innerHTML=STYLE_FIELDS.filter(f=>!f.when||f.when(st)).map(f=>`<div class="fld"><label>${f.l}</label>${fieldHTML(f,st)}</div>`).join("");
@@ -154,6 +157,11 @@ function renderGlobal(){
     <div class="fld"><label>Estilo de botón (CTA)</label><select id="gCtaStyle">${[["brand","Marca"],["apple","Apple (pill azul)"],["instagram","Instagram (degradado)"],["ncgreen","Verde NC (botonazo)"],["neon","Neón"],["outline","Contorno"],["dark","Oscuro"],["pill","Pastilla marca"]].map(o=>`<option value="${o[0]}" ${state.settings.ctaStyle===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select></div>
     <div class="fld"><label>Acción del CTA principal</label><select id="gCtaAction">${[["scroll","Ir al formulario"],["popup","Abrir popup de contacto"],["popupimg","Popup de contacto con imagen"],["call","Llamar (tel:)"],["whatsapp","WhatsApp"]].map(o=>`<option value="${o[0]}" ${state.settings.ctaAction===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Aplica a todos los botones “Ir al formulario”.</div></div>
     ${(state.settings.ctaAction==='popup'||state.settings.ctaAction==='popupimg')?`<div class="fld"><label>Título del popup</label><input id="gPopTitle" value="${esc(state.settings.popupTitle)}" placeholder="¿Necesitas ayuda?"></div>${state.settings.ctaAction==='popupimg'?`<div class="fld"><label>Imagen del popup</label>${fieldHTML({k:"popupImg",l:"",t:"image"},state.settings)}</div>`:''}`:''}
+    <div class="paneltitle" style="padding:10px 0 4px">Móvil</div>
+    <div class="fld"><label>Tamaño de titulares</label><select id="gMTitle">${[["S","Pequeño"],["M","Normal"],["L","Grande"]].map(o=>`<option value="${o[0]}" ${(st.mTitle||'M')===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select></div>
+    <div class="fld"><label>Espaciado entre secciones</label><select id="gMSpace">${[["S","Compacto"],["M","Normal"],["L","Amplio"]].map(o=>`<option value="${o[0]}" ${(st.mSpace||'M')===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select></div>
+    <div class="fld"><label>Barra fija: cuándo aparece</label><select id="gStkShow">${[["scroll","Al dejar atrás el formulario"],["always","Siempre"]].map(o=>`<option value="${o[0]}" ${(st.stickyShow||'scroll')===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select></div>
+    <div class="fld"><label>Barra fija: estilo</label><select id="gStkStyle">${[["bar","Barra (del estilo)"],["float","Flotante"],["single","Un solo botón (el principal)"]].map(o=>`<option value="${o[0]}" ${(st.stickyStyle||'bar')===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Los botones y el canal principal se eligen en el bloque “Barra fija móvil”.</div></div>
     <div class="paneltitle" style="padding:10px 0 4px">Formulario y RGPD</div>
     <div class="fld inline"><label>Gracias sin recargar (AJAX)</label><input type="checkbox" id="gThanks" ${st.thanks?'checked':''}></div>
     ${st.thanks?`<div class="fld"><label>Texto de gracias</label><input id="gThanksTxt" value="${esc(st.thanksText)}"></div>`:''}
@@ -194,6 +202,7 @@ function renderGlobal(){
   cnt("gTitle","gTitleCnt",30,60);cnt("gDesc","gDescCnt",70,155);
   const cs=document.getElementById("gCtaStyle");if(cs)cs.addEventListener('change',()=>{commit();state.settings.ctaStyle=cs.value;renderPreview();});
   gf.querySelectorAll('[data-look]').forEach(b=>b.addEventListener('click',()=>{commit();state.settings.look=b.dataset.look;renderPreview();renderGlobal();if(state.selected)renderRight();}));
+  [["gMTitle","mTitle"],["gMSpace","mSpace"],["gStkShow","stickyShow"],["gStkStyle","stickyStyle"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{commit();state.settings[k]=el.value;renderPreview();});});
   const lf=document.getElementById("gLookFont");if(lf)lf.addEventListener('change',()=>{commit();state.settings.lookBrandFont=lf.checked;renderPreview();});
   const sk=document.getElementById("gStyleKit");if(sk)sk.addEventListener('change',()=>{commit();state.settings.styleKit=sk.value;renderPreview();});
   const mo=document.getElementById("gMotion");if(mo)mo.addEventListener('change',()=>{commit();state.settings.motion=mo.checked;renderPreview();});

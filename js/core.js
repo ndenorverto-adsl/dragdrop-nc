@@ -1,5 +1,5 @@
 /* ---------- ESTADO ---------- */
-const state={ settings:{brand:"nc",title:"",desc:"",tel:"",wa:"",endpoint:"",gtm:"",slug:"landing",ctaStyle:"brand",ctaAction:"scroll",popupTitle:"¿Necesitas ayuda?",popupImg:"",cookies:false,thanks:true,thanksText:"¡Gracias! Te llamamos enseguida.",styleKit:"none",look:"base",lookBrandFont:false,motion:false,importCSS:"",consent:"banner",urlPrivacy:"",urlCookies:"",legalOwner:"",privacyCheck:true,privacyText:"He leído y acepto la",attribution:true,ecData:true,thanksUrl:"",noindex:true,pageUrl:"",ogImage:"",favicon:""},
+const state={ settings:{brand:"nc",title:"",desc:"",tel:"",wa:"",endpoint:"",gtm:"",slug:"landing",ctaStyle:"brand",ctaAction:"scroll",popupTitle:"¿Necesitas ayuda?",popupImg:"",cookies:false,thanks:true,thanksText:"¡Gracias! Te llamamos enseguida.",styleKit:"none",look:"base",lookBrandFont:false,mTitle:"M",mSpace:"M",stickyShow:"scroll",stickyStyle:"bar",motion:false,importCSS:"",consent:"banner",urlPrivacy:"",urlCookies:"",legalOwner:"",privacyCheck:true,privacyText:"He leído y acepto la",attribution:true,ecData:true,thanksUrl:"",noindex:true,pageUrl:"",ogImage:"",favicon:""},
   sections:[], selected:null, tab:"content", device:"desktop" };
 const SETTINGS_DEFAULT=JSON.parse(JSON.stringify(state.settings));
 let uid=1; const nid=()=>"s"+(uid++);

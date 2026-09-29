@@ -12,8 +12,10 @@ const v4Act=()=>ph(state.settings.endpoint,'ENDPOINT_FORMULARIO');
 const v4Wa=()=>`<a href="${waHref()}" target="_blank" rel="noopener" data-cta="whatsapp"`;
 const v4Tel=()=>`<a href="${telHref()}" data-cta="call"`;
 const v4Icon={get call(){return ncIco("phone")},get wa(){return ncIco("message-circle")},get form(){return ncIco("mail")}};
+const v4ML=(p,d)=>"nc-m-"+(((p._st||{}).mLayout)&&p._st.mLayout!=="auto"?p._st.mLayout:d);
+const v4MO=p=>{const t=p._st||{};return " nc-mo-"+(t.mOrder||"form")+(t.mVis==="hide"?" nc-mv-hide":"");};
 const I_TEL=()=>ncIco("phone"),I_WA=()=>ncIco("message-circle"),I_GO=()=>ncIco("arrow-right");
-const V4_VISF=[{k:"layout",l:"Composición",t:"select",opts:[["auto","Automática (según el estilo)"],["std","Estándar"],["photo","Foto o ilustración protagonista"]]},{k:"img",l:"Foto (si no hay, ilustración)",t:"photo"},{k:"imgAlt",l:"Texto alternativo de la foto"},{k:"illus",l:"Ilustración (si no hay foto)",t:"select",opts:NC_ILLUS},{k:"badge",l:"Sello sobre la foto (valor|texto)"}];
+const V4_VISF=[{k:"layout",l:"Composición",t:"select",opts:[["auto","Automática (según el estilo)"],["std","Estándar"],["photo","Con imagen protagonista"]]},{k:"vis",l:"Imagen protagonista",t:"select",opts:NC_VIS},{k:"img",l:"Foto",t:"photo"},{k:"photoFx",l:"Tratamiento de la foto",t:"select",opts:NC_FX},{k:"imgAlt",l:"Texto alternativo de la foto"},{k:"illus",l:"Mockup",t:"select",opts:NC_ILLUS},{k:"badge",l:"Sello sobre la imagen (valor|texto, opcional)"}];
 function v4Checks(s,cls){return `<ul class="${cls}">${v4L(s).map(l=>`<li>${esc(l)}</li>`).join("")}</ul>`;}
 function v4PhoneForm(o){ // formulario de callback de un campo (+ nombre opcional)
   return `<form data-callback action="${v4Act()}" method="post" class="${o.cls||''}">
@@ -50,7 +52,7 @@ da_hero:{label:"A · Hero oferta + precio",ico:"◧",cat:"A · Oferta directa",r
     const card=c==="call"?`<h2>Llama gratis</h2><p>${esc(p.cardSub)}</p>${v4Tel()} class="da-bigcall">${I_TEL()} ${esc(telText())}</a><div class="da-or">o te llamamos nosotros</div>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go alt"})}`
       :c==="wa"?`<h2>Escríbenos por WhatsApp</h2><p>${esc(p.cardSub)}</p>${v4Wa()} class="da-bigwa">${I_WA()} Abrir WhatsApp</a><div class="da-or">o déjanos tu teléfono</div>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go alt"})}`
       :`<h2>${esc(p.cardTitle)}</h2><p>${esc(p.cardSub)}</p>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go"})}`;
-    return `<header class="da da-hero"><div class="container"><div class="row g-4 g-lg-5 align-items-center">
+    return `<header class="da da-hero${v4MO(p)}"><div class="container"><div class="row g-4 g-lg-5 align-items-center">
     <div class="col-lg-7">${p.eyebrow?`<span class="da-eyebrow"><span class="dot"></span>${esc(p.eyebrow)}</span>`:""}
       <h1 class="da-h1">${esc(p.headline)} ${p.highlight?`<mark>${esc(p.highlight)}</mark>`:""}</h1>
       <p class="da-sub">${esc(p.sub)}</p>
@@ -63,17 +65,20 @@ da_hero:{label:"A · Hero oferta + precio",ico:"◧",cat:"A · Oferta directa",r
     </div></div></header>`;}},
 da_trust:{label:"A · Barra de confianza",ico:"★",cat:"A · Oferta directa",raw:true,
   def:()=>({items:"{{VALORACION}}★|en Google\n{{CLIENTES}}|clientes\n{{PLAZO}}|instalación\n0 €|permanencia"}),
-  fields:[{k:"items",l:"Cifras (valor|texto, una por línea)",t:"ta"}],
-  render:p=>`<section class="da da-trust"><div class="container"><div class="row g-3">${v4L(p.items).map(l=>{const c=v4C(l);return `<div class="col-6 col-md-3"><div class="it"><b>${esc(c[0])}</b>${esc(c[1]||'')}</div></div>`;}).join("")}</div></div></section>`},
+  fields:[{k:"variant",l:"Variante",t:"select",opts:[["auto","Automática (según el estilo)"],["row","Fila de cifras"],["big","Cifras grandes"],["ticker","Cinta en movimiento"]]},{k:"items",l:"Cifras (valor|texto, una por línea)",t:"ta"}],
+  render:p=>v4Var(p,"trust")==="ticker"?(()=>{const it=v4L(p.items).map(l=>{const c=v4C(l);return `<span><b>${esc(c[0])}</b> ${esc(c[1]||'')}</span><i aria-hidden="true">✦</i>`;}).join("");return `<section class="da da-trust da-tick" aria-label="Datos"><div class="trk">${it}${it.replace(/<span>/g,'<span aria-hidden="true">')}</div></section>`;})()
+   :`<section class="da da-trust${v4Var(p,"trust")==="big"?" da-trust-big":""}"><div class="container"><div class="row g-3 ${v4ML(p,"grid")}">${v4L(p.items).map(l=>{const c=v4C(l);return `<div class="col-6 col-md-3"><div class="it"><b>${esc(c[0])}</b>${esc(c[1]||'')}</div></div>`;}).join("")}</div></div></section>`},
 da_plans:{label:"A · Tarifas",ico:"$",cat:"A · Oferta directa",raw:true,
   def:()=>({title:"Elige tu tarifa",sub:"Precios finales con IVA. Sin letra pequeña.",plans:[{name:"Solo fibra",price:"{{PRECIO_1}}",unit:"€/mes",feats:"Fibra {{VELOCIDAD}}\nRouter incluido\nSin permanencia",tag:"",cta:"La quiero"},{name:"Fibra + móvil",price:"{{PRECIO_2}}",unit:"€/mes",feats:"Fibra {{VELOCIDAD}}\nMóvil {{GB}}\nInstalación gratis",tag:"La más elegida",cta:"La quiero"},{name:"Fibra + 2 móviles",price:"{{PRECIO_3}}",unit:"€/mes",feats:"Fibra {{VELOCIDAD}}\n2 líneas {{GB}}\nTV incluida",tag:"",cta:"La quiero"}]}),
   fields:[{k:"title",l:"Título"},{k:"sub",l:"Subtítulo"},{k:"plans",l:"Tarifas",t:"repeater",addLabel:"Añadir tarifa",item:[{k:"name",l:"Nombre",def:"Tarifa"},{k:"price",l:"Precio",def:"{{PRECIO}}"},{k:"unit",l:"Unidad",def:"€/mes"},{k:"feats",l:"Incluye (una por línea)",t:"ta",def:""},{k:"tag",l:"Etiqueta destacada (vacío = normal)",def:""},{k:"cta",l:"Botón",def:"La quiero"}]}],
   render:p=>`<section class="da da-sec" id="tarifas"><div class="container"><div class="text-center mb-5"><h2 class="da-h2">${esc(p.title)}</h2><p class="da-muted">${esc(p.sub)}</p></div>
-    <div class="row g-4 justify-content-center">${arr(p.plans).map(pl=>`<div class="col-md-6 col-lg-4"><div class="da-plan ${pl.tag?'best':''}">${pl.tag?`<span class="tag">${esc(pl.tag)}</span>`:""}<h3>${esc(pl.name)}</h3><div class="pp">${esc(pl.price)}<small>${esc(pl.unit||'')}</small></div>${v4Checks(pl.feats,"")}<a href="#form" data-cta="form" class="da-btn ${pl.tag?'pri':'sec'} w-100 justify-content-center">${esc(pl.cta||'La quiero')}</a></div></div>`).join("")}</div></div></section>`},
+    <div class="row g-4 justify-content-center ${v4ML(p,"rail")}">${arr(p.plans).map(pl=>`<div class="col-md-6 col-lg-4"><div class="da-plan ${pl.tag?'best':''}">${pl.tag?`<span class="tag">${esc(pl.tag)}</span>`:""}<h3>${esc(pl.name)}</h3><div class="pp">${esc(pl.price)}<small>${esc(pl.unit||'')}</small></div>${v4Checks(pl.feats,"")}<a href="#form" data-cta="form" class="da-btn ${pl.tag?'pri':'sec'} w-100 justify-content-center">${esc(pl.cta||'La quiero')}</a></div></div>`).join("")}</div></div></section>`},
 da_benefits:{label:"A · Ventajas",ico:"▦",cat:"A · Oferta directa",raw:true,
   def:()=>({title:"Por qué cambiarte hoy",items:"⚡|Rápido|Instalación en {{PLAZO}}.\n💶|Precio claro|Lo que ves es lo que pagas.\n🤝|Sin ataduras|Sin permanencia.\n🛠️|Todo incluido|Router, instalación y soporte."}),
-  fields:[{k:"title",l:"Título"},{k:"items",l:"Ventajas (icono|título|texto)",t:"ta"}],
-  render:p=>`<section class="da da-sec soft"><div class="container"><h2 class="da-h2 text-center mb-5">${esc(p.title)}</h2><div class="row g-3 da-row-ben">${v4L(p.items).map(l=>{const c=v4C(l);return `<div class="col-6 col-lg-3"><div class="da-ben"><span class="ic">${ncIconOrText(c[0])}</span><h3>${esc(c[1]||'')}</h3><p>${esc(c[2]||'')}</p></div></div>`;}).join("")}</div></div></section>`},
+  fields:[{k:"variant",l:"Variante",t:"select",opts:[["auto","Automática (según el estilo)"],["cards","Tarjetas con icono"],["num","Numeradas (editorial)"],["rows","Filas con icono"]]},{k:"title",l:"Título"},{k:"items",l:"Ventajas (icono|título|texto)",t:"ta"}],
+  render:p=>v4Var(p,"ben")==="rows"?`<section class="da da-sec soft"><div class="container" style="max-width:960px"><h2 class="da-h2 mb-4">${esc(p.title)}</h2><div class="da-ben-rows">${v4L(p.items).map(l=>{const c=v4C(l);return `<div class="r"><span class="ic">${ncIconOrText(c[0])}</span><h3>${esc(c[1]||'')}</h3><p>${esc(c[2]||'')}</p></div>`;}).join("")}</div></div></section>`
+   :v4Var(p,"ben")==="num"?`<section class="da da-sec soft"><div class="container"><h2 class="da-h2 mb-5" style="max-width:640px">${esc(p.title)}</h2><div class="row g-4 da-ben-num ${v4ML(p,"list")}">${v4L(p.items).map((l,i)=>{const c=v4C(l);return `<div class="col-6 col-lg-3"><div class="nb"><span class="nn">${String(i+1).padStart(2,"0")}</span><h3>${esc(c[1]||'')}</h3><p>${esc(c[2]||'')}</p></div></div>`;}).join("")}</div></div></section>`
+   :`<section class="da da-sec soft"><div class="container"><h2 class="da-h2 text-center mb-5">${esc(p.title)}</h2><div class="row g-3 da-row-ben ${v4ML(p,"list")}">${v4L(p.items).map(l=>{const c=v4C(l);return `<div class="col-6 col-lg-3"><div class="da-ben"><span class="ic">${ncIconOrText(c[0])}</span><h3>${esc(c[1]||'')}</h3><p>${esc(c[2]||'')}</p></div></div>`;}).join("")}</div></div></section>`},
 da_faq:{label:"A · Preguntas frecuentes",ico:"?",cat:"A · Oferta directa",raw:true,
   def:()=>({title:"Preguntas frecuentes",items:"¿Hay permanencia?|{{RESPUESTA}}\n¿Cuánto tarda la instalación?|{{RESPUESTA}}\n¿Puedo mantener mi número?|{{RESPUESTA}}"}),
   fields:[{k:"title",l:"Título"},{k:"items",l:"Preguntas (pregunta|respuesta)",t:"ta"}],
@@ -100,8 +105,8 @@ db_hero:{label:"B · Hero confianza + multipaso",ico:"◫",cat:"B · Confianza e
   fields:[{k:"canal",l:"Canal principal",t:"select",opts:V4_CANAL},{k:"kicker",l:"Antetítulo"},{k:"headline",l:"Titular"},{k:"italic",l:"Final del titular (cursiva)"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"proof",l:"Prueba (valor|texto, una por línea)",t:"ta"},{k:"quote",l:"Testimonio (real)"},{k:"author",l:"Autor del testimonio"},{k:"formTitle",l:"Título del formulario"},{k:"formSub",l:"Texto del formulario"},{k:"question",l:"Pregunta del paso 1"},{k:"options",l:"Opciones (separadas por |)"},{k:"step2",l:"Texto del paso 2"},{k:"btn",l:"Botón final"},{k:"safe",l:"Texto de seguridad"},...V4_VISF],
   render:p=>{const c=p.canal||"form";const opts=v4C(p.options).filter(Boolean);
     const top=c==="call"?`${v4Tel()} class="db-chan">${I_TEL()} Llama gratis · ${esc(telText())}</a><div class="db-or">o solicita tu estudio y te llamamos</div>`:c==="wa"?`${v4Wa()} class="db-chan wa">${I_WA()} Escríbenos por WhatsApp</a><div class="db-or">o solicita tu estudio y te llamamos</div>`:"";
-    const L=ncHeroLayout(p),bg=L==="photo"&&ncLook()==="lux";
-    return `<header class="db db-hero${L==="photo"?' nc-hx':''}${bg?' nc-bg':''}">${bg?`<div class="nc-bgvis">${ncVisual(p)}</div>`:''}<div class="container"><div class="row g-4 g-lg-5 align-items-${L==="photo"&&!bg?'center':'start'}">
+    const L=ncHeroLayout(p),bg=L==="photo"&&ncLookBg(p);
+    return `<header class="db db-hero${L==="photo"?' nc-hx':''}${bg?' nc-bg':''}${v4MO(p)}">${bg?`<div class="nc-bgvis">${ncVisual(p)}</div>`:''}<div class="container"><div class="row g-4 g-lg-5 align-items-${L==="photo"&&!bg?'center':'start'}">
     <div class="col-lg-6 nc-hx-txt"><div class="db-kicker">${esc(p.kicker)}</div><h1 class="db-h1">${esc(p.headline)} ${p.italic?`<em>${esc(p.italic)}</em>`:""}</h1><p class="db-sub">${esc(p.sub)}</p>
       <div class="db-proof">${v4L(p.proof).map(l=>{const x=v4C(l);return `<div><b>${esc(x[0])}</b>${esc(x[1]||'')}</div>`;}).join("")}</div>
       ${p.quote?`<blockquote class="db-quote">“${esc(p.quote)}”<span>— ${esc(p.author)}</span></blockquote>`:""}</div>
@@ -118,15 +123,15 @@ db_seals:{label:"B · Sellos y certificados",ico:"🛡️",cat:"B · Confianza e
 db_steps:{label:"B · Cómo funciona",ico:"⑃",cat:"B · Confianza editorial",raw:true,
   def:()=>({title:"Así de sencillo",sub:"Sin visitas comerciales sorpresa ni presupuestos cerrados.",items:"Nos cuentas tu caso|Una pregunta rápida y tu teléfono.\nTe llamamos|Un asesor te explica opciones y precio final.\nLo dejamos listo|Nos encargamos de todo."}),
   fields:[{k:"title",l:"Título"},{k:"sub",l:"Subtítulo"},{k:"items",l:"Pasos (título|texto)",t:"ta"}],
-  render:p=>`<section class="db db-sec"><div class="container"><div class="mb-5" style="max-width:640px"><h2 class="db-h2">${esc(p.title)}</h2><p class="db-muted">${esc(p.sub)}</p></div><div class="row g-4">${v4L(p.items).map((l,i)=>{const c=v4C(l);return `<div class="col-md-4"><div class="db-step"><div class="n">${String(i+1).padStart(2,'0')}</div><h3>${esc(c[0])}</h3><p>${esc(c[1]||'')}</p></div></div>`;}).join("")}</div></div></section>`},
+  render:p=>`<section class="db db-sec"><div class="container"><div class="mb-5" style="max-width:640px"><h2 class="db-h2">${esc(p.title)}</h2><p class="db-muted">${esc(p.sub)}</p></div><div class="row g-4 ${v4ML(p,"list")}">${v4L(p.items).map((l,i)=>{const c=v4C(l);return `<div class="col-md-4"><div class="db-step"><div class="n">${String(i+1).padStart(2,'0')}</div><h3>${esc(c[0])}</h3><p>${esc(c[1]||'')}</p></div></div>`;}).join("")}</div></div></section>`},
 db_compare:{label:"B · Comparativa honesta",ico:"⚖️",cat:"B · Confianza editorial",raw:true,
   def:()=>({title:"Qué incluye",head:"Incluido|Con nosotros|Otras opciones",rows:"Aviso a emergencias|✓ Sí|✗ No\nCentral 24 h|✓ Sí|✗ No\nMantenimiento|✓ Incluido|Por tu cuenta"}),
   fields:[{k:"title",l:"Título"},{k:"head",l:"Cabecera (col1|col2|col3)"},{k:"rows",l:"Filas (col1|col2|col3)",t:"ta"}],
-  render:p=>`<section class="db db-sec pt-0"><div class="container"><h2 class="db-h2 mb-4">${esc(p.title)}</h2><div class="db-compare"><table class="table mb-0"><thead><tr>${v4C(p.head).map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${v4L(p.rows).map(l=>`<tr>${v4C(l).map((c,i)=>`<td class="${i===1?'yes':''}">${ncMark(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div></section>`},
+  render:p=>`<section class="db db-sec pt-0"><div class="container"><h2 class="db-h2 mb-4">${esc(p.title)}</h2><div class="db-compare"><table class="table mb-0"><thead><tr>${v4C(p.head).map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${v4L(p.rows).map(l=>`<tr>${v4C(l).map((c,i)=>`<td class="${i===1?'yes':''}" data-l="${esc(v4C(p.head)[i]||'')}"><span>${ncMark(c)}</span></td>`).join("")}</tr>`).join("")}</tbody></table></div></div></section>`},
 db_reviews:{label:"B · Opiniones reales",ico:"❝",cat:"B · Confianza editorial",raw:true,
   def:()=>({title:"Lo que dicen nuestros clientes",source:"Opiniones verificadas en {{PLATAFORMA}}",items:"{{TESTIMONIO_1}}|{{NOMBRE_1}}|{{CIUDAD_1}}\n{{TESTIMONIO_2}}|{{NOMBRE_2}}|{{CIUDAD_2}}\n{{TESTIMONIO_3}}|{{NOMBRE_3}}|{{CIUDAD_3}}"}),
   fields:[{k:"title",l:"Título"},{k:"source",l:"Fuente de las opiniones"},{k:"items",l:"Opiniones (texto|nombre|ciudad) — solo reales",t:"ta"}],
-  render:p=>`<section class="db db-sec soft"><div class="container"><h2 class="db-h2">${esc(p.title)}</h2><p class="db-muted mb-5">${esc(p.source)}</p><div class="row g-4">${v4L(p.items).map(l=>{const c=v4C(l);return `<div class="col-md-4"><figure class="db-rev"><div class="st">★★★★★</div><blockquote>“${esc(c[0])}”</blockquote><figcaption>${esc(c[1]||'')}${c[2]?` · ${esc(c[2])}`:""}</figcaption></figure></div>`;}).join("")}</div></div></section>`},
+  render:p=>`<section class="db db-sec soft"><div class="container"><h2 class="db-h2">${esc(p.title)}</h2><p class="db-muted mb-5">${esc(p.source)}</p><div class="row g-4 ${v4ML(p,"rail")}">${v4L(p.items).map(l=>{const c=v4C(l);return `<div class="col-md-4"><figure class="db-rev"><div class="st">★★★★★</div><blockquote>“${esc(c[0])}”</blockquote><figcaption>${esc(c[1]||'')}${c[2]?` · ${esc(c[2])}`:""}</figcaption></figure></div>`;}).join("")}</div></div></section>`},
 db_faq:{label:"B · Preguntas frecuentes",ico:"?",cat:"B · Confianza editorial",raw:true,
   def:()=>({title:"Resolvemos tus dudas",items:"¿Tiene algún coste el estudio?|{{RESPUESTA}}\n¿Hay permanencia?|{{RESPUESTA}}\n¿Qué pasa con mis datos?|{{RESPUESTA}}"}),
   fields:[{k:"title",l:"Título"},{k:"items",l:"Preguntas (pregunta|respuesta)",t:"ta"}],
@@ -192,7 +197,7 @@ ORDER.unshift(...Object.keys(LIB).filter(k=>/^d[abc]_/.test(k)));
 function ncDirCSS(){
   const used=new Set(state.sections.filter(s=>!s.hidden).map(s=>(s.type.match(/^(d[abc])_/)||[])[1]).filter(Boolean));
   if(!used.size)return "";
-  const common=ncHxCSS()+`.da,.db,.dc{--dline:var(--line,#e7e4f0)}.da h1,.da h2,.da h3,.db h1,.db h2,.db h3,.dc h1,.dc h2,.dc h3{font-family:var(--fhead)}
+  const common=ncHxCSS()+ncMobileCSS()+`.da,.db,.dc{--dline:var(--line,#e7e4f0)}.da h1,.da h2,.da h3,.db h1,.db h2,.db h3,.dc h1,.dc h2,.dc h3{font-family:var(--fhead)}
   .da .form-control,.db .form-control,.dc .form-control{font-size:16px}
   .da-faq .accordion-button,.db-faq .accordion-button,.dc-faq .accordion-button{font-weight:600}`;
   const A=`
@@ -202,7 +207,7 @@ function ncDirCSS(){
   .da-call{display:inline-flex;align-items:center;gap:10px;background:var(--bp);color:var(--btntext,#fff);text-decoration:none;border-radius:12px;padding:9px 16px;font-weight:700;line-height:1.1}
   .da-call small{display:block;font-weight:500;font-size:11px;opacity:.85}
   .da-hero{background:linear-gradient(180deg,var(--bsoft) 0%,#fff 100%);padding:52px 0 60px}
-  .da-eyebrow{display:inline-flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--dline);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--bpt)}
+  .da-eyebrow{display:inline-flex;gap:9px;align-items:center;font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--bpt)}
   .da .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.18);display:inline-block;flex:0 0 auto}
   .da-h1{font-size:clamp(34px,4.6vw,58px);font-weight:800;line-height:1.03;letter-spacing:-.025em;margin:18px 0 14px;color:var(--bink)}
   .da-h1 mark{background:linear-gradient(transparent 60%,color-mix(in srgb,var(--bp) 22%,transparent) 60%);padding:0 .06em;color:inherit}
@@ -240,6 +245,14 @@ function ncDirCSS(){
   .da-plan h3{font-size:18px;font-weight:800}.da-plan .pp{font:800 40px var(--fhead);letter-spacing:-.03em;overflow-wrap:anywhere;min-width:0}.da-plan .pp small{font-size:15px;font-weight:600;color:var(--bmuted);margin-left:4px}
   .da-plan ul{list-style:none;padding:0;margin:14px 0 20px;font-size:14.5px;color:var(--bmuted);flex:1}.da-plan li{padding:7px 0;border-bottom:1px solid var(--dline)}
   .da-ben{background:#fff;border-radius:16px;padding:20px;height:100%;border:1px solid var(--dline)}.da-ben .ic{font-size:26px;color:var(--bpt);display:inline-flex}.da-ben h3{font-size:17px;font-weight:800;margin:10px 0 6px;color:var(--bink)}.da-ben p{font-size:14px;color:var(--bmuted);margin:0}
+  .da-ben-rows{border-top:1px solid var(--bink)}.da-ben-rows .r{display:grid;grid-template-columns:48px minmax(160px,.8fr) 1.4fr;gap:6px 24px;align-items:baseline;padding:22px 0;border-bottom:1px solid var(--dline)}
+  .da-ben-rows .ic{font-size:24px;color:var(--bpt);align-self:center}.da-ben-rows h3{font-size:20px;font-weight:800;margin:0;color:var(--bink)}.da-ben-rows p{margin:0;color:var(--bmuted)}
+  .da-ben-num .nb{border-top:2px solid var(--bink);padding-top:16px;height:100%}.da-ben-num .nn{font:700 13px var(--fhead);color:var(--bpt);letter-spacing:.04em}.da-ben-num h3{font-size:22px;font-weight:800;margin:28px 0 8px;color:var(--bink)}.da-ben-num p{color:var(--bmuted);margin:0;font-size:15px}
+  .da-trust-big{padding:40px 0}.da-trust-big .it{flex-direction:column;gap:6px}.da-trust-big .it b{font-size:clamp(34px,4vw,52px);line-height:1;letter-spacing:-.03em}
+  .da-tick{overflow:hidden;white-space:nowrap;padding:16px 0;background:var(--bink)!important;color:#fff;border:0}.da-tick .trk{display:inline-flex;gap:28px;align-items:center;font:600 17px var(--fhead);padding-left:28px}
+  .da-tick b{color:color-mix(in srgb,var(--ba) 70%,#fff);font-weight:800}.da-tick i{font-style:normal;opacity:.5}
+  @media (prefers-reduced-motion:no-preference){.da-tick .trk{animation:ncTk 28s linear infinite}@keyframes ncTk{to{transform:translateX(-50%)}}}
+  @media (max-width:767px){.da-ben-rows .r{grid-template-columns:36px 1fr;padding:16px 0}.da-ben-rows .r p{grid-column:2}.da-ben-num h3{margin-top:14px;font-size:19px}.da-tick .trk{font-size:15px}}
   .da-ctab{background:var(--bink);color:#fff;padding:56px 0}.da-ctab h2{font-size:clamp(26px,3vw,36px);font-weight:800}.da-ctab p{opacity:.8;margin:0}
   .da-inline{display:flex;gap:8px;flex-wrap:wrap}.da-inline .form-control{flex:1 1 200px;margin:0!important;border-radius:12px;padding:14px}.da-inline .da-go{width:auto;flex:0 0 auto;margin:0;padding:14px 22px;background:var(--bp)}
   .da-inline .nc-legal,.da-inline .nc-legal-info{order:3;flex-basis:100%;color:#fff}
@@ -293,15 +306,15 @@ function ncDirCSS(){
     body:has(.db-sticky){padding-bottom:84px}.db-ctabox{padding:28px 22px}}`;
   const C=`
   .dc{--dk:color-mix(in srgb,var(--bink) 30%,#07060B);--gl:rgba(255,255,255,.06);--gb:rgba(255,255,255,.11)}
-  .dc-grad{background:linear-gradient(90deg,color-mix(in srgb,var(--bp) 50%,#fff),var(--bp) 45%,color-mix(in srgb,var(--ba) 75%,#fff));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .dc-grad{color:color-mix(in srgb,var(--bp) 50%,#fff)}
   .dc-nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--dk) 82%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--gb);padding:14px 0}
   .dc-logo{font:700 17px var(--fhead);color:#fff;display:flex;align-items:center;gap:9px}.dc-logo i{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--bp),var(--ba));display:inline-block}
   .dc-pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:99px;padding:10px 20px;font-weight:600;font-size:14.5px;text-decoration:none;border:1px solid transparent}
   .dc-pill.w{background:#fff;color:#000}.dc-pill.g{background:var(--gl);border-color:var(--gb);color:#fff}.dc-pill.wa{background:#25D366;color:#053}.dc-pill.lg{padding:15px 28px;font-size:16.5px}
   .dc-hero{background:var(--dk);color:#fff;position:relative;overflow:hidden;padding:90px 0 110px}
   .dc-glow{position:absolute;border-radius:50%;filter:blur(110px);pointer-events:none}
-  .dc-glow.a{width:620px;height:620px;background:radial-gradient(circle,color-mix(in srgb,var(--bp) 55%,transparent),transparent 65%);top:-260px;left:50%;transform:translateX(-60%)}
-  .dc-glow.b{width:420px;height:420px;background:radial-gradient(circle,color-mix(in srgb,var(--ba) 25%,transparent),transparent 65%);bottom:-160px;right:6%}
+  .dc-glow.a{width:620px;height:620px;background:radial-gradient(circle,color-mix(in srgb,var(--bp) 30%,transparent),transparent 65%);top:-260px;left:50%;transform:translateX(-60%)}
+  .dc-glow.b{width:420px;height:420px;background:radial-gradient(circle,color-mix(in srgb,var(--ba) 12%,transparent),transparent 65%);bottom:-160px;right:6%}
   .dc-chip{display:inline-flex;gap:8px;align-items:center;background:var(--gl);border:1px solid var(--gb);border-radius:99px;padding:6px 14px;font-size:13px;color:rgba(255,255,255,.82)}.dc-chip b{color:color-mix(in srgb,var(--ba) 75%,#fff)}
   .dc-h1{font-size:clamp(40px,6.4vw,82px);font-weight:800;line-height:1.03;letter-spacing:-.035em;margin:22px auto 18px;max-width:980px}
   .dc-sub{font-size:clamp(16px,1.6vw,20px);color:rgba(255,255,255,.64);max-width:600px;margin:0 auto;line-height:1.6}
@@ -315,7 +328,7 @@ function ncDirCSS(){
   .dc-kpis{margin:64px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:820px}
   .dc-kpi{background:var(--gl);border:1px solid var(--gb);border-radius:16px;padding:18px;text-align:left}.dc-kpi b{display:block;font:800 28px var(--fhead);letter-spacing:-.03em;overflow-wrap:anywhere}.dc-kpi span{font-size:13px;color:rgba(255,255,255,.55)}
   .dc-sec{padding:110px 0;background:#fff;color:var(--bink)}
-  .dc-sec .dc-grad{background:linear-gradient(90deg,var(--bpt),color-mix(in srgb,var(--bpt) 55%,var(--bink)));-webkit-background-clip:text;background-clip:text}
+  .dc-sec .dc-grad{color:var(--bpt)}
   .dc-h2{font-size:clamp(32px,4.6vw,60px);font-weight:800;line-height:1.05;letter-spacing:-.035em}
   .dc-lead{font-size:18px;color:var(--bmuted);max-width:620px;margin:18px auto 0}
   .dc-bento{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-top:56px}
@@ -344,12 +357,12 @@ function ncLum(hex){const m=String(hex||"").trim().match(/^#?([0-9a-f]{3}|[0-9a-
   const c=[0,2,4].map(i=>{const v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);});return .2126*c[0]+.7152*c[1]+.0722*c[2];}
 
 /* ---------- Heros con foto / ilustración protagonista ---------- */
-function v4HeroAPhoto(p){const c=p.canal||"form",bg=ncLook()==="lux";
+function v4HeroAPhoto(p){const c=p.canal||"form",bg=ncLookBg(p);
   const form=v4PhoneForm({btn:p.cardBtn||p.cta,btnCls:"da-go",cls:"da-inline",arrow:true});
   const top=c==="call"?`<div class="nc-hx-big">${v4Tel()} class="da-btn pri">${I_TEL()} Llamar gratis · ${esc(telText())}</a></div><div class="nc-hx-or">o te llamamos nosotros</div>`
     :c==="wa"?`<div class="nc-hx-big">${v4Wa()} class="da-btn pri wa">${I_WA()} Escríbenos por WhatsApp</a></div><div class="nc-hx-or">o déjanos tu teléfono y te llamamos</div>`:"";
   const alt=`<div class="nc-hx-alt">${c==="call"?"":`${v4Tel()}>${I_TEL()} ${c==="form"?"o llama gratis al ":""}${esc(telText())}</a>`}${p.live?`<span class="da-muted d-inline-flex align-items-center gap-2" style="font-size:13.5px"><span class="dot"></span>${esc(p.live)}</span>`:""}</div>`;
-  return `<header class="da da-hero nc-hx${bg?' nc-bg':''}">${bg?`<div class="nc-bgvis">${ncVisual(p)}</div>`:''}<div class="container"><div class="row g-4 g-lg-5 align-items-center">
+  return `<header class="da da-hero nc-hx${bg?' nc-bg':''}${v4MO(p)}">${bg?`<div class="nc-bgvis">${ncVisual(p)}</div>`:''}<div class="container"><div class="row g-4 g-lg-5 align-items-center">
     <div class="${bg?'col-lg-8 col-xl-7':'col-lg-6'} nc-hx-txt">${p.eyebrow?`<span class="da-eyebrow"><span class="dot"></span>${esc(p.eyebrow)}</span>`:""}
       <h1 class="da-h1">${esc(p.headline)} ${p.highlight?`<mark>${esc(p.highlight)}</mark>`:""}</h1>
       <p class="da-sub">${esc(p.sub)}</p>
@@ -362,10 +375,16 @@ function v4HeroAPhoto(p){const c=p.canal||"form",bg=ncLook()==="lux";
 function v4HeroCPhoto(p,big,alts){const kp=v4L(p.kpis).map(l=>v4C(l));
   const scr=p.img?`<img src="${esc(p.img)}" alt="${esc(p.imgAlt||'')}">`:`<div class="lb">${esc((kp[0]||[])[1]||'')}</div><div class="big">${esc((kp[0]||[])[0]||'')}</div><div class="ln" style="width:70%"></div><div class="ln" style="width:45%"></div>
     <div class="bars"><i style="height:40%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:78%"></i><i style="height:66%"></i><i style="height:92%"></i></div>${kp.slice(1,3).map(x=>`<div class="tile"><span>${esc(x[1]||'')}</span><b>${esc(x[0]||'')}</b></div>`).join("")}`;
-  return `<header class="dc dc-hero nc-hx"><div class="dc-glow a"></div><div class="dc-glow b"></div><div class="container position-relative"><div class="row g-5 align-items-center">
+  return `<header class="dc dc-hero nc-hx${v4MO(p)}"><div class="dc-glow a"></div><div class="dc-glow b"></div><div class="container position-relative"><div class="row g-5 align-items-center">
     <div class="col-lg-7 nc-hx-txt">${p.chipText?`<span class="dc-chip">${p.chip?`<b>${esc(p.chip)}</b> `:""}${esc(p.chipText)}</span>`:""}
     <h1 class="dc-h1">${esc(p.headline)} ${p.gradient?`<span class="dc-grad">${esc(p.gradient)}</span>`:""}</h1><p class="dc-sub">${esc(p.sub)}</p>
     ${big}<div id="form">${v4PhoneForm({btn:p.btn,btnCls:"dc-go",cls:"dc-formbar",ph:p.ph,arrow:true})}</div><div class="dc-note">${esc(p.note)}</div>
     <div class="dc-alt">${alts}</div>
     <div class="dc-kpis">${kp.map(x=>`<div class="dc-kpi"><b>${esc(x[0]||'')}</b><span>${esc(x[1]||'')}</span></div>`).join("")}</div></div>
     <div class="col-lg-5 nc-phone-col"><div class="nc-phone"><div class="scr">${scr}</div></div></div></div></div></header>`;}
+
+function ncLookBg(p){const v=p.vis||"auto";return ncLook()==="lux"&&!!p.img&&(v==="auto"||v==="photo");}
+
+/* Variante "automática": cada estilo elige la composición que mejor le encaja */
+const V4_AUTO_VAR={trust:{brutal:"ticker",retro:"ticker",swiss:"big",lux:"big",editorial:"big"},ben:{editorial:"num",swiss:"num",lux:"rows",corporate:"cards"}};
+function v4Var(p,k){const v=p.variant||"auto";if(v!=="auto")return v;return (V4_AUTO_VAR[k]||{})[ncLook()]||({trust:"row",ben:"cards"})[k];}
