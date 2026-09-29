@@ -203,7 +203,7 @@ function ncDirCSS(){
   .da-h1{font-size:clamp(34px,4.6vw,58px);font-weight:800;line-height:1.03;letter-spacing:-.025em;margin:18px 0 14px;color:var(--bink)}
   .da-h1 mark{background:linear-gradient(transparent 60%,color-mix(in srgb,var(--bp) 22%,transparent) 60%);padding:0 .06em;color:inherit}
   .da-sub{font-size:18px;color:var(--bmuted);max-width:540px}
-  .da-price{display:flex;align-items:flex-end;gap:14px;margin:24px 0 6px}.da-price .p{font:800 60px/.9 var(--fhead);letter-spacing:-.04em;color:var(--bink)}
+  .da-price{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px 14px;margin:24px 0 6px}.da-price .p{font:800 60px/.95 var(--fhead);letter-spacing:-.04em;color:var(--bink);min-width:0;overflow-wrap:anywhere}
   .da-price .u{font-size:13.5px;color:var(--bmuted);line-height:1.3}.da-price .u b{display:block;color:var(--bink);font-size:15px}
   .da-old{font-size:14px;color:var(--bmuted)}
   .da-checks{display:flex;flex-wrap:wrap;gap:8px 18px;margin:18px 0 0;padding:0;list-style:none;font-size:14.5px;font-weight:500;color:var(--bink)}
@@ -243,7 +243,7 @@ function ncDirCSS(){
   .da-sticky{display:none}
   @media (max-width:767px){.da-sticky{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:1040;gap:8px;padding:10px;background:#fff;border-top:1px solid var(--dline);box-shadow:0 -8px 24px rgba(0,0,0,.08)}
     .da-sticky .da-btn{flex:1;justify-content:center;padding:13px 8px;font-size:15px}body:has(.da-sticky){padding-bottom:74px}
-    .da-hero{padding:28px 0 36px}.da-price .p{font-size:50px}.da-call small{display:none}}`;
+    .da-hero{padding:28px 0 36px}.da-price .p{font-size:clamp(34px,11vw,50px)}.da-call small{display:none}}`;
   const B=`
   .db-nav,.db-hero,.db-sec,.db-seals,.db-ctab,.db-foot{background:var(--bpaper,color-mix(in srgb,var(--bsoft) 35%,#FBF9F6))}
   .db-nav{padding:18px 0;border-bottom:1px solid var(--dline)}

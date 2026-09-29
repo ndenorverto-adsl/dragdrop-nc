@@ -132,3 +132,5 @@ iframe#pv{border:0;display:block;width:100%;height:calc(100vh - 150px);backgroun
 .tpl-meta p{color:var(--muted);font-size:11.5px;line-height:1.45;margin:0;flex:1}
 .tpl-tags{display:flex;flex-wrap:wrap;gap:4px}.tpl-tags .tag{margin:0}
 .tpl-meta .btn{align-self:flex-start}
+.tpl-filters .br{flex-basis:100%;height:0}
+.chipf.sm{padding:4px 10px;font-size:11.5px}

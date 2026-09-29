@@ -7,7 +7,7 @@ const FS = path.join(__dirname, 'node_modules/@fontsource'); const BS = path.joi
   const brands = (brandsArg || 'nc').split(',');
   const app = await open(path.resolve(root));
   const docs = await app.page.evaluate(brands => { const r = {}; const names = Object.keys(TEMPLATE_META).filter(n => !TEMPLATE_META[n].legacy);
-    brands.forEach(b => names.forEach(n => { state.sections = tplSections(n); state.settings.brand = b; Object.assign(state.settings, { tel: '900 000 000', wa: '34600000000' }); r[b + '__' + n] = buildDoc(true); })); return r; }, brands);
+    brands.forEach(b => names.forEach(n => { state.sections = tplSections(n); state.settings.brand = b === 'auto' ? (TEMPLATE_BRAND[n] || 'nc') : b; Object.assign(state.settings, { tel: '900 000 000', wa: '34600000000' }); r[b + '__' + n] = buildDoc(true); })); return r; }, brands);
   if (app.errors.length) console.log('ERR', app.errors);
   await app.close();
   const srv = http.createServer((q, a) => { const f = path.join(FS, decodeURIComponent(q.url.split('?')[0]).slice(4)); if (!fs.existsSync(f)) { a.writeHead(404); return a.end(); } a.writeHead(200, { 'content-type': f.endsWith('.css') ? 'text/css' : 'font/woff2', 'access-control-allow-origin': '*' }); fs.createReadStream(f).pipe(a); }).listen(0);

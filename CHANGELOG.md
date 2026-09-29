@@ -1,5 +1,12 @@
 # Changelog
 
+## v3.3 — 2026-09-29 · Plantillas nuevas (entrega 2)
+- **19 plantillas por sector × canal**: Telco y Energía (A), Alarmas, Seguros, Salud y Legal (B), cada una en Formulario / Llamada / WhatsApp, más "Energía · Premium" (C). Copy de sector real; ofertas, precios, cifras y respuestas como `{{PLACEHOLDER}}`.
+- **17 plantillas por cliente** con su marca: Jazztel, MásMóvil, Simyo, Yoigo, Vodafone, Lowi, Orange, Finetwork, MásAhorro, TotalEnergies, Prosegur, ADT, Segurma, Sicor, AlarmaFácil, SICOR Teleasistencia (llamada como canal principal) y Tuawa (C). Sustituyen a las plantillas de cliente anteriores.
+- Galería: filtros por sector y por canal, contador de resultados y orden Arquetipo → Sector → Cliente.
+- Corrección: precios largos ya no desbordan el hero en móvil.
+- Pendiente: Repsol y O2 (extraer su marca de la web y validarla).
+
 ## v3.2 — 2026-09-29 · Plantillas nuevas (entrega 1)
 - 3 direcciones visuales como familias de bloques, adaptadas a la marca cargada:
   - **A · Oferta directa** (`da_*`): topbar de urgencia, nav con teléfono, hero con precio, confianza, tarifas, ventajas, FAQ, CTA final, footer y barra fija móvil.
