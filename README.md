@@ -11,6 +11,7 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   brands.js           #   marcas, fuentes y style kits
   core.js             #   estado, ajustes por defecto y helpers
   blocks.js           #   librería de bloques (LIB)
+  looks.js            #   iconos SVG, fotos libres, ilustración y estilos de diseño
   blocks-v4.js        #   familias A/B/C (da_ / db_ / dc_) + su CSS
   templates.js        #   plantillas
   render.js           #   genera el documento HTML (preview y export)
@@ -45,6 +46,8 @@ Galería (▦ Plantillas) con tres formas de encontrar punto de partida: **Arque
 - **A · Oferta directa**: precio y llamada primero (telco, energía).
 - **B · Confianza editorial**: prueba social y multipaso (alarmas, seguros, salud, legal).
 - **C · Premium producto**: hero oscuro y formulario tipo buscador (lanzamientos).
+
+**Estilos de diseño** (Global → Estilo de diseño): Base, Editorial, Swiss grid, Brutalista táctil, Suave orgánico, Tech aurora, Corporativo premium, Retro cálido y Minimal lujo. Cambian tipografía, formas, profundidad y fondos de todos los bloques A/B/C sin tocar los colores de la marca; con "Usar tipografía de la marca" se mantienen las fuentes del cliente. Los heros admiten foto (subida, URL o fotos libres de Unsplash) o, si no hay, una ilustración con los colores de la marca.
 
 Los bloques toman colores y tipografías de la marca activa. Los datos de negocio van como `{{PLACEHOLDER}}` y el checklist los señala antes de exportar.
 
@@ -84,6 +87,8 @@ npm install
 npx playwright install chromium   # solo la primera vez
 npm test                          # smoke del editor + E2E de la landing exportada + validación HTML
 ```
+
+`node shots-looks.js .. out/looks "Oferta con precio|Confianza + multipaso" "editorial,aurora" nc` captura plantillas × estilos.
 
 `snapshot.js` + `compare.js` sirven para comprobar que un refactor no cambia el HTML exportado.
 

@@ -11,13 +11,15 @@ const v4C=l=>String(l||"").split("|").map(x=>x.trim());
 const v4Act=()=>ph(state.settings.endpoint,'ENDPOINT_FORMULARIO');
 const v4Wa=()=>`<a href="${waHref()}" target="_blank" rel="noopener" data-cta="whatsapp"`;
 const v4Tel=()=>`<a href="${telHref()}" data-cta="call"`;
-const v4Icon={call:"📞",wa:"💬",form:"✉️"};
+const v4Icon={get call(){return ncIco("phone")},get wa(){return ncIco("message-circle")},get form(){return ncIco("mail")}};
+const I_TEL=()=>ncIco("phone"),I_WA=()=>ncIco("message-circle"),I_GO=()=>ncIco("arrow-right");
+const V4_VISF=[{k:"layout",l:"Composición",t:"select",opts:[["auto","Automática (según el estilo)"],["std","Estándar"],["photo","Foto o ilustración protagonista"]]},{k:"img",l:"Foto (si no hay, ilustración)",t:"photo"},{k:"imgAlt",l:"Texto alternativo de la foto"},{k:"illus",l:"Ilustración (si no hay foto)",t:"select",opts:NC_ILLUS},{k:"badge",l:"Sello sobre la foto (valor|texto)"}];
 function v4Checks(s,cls){return `<ul class="${cls}">${v4L(s).map(l=>`<li>${esc(l)}</li>`).join("")}</ul>`;}
 function v4PhoneForm(o){ // formulario de callback de un campo (+ nombre opcional)
   return `<form data-callback action="${v4Act()}" method="post" class="${o.cls||''}">
     ${o.name?`<input required name="nombre" class="form-control mb-2" placeholder="Nombre" autocomplete="name">`:""}
     <input required name="telefono" type="tel" class="form-control mb-2" placeholder="${esc(o.ph||'Tu teléfono')}">
-    <button type="submit" class="${o.btnCls}">${esc(o.btn)}</button></form>`;
+    <button type="submit" class="${o.btnCls}">${esc(o.btn)}${o.arrow?' '+I_GO():''}</button></form>`;
 }
 function v4Faq(p,fam){const id="faq"+fam+Math.random().toString(36).slice(2,6);
   return `<div class="accordion ${fam}-faq" id="${id}">${v4L(p.items).map((l,i)=>{const c=v4C(l);return `<div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button ${i?'collapsed':''}" type="button" data-bs-toggle="collapse" data-bs-target="#${id}_${i}">${esc(c[0])}</button></h3><div id="${id}_${i}" class="accordion-collapse collapse ${i?'':'show'}" data-bs-parent="#${id}"><div class="accordion-body">${esc(c[1]||'')}</div></div></div>`;}).join("")}</div>`;}
@@ -25,7 +27,7 @@ function v4Legal(){const st=state.settings;return `<a href="${esc(ph(st.urlPriva
 function v4Logo(p,cls){return p.logoImg?`<img src="${p.logoImg}" alt="${esc(p.logo||'Logo')}" class="logo ${cls||''}" style="height:32px;width:auto">`:`<span class="${cls||''}"><i></i>${esc(p.logo||'{{LOGO}}')}</span>`;}
 const V4_NAVF=[{k:"logo",l:"Nombre / logo (texto)"},{k:"logoImg",l:"Logo (imagen)",t:"image"},{k:"telLabel",l:"Texto sobre el teléfono"}];
 const V4_STICKYF=[{k:"canal",l:"Canal principal",t:"select",opts:V4_CANAL},{k:"call",l:"Botón llamar"},{k:"form",l:"Botón formulario"},{k:"wa",l:"Botón WhatsApp"}];
-function v4StickyBtns(p,pri,sec){const b={call:`${v4Tel()} class="${sec}">📞 ${esc(p.call)}</a>`,form:`<a href="#form" data-cta="form" class="${sec}">${esc(p.form)}</a>`,wa:`${v4Wa()} class="${sec}">💬 ${esc(p.wa)}</a>`};
+function v4StickyBtns(p,pri,sec){const b={call:`${v4Tel()} class="${sec}">${I_TEL()} ${esc(p.call)}</a>`,form:`<a href="#form" data-cta="form" class="${sec}">${esc(p.form)}</a>`,wa:`${v4Wa()} class="${sec}">${I_WA()} ${esc(p.wa)}</a>`};
   const order=p.canal==="call"?["form","call"]:p.canal==="wa"?["call","wa"]:["call","form"]; // el principal va a la derecha (zona del pulgar)
   return order.map((k,i)=>i===1?b[k].replace(`class="${sec}"`,`class="${pri}"`):b[k]).join("");}
 
@@ -34,19 +36,19 @@ Object.assign(LIB,{
 da_topbar:{label:"A · Barra de urgencia",ico:"⏱",cat:"A · Oferta directa",raw:true,
   def:()=>({text:"Oferta online hasta el {{FECHA_FIN}}",bold:"instalación gratis"}),
   fields:[{k:"text",l:"Texto"},{k:"bold",l:"Texto destacado"}],
-  render:p=>`<div class="da da-top">⏱ ${esc(p.text)}${p.bold?` · <b>${esc(p.bold)}</b>`:""}</div>`},
+  render:p=>`<div class="da da-top">${ncIco("timer")} ${esc(p.text)}${p.bold?` · <b>${esc(p.bold)}</b>`:""}</div>`},
 da_nav:{label:"A · Nav + teléfono",ico:"▭",cat:"A · Oferta directa",raw:true,
   def:()=>({logo:"{{LOGO}}",logoImg:"",telLabel:"Llamada gratuita"}),fields:V4_NAVF,
   render:p=>`<nav class="da da-nav"><div class="container d-flex align-items-center justify-content-between">${v4Logo(p,'da-logo')}
-    ${v4Tel()} class="da-call"><span aria-hidden="true">📞</span><span><small>${esc(p.telLabel)}</small>${esc(telText())}</span></a></div></nav>`},
+    ${v4Tel()} class="da-call">${I_TEL()}<span><small>${esc(p.telLabel)}</small>${esc(telText())}</span></a></div></nav>`},
 da_hero:{label:"A · Hero oferta + precio",ico:"◧",cat:"A · Oferta directa",raw:true,
-  def:()=>({canal:"form",eyebrow:"Asesores disponibles ahora",headline:"Fibra y móvil",highlight:"sin permanencia",sub:"Todo lo que usas en casa y en el móvil, en una sola factura.",price:"{{PRECIO}}",priceUnit:"€/mes",priceNote:"IVA incluido · precio final",oldPrice:"",checks:"Instalación gratis\nRouter incluido\nMantienes tu número",cta:"Quiero esta oferta",cardTitle:"Te llamamos gratis",cardSub:"Déjanos tu teléfono y un asesor te confirma el precio.",cardBtn:"Llamadme gratis",live:"Te llamamos en menos de {{MINUTOS}} min · {{HORARIO}}",img:""}),
-  fields:[{k:"canal",l:"Canal principal",t:"select",opts:V4_CANAL},{k:"eyebrow",l:"Etiqueta"},{k:"headline",l:"Titular"},{k:"highlight",l:"Parte subrayada del titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"price",l:"Precio"},{k:"priceUnit",l:"Unidad (€/mes)"},{k:"priceNote",l:"Nota del precio"},{k:"oldPrice",l:"Precio anterior (opcional)"},{k:"checks",l:"Ventajas (una por línea)",t:"ta"},{k:"cta",l:"Botón principal"},{k:"cardTitle",l:"Título tarjeta"},{k:"cardSub",l:"Texto tarjeta"},{k:"cardBtn",l:"Botón tarjeta"},{k:"live",l:"Línea de disponibilidad"},{k:"img",l:"Imagen de producto (opcional)",t:"image"}],
-  render:p=>{const c=p.canal||"form";
-    const pri=c==="call"?`${v4Tel()} class="da-btn pri">📞 Llamar gratis</a>`:c==="wa"?`${v4Wa()} class="da-btn pri wa">💬 WhatsApp</a>`:`<a href="#form" data-cta="form" class="da-btn pri">${esc(p.cta)} →</a>`;
-    const sec=c==="call"?`<a href="#form" data-cta="form" class="da-btn sec">Te llamamos</a>`:`${v4Tel()} class="da-btn sec">📞 ${esc(telText())}</a>`;
-    const card=c==="call"?`<h2>Llama gratis</h2><p>${esc(p.cardSub)}</p>${v4Tel()} class="da-bigcall">📞 ${esc(telText())}</a><div class="da-or">o te llamamos nosotros</div>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go alt"})}`
-      :c==="wa"?`<h2>Escríbenos por WhatsApp</h2><p>${esc(p.cardSub)}</p>${v4Wa()} class="da-bigwa">💬 Abrir WhatsApp</a><div class="da-or">o déjanos tu teléfono</div>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go alt"})}`
+  def:()=>({canal:"form",eyebrow:"Asesores disponibles ahora",headline:"Fibra y móvil",highlight:"sin permanencia",sub:"Todo lo que usas en casa y en el móvil, en una sola factura.",price:"{{PRECIO}}",priceUnit:"€/mes",priceNote:"IVA incluido · precio final",oldPrice:"",checks:"Instalación gratis\nRouter incluido\nMantienes tu número",cta:"Quiero esta oferta",cardTitle:"Te llamamos gratis",cardSub:"Déjanos tu teléfono y un asesor te confirma el precio.",cardBtn:"Llamadme gratis",live:"Te llamamos en menos de {{MINUTOS}} min · {{HORARIO}}",img:"",imgAlt:"",layout:"auto",illus:"auto",badge:""}),
+  fields:[{k:"canal",l:"Canal principal",t:"select",opts:V4_CANAL},{k:"eyebrow",l:"Etiqueta"},{k:"headline",l:"Titular"},{k:"highlight",l:"Parte subrayada del titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"price",l:"Precio"},{k:"priceUnit",l:"Unidad (€/mes)"},{k:"priceNote",l:"Nota del precio"},{k:"oldPrice",l:"Precio anterior (opcional)"},{k:"checks",l:"Ventajas (una por línea)",t:"ta"},{k:"cta",l:"Botón principal"},{k:"cardTitle",l:"Título tarjeta"},{k:"cardSub",l:"Texto tarjeta"},{k:"cardBtn",l:"Botón tarjeta"},{k:"live",l:"Línea de disponibilidad"},...V4_VISF],
+  render:p=>{const c=p.canal||"form";if(ncHeroLayout(p)==="photo")return v4HeroAPhoto(p);
+    const pri=c==="call"?`${v4Tel()} class="da-btn pri">${I_TEL()} Llamar gratis</a>`:c==="wa"?`${v4Wa()} class="da-btn pri wa">${I_WA()} WhatsApp</a>`:`<a href="#form" data-cta="form" class="da-btn pri">${esc(p.cta)} ${I_GO()}</a>`;
+    const sec=c==="call"?`<a href="#form" data-cta="form" class="da-btn sec">Te llamamos</a>`:`${v4Tel()} class="da-btn sec">${I_TEL()} ${esc(telText())}</a>`;
+    const card=c==="call"?`<h2>Llama gratis</h2><p>${esc(p.cardSub)}</p>${v4Tel()} class="da-bigcall">${I_TEL()} ${esc(telText())}</a><div class="da-or">o te llamamos nosotros</div>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go alt"})}`
+      :c==="wa"?`<h2>Escríbenos por WhatsApp</h2><p>${esc(p.cardSub)}</p>${v4Wa()} class="da-bigwa">${I_WA()} Abrir WhatsApp</a><div class="da-or">o déjanos tu teléfono</div>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go alt"})}`
       :`<h2>${esc(p.cardTitle)}</h2><p>${esc(p.cardSub)}</p>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go"})}`;
     return `<header class="da da-hero"><div class="container"><div class="row g-4 g-lg-5 align-items-center">
     <div class="col-lg-7">${p.eyebrow?`<span class="da-eyebrow"><span class="dot"></span>${esc(p.eyebrow)}</span>`:""}
@@ -71,7 +73,7 @@ da_plans:{label:"A · Tarifas",ico:"$",cat:"A · Oferta directa",raw:true,
 da_benefits:{label:"A · Ventajas",ico:"▦",cat:"A · Oferta directa",raw:true,
   def:()=>({title:"Por qué cambiarte hoy",items:"⚡|Rápido|Instalación en {{PLAZO}}.\n💶|Precio claro|Lo que ves es lo que pagas.\n🤝|Sin ataduras|Sin permanencia.\n🛠️|Todo incluido|Router, instalación y soporte."}),
   fields:[{k:"title",l:"Título"},{k:"items",l:"Ventajas (icono|título|texto)",t:"ta"}],
-  render:p=>`<section class="da da-sec soft"><div class="container"><h2 class="da-h2 text-center mb-5">${esc(p.title)}</h2><div class="row g-3">${v4L(p.items).map(l=>{const c=v4C(l);return `<div class="col-6 col-lg-3"><div class="da-ben"><span class="ic">${esc(c[0])}</span><h3>${esc(c[1]||'')}</h3><p>${esc(c[2]||'')}</p></div></div>`;}).join("")}</div></div></section>`},
+  render:p=>`<section class="da da-sec soft"><div class="container"><h2 class="da-h2 text-center mb-5">${esc(p.title)}</h2><div class="row g-3 da-row-ben">${v4L(p.items).map(l=>{const c=v4C(l);return `<div class="col-6 col-lg-3"><div class="da-ben"><span class="ic">${ncIconOrText(c[0])}</span><h3>${esc(c[1]||'')}</h3><p>${esc(c[2]||'')}</p></div></div>`;}).join("")}</div></div></section>`},
 da_faq:{label:"A · Preguntas frecuentes",ico:"?",cat:"A · Oferta directa",raw:true,
   def:()=>({title:"Preguntas frecuentes",items:"¿Hay permanencia?|{{RESPUESTA}}\n¿Cuánto tarda la instalación?|{{RESPUESTA}}\n¿Puedo mantener mi número?|{{RESPUESTA}}"}),
   fields:[{k:"title",l:"Título"},{k:"items",l:"Preguntas (pregunta|respuesta)",t:"ta"}],
@@ -92,21 +94,22 @@ da_sticky:{label:"A · Barra fija móvil",ico:"⤓",cat:"A · Oferta directa",ra
 db_nav:{label:"B · Nav editorial",ico:"▭",cat:"B · Confianza editorial",raw:true,
   def:()=>({logo:"{{LOGO}}",logoImg:"",telLabel:"¿Hablamos? {{HORARIO}}"}),fields:V4_NAVF,
   render:p=>`<nav class="db db-nav"><div class="container d-flex align-items-center justify-content-between">${v4Logo(p,'db-logo')}
-    ${v4Tel()} class="db-navtel"><small>${esc(p.telLabel)}</small><span>📞 ${esc(telText())}</span></a></div></nav>`},
+    ${v4Tel()} class="db-navtel"><small>${esc(p.telLabel)}</small><span>${I_TEL()} ${esc(telText())}</span></a></div></nav>`},
 db_hero:{label:"B · Hero confianza + multipaso",ico:"◫",cat:"B · Confianza editorial",raw:true,
-  def:()=>({canal:"form",kicker:"Alarma para tu hogar",headline:"La tranquilidad de saber que tu casa",italic:"está protegida",sub:"Un experto estudia tu caso y te propone lo que de verdad necesitas. Sin compromiso.",proof:"{{VALORACION}} ★★★★★|{{N_OPINIONES}} opiniones verificadas\n24 h|Central Receptora\n{{AÑOS}}|de experiencia",quote:"{{TESTIMONIO_REAL}}",author:"{{NOMBRE}}, {{CIUDAD}}",formTitle:"Tu estudio gratuito",formSub:"Responde 1 pregunta y te llamamos con una propuesta a medida.",question:"¿Dónde lo necesitas?",options:"🏠 Casa|🏢 Piso|🏪 Negocio|🏡 2ª vivienda",step2:"¡Perfecto! ¿A qué teléfono te llamamos?",btn:"Quiero mi estudio gratis",safe:"Tus datos están protegidos · no hacemos spam"}),
-  fields:[{k:"canal",l:"Canal principal",t:"select",opts:V4_CANAL},{k:"kicker",l:"Antetítulo"},{k:"headline",l:"Titular"},{k:"italic",l:"Final del titular (cursiva)"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"proof",l:"Prueba (valor|texto, una por línea)",t:"ta"},{k:"quote",l:"Testimonio (real)"},{k:"author",l:"Autor del testimonio"},{k:"formTitle",l:"Título del formulario"},{k:"formSub",l:"Texto del formulario"},{k:"question",l:"Pregunta del paso 1"},{k:"options",l:"Opciones (separadas por |)"},{k:"step2",l:"Texto del paso 2"},{k:"btn",l:"Botón final"},{k:"safe",l:"Texto de seguridad"}],
+  def:()=>({canal:"form",kicker:"Alarma para tu hogar",headline:"La tranquilidad de saber que tu casa",italic:"está protegida",sub:"Un experto estudia tu caso y te propone lo que de verdad necesitas. Sin compromiso.",proof:"{{VALORACION}} ★★★★★|{{N_OPINIONES}} opiniones verificadas\n24 h|Central Receptora\n{{AÑOS}}|de experiencia",quote:"{{TESTIMONIO_REAL}}",author:"{{NOMBRE}}, {{CIUDAD}}",formTitle:"Tu estudio gratuito",formSub:"Responde 1 pregunta y te llamamos con una propuesta a medida.",question:"¿Dónde lo necesitas?",options:"🏠 Casa|🏢 Piso|🏪 Negocio|🏡 2ª vivienda",step2:"¡Perfecto! ¿A qué teléfono te llamamos?",btn:"Quiero mi estudio gratis",safe:"Tus datos están protegidos · no hacemos spam",img:"",imgAlt:"",layout:"auto",illus:"auto",badge:""}),
+  fields:[{k:"canal",l:"Canal principal",t:"select",opts:V4_CANAL},{k:"kicker",l:"Antetítulo"},{k:"headline",l:"Titular"},{k:"italic",l:"Final del titular (cursiva)"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"proof",l:"Prueba (valor|texto, una por línea)",t:"ta"},{k:"quote",l:"Testimonio (real)"},{k:"author",l:"Autor del testimonio"},{k:"formTitle",l:"Título del formulario"},{k:"formSub",l:"Texto del formulario"},{k:"question",l:"Pregunta del paso 1"},{k:"options",l:"Opciones (separadas por |)"},{k:"step2",l:"Texto del paso 2"},{k:"btn",l:"Botón final"},{k:"safe",l:"Texto de seguridad"},...V4_VISF],
   render:p=>{const c=p.canal||"form";const opts=v4C(p.options).filter(Boolean);
-    const top=c==="call"?`${v4Tel()} class="db-chan">📞 Llama gratis · ${esc(telText())}</a><div class="db-or">o solicita tu estudio y te llamamos</div>`:c==="wa"?`${v4Wa()} class="db-chan wa">💬 Escríbenos por WhatsApp</a><div class="db-or">o solicita tu estudio y te llamamos</div>`:"";
-    return `<header class="db db-hero"><div class="container"><div class="row g-4 g-lg-5 align-items-start">
-    <div class="col-lg-6"><div class="db-kicker">${esc(p.kicker)}</div><h1 class="db-h1">${esc(p.headline)} ${p.italic?`<em>${esc(p.italic)}</em>`:""}</h1><p class="db-sub">${esc(p.sub)}</p>
+    const top=c==="call"?`${v4Tel()} class="db-chan">${I_TEL()} Llama gratis · ${esc(telText())}</a><div class="db-or">o solicita tu estudio y te llamamos</div>`:c==="wa"?`${v4Wa()} class="db-chan wa">${I_WA()} Escríbenos por WhatsApp</a><div class="db-or">o solicita tu estudio y te llamamos</div>`:"";
+    const L=ncHeroLayout(p),bg=L==="photo"&&ncLook()==="lux";
+    return `<header class="db db-hero${L==="photo"?' nc-hx':''}${bg?' nc-bg':''}">${bg?`<div class="nc-bgvis">${ncVisual(p)}</div>`:''}<div class="container"><div class="row g-4 g-lg-5 align-items-${L==="photo"&&!bg?'center':'start'}">
+    <div class="col-lg-6 nc-hx-txt"><div class="db-kicker">${esc(p.kicker)}</div><h1 class="db-h1">${esc(p.headline)} ${p.italic?`<em>${esc(p.italic)}</em>`:""}</h1><p class="db-sub">${esc(p.sub)}</p>
       <div class="db-proof">${v4L(p.proof).map(l=>{const x=v4C(l);return `<div><b>${esc(x[0])}</b>${esc(x[1]||'')}</div>`;}).join("")}</div>
       ${p.quote?`<blockquote class="db-quote">“${esc(p.quote)}”<span>— ${esc(p.author)}</span></blockquote>`:""}</div>
-    <div class="col-lg-5 offset-lg-1"><div class="db-form" id="form" data-live data-quiz>
+    <div class="col-lg-5 offset-lg-1">${L==="photo"&&!bg?ncVisual(p):''}<div class="db-form" id="form" data-live data-quiz>
       ${top}<div class="db-bar"><i data-quiz-bar></i></div><h2>${esc(p.formTitle)}</h2>
-      <div data-step><p>${esc(p.formSub)}</p><div class="db-q">${esc(p.question)}</div><div class="db-opts">${opts.map(o=>`<button type="button" class="db-opt" data-opt="${esc(o)}" data-q="${esc(p.question)}">${esc(o)}</button>`).join("")}</div></div>
+      <div data-step><p>${esc(p.formSub)}</p><div class="db-q">${esc(p.question)}</div><div class="db-opts">${opts.map(o=>{const e=ncSplitEmoji(o);return `<button type="button" class="db-opt" data-opt="${esc(e.text||o)}" data-q="${esc(p.question)}">${e.ico?ncIco(e.ico):''}${esc(e.text||o)}</button>`;}).join("")}</div></div>
       <div data-step style="display:none"><p>${esc(p.step2)}</p>${v4PhoneForm({btn:p.btn,btnCls:"db-go",ph:"600 000 000"})}<button type="button" class="db-back" data-quiz-back>← Cambiar respuesta</button></div>
-      <div class="db-safe">🔒 ${esc(p.safe)}</div></div></div>
+      <div class="db-safe">${ncIco("lock")} ${esc(p.safe)}</div></div></div>
     </div></div></header>`;}},
 db_seals:{label:"B · Sellos y certificados",ico:"🛡️",cat:"B · Confianza editorial",raw:true,
   def:()=>({label:"Certificados y reconocimientos",items:"{{SELLO_1}}\n{{SELLO_2}}\n{{SELLO_3}}\n{{SELLO_4}}",logos:[]}),
@@ -119,7 +122,7 @@ db_steps:{label:"B · Cómo funciona",ico:"⑃",cat:"B · Confianza editorial",r
 db_compare:{label:"B · Comparativa honesta",ico:"⚖️",cat:"B · Confianza editorial",raw:true,
   def:()=>({title:"Qué incluye",head:"Incluido|Con nosotros|Otras opciones",rows:"Aviso a emergencias|✓ Sí|✗ No\nCentral 24 h|✓ Sí|✗ No\nMantenimiento|✓ Incluido|Por tu cuenta"}),
   fields:[{k:"title",l:"Título"},{k:"head",l:"Cabecera (col1|col2|col3)"},{k:"rows",l:"Filas (col1|col2|col3)",t:"ta"}],
-  render:p=>`<section class="db db-sec pt-0"><div class="container"><h2 class="db-h2 mb-4">${esc(p.title)}</h2><div class="db-compare"><table class="table mb-0"><thead><tr>${v4C(p.head).map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${v4L(p.rows).map(l=>`<tr>${v4C(l).map((c,i)=>`<td class="${i===1?'yes':''}">${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div></section>`},
+  render:p=>`<section class="db db-sec pt-0"><div class="container"><h2 class="db-h2 mb-4">${esc(p.title)}</h2><div class="db-compare"><table class="table mb-0"><thead><tr>${v4C(p.head).map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${v4L(p.rows).map(l=>`<tr>${v4C(l).map((c,i)=>`<td class="${i===1?'yes':''}">${ncMark(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div></section>`},
 db_reviews:{label:"B · Opiniones reales",ico:"❝",cat:"B · Confianza editorial",raw:true,
   def:()=>({title:"Lo que dicen nuestros clientes",source:"Opiniones verificadas en {{PLATAFORMA}}",items:"{{TESTIMONIO_1}}|{{NOMBRE_1}}|{{CIUDAD_1}}\n{{TESTIMONIO_2}}|{{NOMBRE_2}}|{{CIUDAD_2}}\n{{TESTIMONIO_3}}|{{NOMBRE_3}}|{{CIUDAD_3}}"}),
   fields:[{k:"title",l:"Título"},{k:"source",l:"Fuente de las opiniones"},{k:"items",l:"Opiniones (texto|nombre|ciudad) — solo reales",t:"ta"}],
@@ -142,13 +145,14 @@ db_sticky:{label:"B · Barra fija móvil",ico:"⤓",cat:"B · Confianza editoria
 /* ============ C · PREMIUM PRODUCTO ============ */
 dc_nav:{label:"C · Nav glass",ico:"▭",cat:"C · Premium producto",raw:true,
   def:()=>({logo:"{{LOGO}}",logoImg:"",telLabel:""}),fields:V4_NAVF,
-  render:p=>`<nav class="dc dc-nav"><div class="container d-flex align-items-center justify-content-between">${v4Logo(p,'dc-logo')}${v4Tel()} class="dc-pill w">📞 ${esc(telText())}</a></div></nav>`},
+  render:p=>`<nav class="dc dc-nav"><div class="container d-flex align-items-center justify-content-between">${v4Logo(p,'dc-logo')}${v4Tel()} class="dc-pill w">${I_TEL()} ${esc(telText())}</a></div></nav>`},
 dc_hero:{label:"C · Hero oscuro + buscador",ico:"◨",cat:"C · Premium producto",raw:true,
-  def:()=>({canal:"form",chip:"Nuevo",chipText:"{{NOVEDAD}}",headline:"Paga solo",gradient:"lo que usas",sub:"Sin márgenes escondidos ni letra pequeña. Todo claro desde el primer día.",ph:"Tu teléfono",btn:"Calcular mi ahorro",note:"Te llamamos en minutos",kpis:"{{DATO_1}}|{{ETIQUETA_1}}\n0 €|permanencia\n100%|online"}),
-  fields:[{k:"canal",l:"Canal principal",t:"select",opts:V4_CANAL},{k:"chip",l:"Chip (destacado)"},{k:"chipText",l:"Chip (texto)"},{k:"headline",l:"Titular"},{k:"gradient",l:"Parte en degradado"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"ph",l:"Placeholder del campo"},{k:"btn",l:"Botón"},{k:"note",l:"Nota bajo el campo"},{k:"kpis",l:"Cifras (valor|texto)",t:"ta"}],
+  def:()=>({canal:"form",chip:"Nuevo",chipText:"{{NOVEDAD}}",headline:"Paga solo",gradient:"lo que usas",sub:"Sin márgenes escondidos ni letra pequeña. Todo claro desde el primer día.",ph:"Tu teléfono",btn:"Calcular mi ahorro",note:"Te llamamos en minutos",kpis:"{{DATO_1}}|{{ETIQUETA_1}}\n0 €|permanencia\n100%|online",img:"",imgAlt:"",layout:"auto",illus:"auto",badge:""}),
+  fields:[{k:"canal",l:"Canal principal",t:"select",opts:V4_CANAL},{k:"chip",l:"Chip (destacado)"},{k:"chipText",l:"Chip (texto)"},{k:"headline",l:"Titular"},{k:"gradient",l:"Parte en degradado"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"ph",l:"Placeholder del campo"},{k:"btn",l:"Botón"},{k:"note",l:"Nota bajo el campo"},{k:"kpis",l:"Cifras (valor|texto)",t:"ta"},...V4_VISF.filter(f=>f.k!=="illus"&&f.k!=="badge")],
   render:p=>{const c=p.canal||"form";
-    const big=c==="call"?`<div class="dc-big">${v4Tel()} class="dc-pill w lg">📞 Llama gratis · ${esc(telText())}</a></div><div class="dc-or">o déjanos tu teléfono</div>`:c==="wa"?`<div class="dc-big">${v4Wa()} class="dc-pill wa lg">💬 Escríbenos por WhatsApp</a></div><div class="dc-or">o déjanos tu teléfono</div>`:"";
-    const alts=[c!=="call"?`${v4Tel()} class="dc-pill g">📞 Prefiero llamar</a>`:"",c!=="wa"?`${v4Wa()} class="dc-pill wa">💬 WhatsApp</a>`:""].join("");
+    const big=c==="call"?`<div class="dc-big">${v4Tel()} class="dc-pill w lg">${I_TEL()} Llama gratis · ${esc(telText())}</a></div><div class="dc-or">o déjanos tu teléfono</div>`:c==="wa"?`<div class="dc-big">${v4Wa()} class="dc-pill wa lg">${I_WA()} Escríbenos por WhatsApp</a></div><div class="dc-or">o déjanos tu teléfono</div>`:"";
+    const alts=[c!=="call"?`${v4Tel()} class="dc-pill g">${I_TEL()} Prefiero llamar</a>`:"",c!=="wa"?`${v4Wa()} class="dc-pill wa">${I_WA()} WhatsApp</a>`:""].join("");
+    if(ncHeroLayout(p)==="photo")return v4HeroCPhoto(p,big,alts);
     return `<header class="dc dc-hero"><div class="dc-glow a"></div><div class="dc-glow b"></div><div class="container position-relative text-center">
     ${p.chipText?`<span class="dc-chip">${p.chip?`<b>${esc(p.chip)}</b> `:""}${esc(p.chipText)}</span>`:""}
     <h1 class="dc-h1">${esc(p.headline)} ${p.gradient?`<span class="dc-grad">${esc(p.gradient)}</span>`:""}</h1><p class="dc-sub">${esc(p.sub)}</p>
@@ -188,7 +192,7 @@ ORDER.unshift(...Object.keys(LIB).filter(k=>/^d[abc]_/.test(k)));
 function ncDirCSS(){
   const used=new Set(state.sections.filter(s=>!s.hidden).map(s=>(s.type.match(/^(d[abc])_/)||[])[1]).filter(Boolean));
   if(!used.size)return "";
-  const common=`.da,.db,.dc{--dline:var(--line,#e7e4f0)}.da h1,.da h2,.da h3,.db h1,.db h2,.db h3,.dc h1,.dc h2,.dc h3{font-family:var(--fhead)}
+  const common=ncHxCSS()+`.da,.db,.dc{--dline:var(--line,#e7e4f0)}.da h1,.da h2,.da h3,.db h1,.db h2,.db h3,.dc h1,.dc h2,.dc h3{font-family:var(--fhead)}
   .da .form-control,.db .form-control,.dc .form-control{font-size:16px}
   .da-faq .accordion-button,.db-faq .accordion-button,.dc-faq .accordion-button{font-weight:600}`;
   const A=`
@@ -233,9 +237,9 @@ function ncDirCSS(){
   .da-plan{border:1.5px solid var(--dline);border-radius:18px;padding:24px;height:100%;background:#fff;position:relative;display:flex;flex-direction:column;color:var(--bink)}
   .da-plan.best{border-color:var(--bp);box-shadow:0 20px 40px -24px color-mix(in srgb,var(--bp) 70%,transparent)}
   .da-plan .tag{position:absolute;top:-12px;left:24px;background:var(--bp);color:var(--btntext,#fff);font-size:12px;font-weight:700;border-radius:99px;padding:4px 10px}
-  .da-plan h3{font-size:18px;font-weight:800}.da-plan .pp{font:800 40px var(--fhead);letter-spacing:-.03em}.da-plan .pp small{font-size:15px;font-weight:600;color:var(--bmuted);margin-left:4px}
+  .da-plan h3{font-size:18px;font-weight:800}.da-plan .pp{font:800 40px var(--fhead);letter-spacing:-.03em;overflow-wrap:anywhere;min-width:0}.da-plan .pp small{font-size:15px;font-weight:600;color:var(--bmuted);margin-left:4px}
   .da-plan ul{list-style:none;padding:0;margin:14px 0 20px;font-size:14.5px;color:var(--bmuted);flex:1}.da-plan li{padding:7px 0;border-bottom:1px solid var(--dline)}
-  .da-ben{background:#fff;border-radius:16px;padding:20px;height:100%;border:1px solid var(--dline)}.da-ben .ic{font-size:26px}.da-ben h3{font-size:17px;font-weight:800;margin:10px 0 6px;color:var(--bink)}.da-ben p{font-size:14px;color:var(--bmuted);margin:0}
+  .da-ben{background:#fff;border-radius:16px;padding:20px;height:100%;border:1px solid var(--dline)}.da-ben .ic{font-size:26px;color:var(--bpt);display:inline-flex}.da-ben h3{font-size:17px;font-weight:800;margin:10px 0 6px;color:var(--bink)}.da-ben p{font-size:14px;color:var(--bmuted);margin:0}
   .da-ctab{background:var(--bink);color:#fff;padding:56px 0}.da-ctab h2{font-size:clamp(26px,3vw,36px);font-weight:800}.da-ctab p{opacity:.8;margin:0}
   .da-inline{display:flex;gap:8px;flex-wrap:wrap}.da-inline .form-control{flex:1 1 200px;margin:0!important;border-radius:12px;padding:14px}.da-inline .da-go{width:auto;flex:0 0 auto;margin:0;padding:14px 22px;background:var(--bp)}
   .da-inline .nc-legal,.da-inline .nc-legal-info{order:3;flex-basis:100%;color:#fff}
@@ -260,7 +264,7 @@ function ncDirCSS(){
   .db-form h2{font-size:25px;margin:0 0 6px;font-weight:600}.db-form p{color:var(--bmuted);font-size:14.5px}
   .db-q{font-size:13.5px;font-weight:700;margin:6px 0 8px}
   .db-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .db-opt{border:1px solid var(--dline);border-radius:10px;padding:13px 10px;font-size:14.5px;font-weight:500;background:#fff;color:var(--bink)}
+  .db-opt{border:1px solid var(--dline);border-radius:10px;padding:13px 10px;font-size:14.5px;font-weight:500;background:#fff;color:var(--bink);display:flex;align-items:center;justify-content:center;gap:8px}.db-opt .nci{color:var(--bpt)}
   .db-opt:hover,.db-opt.on{border-color:var(--bp);background:color-mix(in srgb,var(--bp) 8%,#fff);color:var(--bpt)}
   .db-form .form-control{border-radius:10px;padding:13px 14px}
   .db-go{width:100%;margin-top:6px;background:var(--bink);color:#fff;border:0;border-radius:10px;padding:15px;font-weight:600;font-size:16px}
@@ -275,7 +279,7 @@ function ncDirCSS(){
   .db-step{border-top:1px solid var(--bink);padding-top:18px}.db-step .n{font:600 15px var(--fhead);color:var(--bpt)}.db-step h3{font-size:22px;margin:6px 0 8px;font-weight:600}.db-step p{color:var(--bmuted);font-size:15px}
   .db-compare{background:#fff;border:1px solid var(--dline);border-radius:16px;overflow:hidden}
   .db-compare th{font-size:12.5px;color:var(--bmuted);text-transform:uppercase;letter-spacing:.05em;background:color-mix(in srgb,var(--bsoft) 60%,#fff)}
-  .db-compare td,.db-compare th{padding:14px 18px;border-color:var(--dline)}.db-compare td.yes{color:#1F7A4D;font-weight:700}
+  .db-compare td,.db-compare th{padding:14px 18px;border-color:var(--dline)}.db-compare td.yes{color:#1F7A4D;font-weight:700}.db-compare .nci.ok{color:#1F7A4D;margin-right:6px}.db-compare .nci.no{color:#B42318;margin-right:6px}
   .db-rev{background:var(--bpaper,#FBF9F6);border:1px solid var(--dline);border-radius:16px;padding:22px;height:100%;margin:0}.db-rev .st{color:#E3A008;letter-spacing:2px}.db-rev blockquote{font-size:15.5px;margin:10px 0 14px}.db-rev figcaption{color:var(--bmuted);font-size:13px}
   .db-ctab{padding:0 0 80px}.db-ctabox{background:var(--bink);color:#fff;border-radius:22px;padding:40px;display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
   .db-ctabox h2{font-size:clamp(24px,2.8vw,34px);font-weight:600;margin:0 0 6px}.db-ctabox p{opacity:.75;margin:0}
@@ -309,7 +313,7 @@ function ncDirCSS(){
   .dc-note{font-size:12.5px;color:rgba(255,255,255,.5);margin-top:14px}
   .dc-alt{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
   .dc-kpis{margin:64px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:820px}
-  .dc-kpi{background:var(--gl);border:1px solid var(--gb);border-radius:16px;padding:18px;text-align:left}.dc-kpi b{display:block;font:800 28px var(--fhead);letter-spacing:-.03em}.dc-kpi span{font-size:13px;color:rgba(255,255,255,.55)}
+  .dc-kpi{background:var(--gl);border:1px solid var(--gb);border-radius:16px;padding:18px;text-align:left}.dc-kpi b{display:block;font:800 28px var(--fhead);letter-spacing:-.03em;overflow-wrap:anywhere}.dc-kpi span{font-size:13px;color:rgba(255,255,255,.55)}
   .dc-sec{padding:110px 0;background:#fff;color:var(--bink)}
   .dc-sec .dc-grad{background:linear-gradient(90deg,var(--bpt),color-mix(in srgb,var(--bpt) 55%,var(--bink)));-webkit-background-clip:text;background-clip:text}
   .dc-h2{font-size:clamp(32px,4.6vw,60px);font-weight:800;line-height:1.05;letter-spacing:-.035em}
@@ -318,7 +322,7 @@ function ncDirCSS(){
   .dc-tile{border-radius:24px;padding:32px;min-height:220px;background:var(--bsoft);position:relative;overflow:hidden}
   .dc-tile.d{background:var(--dk);color:#fff}.dc-tile h3{font-size:25px;font-weight:700;position:relative;max-width:80%}
   .dc-tile p{color:var(--bmuted);max-width:340px;position:relative}.dc-tile.d p{color:rgba(255,255,255,.62)}
-  .dc-tile .big{font:800 64px/1 var(--fhead);letter-spacing:-.05em;margin-top:18px;position:relative}.dc-tile .big small{display:block;font-size:15px;font-weight:600;letter-spacing:0;margin-top:8px;opacity:.6}
+  .dc-tile .big{font:800 64px/1 var(--fhead);letter-spacing:-.05em;margin-top:18px;position:relative;overflow-wrap:anywhere}.dc-tile .big small{display:block;font-size:15px;font-weight:600;letter-spacing:0;margin-top:8px;opacity:.6}
   .dc-orb{position:absolute;right:-90px;top:-90px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle at 30% 30%,var(--ba),var(--bp) 60%,transparent 70%);opacity:.7}
   .dc-logos{padding:56px 0;background:#fff;border-bottom:1px solid var(--dline)}.dc-logos p{text-align:center;font-size:13px;color:var(--bmuted);margin-bottom:24px}
   .dc-lgrid{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--dline);border-radius:14px;overflow:hidden}
@@ -338,3 +342,30 @@ function ncDirCSS(){
 
 function ncLum(hex){const m=String(hex||"").trim().match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i);if(!m)return 0;let h=m[1];if(h.length===3)h=h.split("").map(c=>c+c).join("");
   const c=[0,2,4].map(i=>{const v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);});return .2126*c[0]+.7152*c[1]+.0722*c[2];}
+
+/* ---------- Heros con foto / ilustración protagonista ---------- */
+function v4HeroAPhoto(p){const c=p.canal||"form",bg=ncLook()==="lux";
+  const form=v4PhoneForm({btn:p.cardBtn||p.cta,btnCls:"da-go",cls:"da-inline",arrow:true});
+  const top=c==="call"?`<div class="nc-hx-big">${v4Tel()} class="da-btn pri">${I_TEL()} Llamar gratis · ${esc(telText())}</a></div><div class="nc-hx-or">o te llamamos nosotros</div>`
+    :c==="wa"?`<div class="nc-hx-big">${v4Wa()} class="da-btn pri wa">${I_WA()} Escríbenos por WhatsApp</a></div><div class="nc-hx-or">o déjanos tu teléfono y te llamamos</div>`:"";
+  const alt=`<div class="nc-hx-alt">${c==="call"?"":`${v4Tel()}>${I_TEL()} ${c==="form"?"o llama gratis al ":""}${esc(telText())}</a>`}${p.live?`<span class="da-muted d-inline-flex align-items-center gap-2" style="font-size:13.5px"><span class="dot"></span>${esc(p.live)}</span>`:""}</div>`;
+  return `<header class="da da-hero nc-hx${bg?' nc-bg':''}">${bg?`<div class="nc-bgvis">${ncVisual(p)}</div>`:''}<div class="container"><div class="row g-4 g-lg-5 align-items-center">
+    <div class="${bg?'col-lg-8 col-xl-7':'col-lg-6'} nc-hx-txt">${p.eyebrow?`<span class="da-eyebrow"><span class="dot"></span>${esc(p.eyebrow)}</span>`:""}
+      <h1 class="da-h1">${esc(p.headline)} ${p.highlight?`<mark>${esc(p.highlight)}</mark>`:""}</h1>
+      <p class="da-sub">${esc(p.sub)}</p>
+      ${p.price?`<div class="da-price"><div class="p">${esc(p.price)}</div><div class="u"><b>${esc(p.priceUnit)}</b>${esc(p.priceNote)}</div></div>`:""}
+      ${p.oldPrice?`<div class="da-old"><s>${esc(p.oldPrice)}</s> precio habitual</div>`:""}
+      ${v4Checks(p.checks,"da-checks")}
+      <div class="nc-hx-form" id="form">${top}${form}</div>${alt}</div>
+    ${bg?'':`<div class="col-lg-6">${ncVisual(p)}</div>`}
+    </div></div></header>`;}
+function v4HeroCPhoto(p,big,alts){const kp=v4L(p.kpis).map(l=>v4C(l));
+  const scr=p.img?`<img src="${esc(p.img)}" alt="${esc(p.imgAlt||'')}">`:`<div class="lb">${esc((kp[0]||[])[1]||'')}</div><div class="big">${esc((kp[0]||[])[0]||'')}</div><div class="ln" style="width:70%"></div><div class="ln" style="width:45%"></div>
+    <div class="bars"><i style="height:40%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:78%"></i><i style="height:66%"></i><i style="height:92%"></i></div>${kp.slice(1,3).map(x=>`<div class="tile"><span>${esc(x[1]||'')}</span><b>${esc(x[0]||'')}</b></div>`).join("")}`;
+  return `<header class="dc dc-hero nc-hx"><div class="dc-glow a"></div><div class="dc-glow b"></div><div class="container position-relative"><div class="row g-5 align-items-center">
+    <div class="col-lg-7 nc-hx-txt">${p.chipText?`<span class="dc-chip">${p.chip?`<b>${esc(p.chip)}</b> `:""}${esc(p.chipText)}</span>`:""}
+    <h1 class="dc-h1">${esc(p.headline)} ${p.gradient?`<span class="dc-grad">${esc(p.gradient)}</span>`:""}</h1><p class="dc-sub">${esc(p.sub)}</p>
+    ${big}<div id="form">${v4PhoneForm({btn:p.btn,btnCls:"dc-go",cls:"dc-formbar",ph:p.ph,arrow:true})}</div><div class="dc-note">${esc(p.note)}</div>
+    <div class="dc-alt">${alts}</div>
+    <div class="dc-kpis">${kp.map(x=>`<div class="dc-kpi"><b>${esc(x[0]||'')}</b><span>${esc(x[1]||'')}</span></div>`).join("")}</div></div>
+    <div class="col-lg-5 nc-phone-col"><div class="nc-phone"><div class="scr">${scr}</div></div></div></div></div></header>`;}

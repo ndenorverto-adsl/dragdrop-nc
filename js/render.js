@@ -89,8 +89,9 @@ function _freeDel(html,ncid){try{const r=ncParse(html);const el=r.querySelector(
 
 function collectFonts(b){
   const nm=s=>{const m=(s||"").match(/'([^']+)'/);return m?m[1]:null;};
-  const set=[nm(b.fhead),nm(b.fbody)];
+  const set=(typeof ncLookUsesFont==="function"&&ncLookUsesFont()&&!state.sections.some(s=>!/^d[abc]_/.test(s.type)))?[]:[nm(b.fhead),nm(b.fbody)];
   state.sections.forEach(s=>{const hf=(s.style&&s.style.headFont)||"";if(hf)set.push(hf);});
+  if(typeof ncLookFonts==="function")set.push(...ncLookFonts());
   return fontsHrefMany(set);
 }
 function buildDoc(forExport){
@@ -192,10 +193,10 @@ ${forExport?ncHeadMeta(secs):''}
 <meta property="og:title" content="${esc(ph(state.settings.title,"TITULO_SEO"))}"><meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="${collectFonts(b)}" rel="stylesheet"><link href="${bsCSS}" rel="stylesheet">${st.importCSS||""}
-<style>:root{${b.vars}--fhead:${b.fhead};--fbody:${b.fbody}}${baseCSS()}${ncProCSS()}${ncDirCSS()}${b.profileCSS||''}${STYLEKITS[st.styleKit]||''}</style>
-${gtmHead}</head><body class="cta-${st.ctaStyle||'brand'}${st.motion?' nc-motion':''}" data-ctaaction="${st.ctaAction||'scroll'}" data-nc="${esc(JSON.stringify(ncRuntimeConfig()))}" data-tel="${esc(ph(st.tel,'TELEFONO').replace(/\s/g,''))}" data-wa="${esc(ph(st.wa,'WHATSAPP').replace(/[^0-9]/g,''))}">
+<style>:root{${b.vars}--fhead:${b.fhead};--fbody:${b.fbody}}${ncLookFontVars()}${baseCSS()}${ncProCSS()}${ncDirCSS()}${ncLookCSS()}${b.profileCSS||''}${STYLEKITS[st.styleKit]||''}${forExport?'':NC_PH_PREVIEW_CSS}</style>
+${gtmHead}</head><body class="cta-${st.ctaStyle||'brand'}${st.motion?' nc-motion':''}${ncLook()!=='base'?' lk-'+ncLook():''}" data-ctaaction="${st.ctaAction||'scroll'}" data-nc="${esc(JSON.stringify(ncRuntimeConfig()))}" data-tel="${esc(ph(st.tel,'TELEFONO').replace(/\s/g,''))}" data-wa="${esc(ph(st.wa,'WHATSAPP').replace(/[^0-9]/g,''))}">
 ${gtmBody}
-${secs}
+${forExport?secs:ncPhChips(secs)}
 ${modalPro}${cookie}
 <script src="${bsJS}"><\/script>
 ${forExport?'<script>'+ncRuntimeJS()+'<\/script>':''}${widgets}${editor}

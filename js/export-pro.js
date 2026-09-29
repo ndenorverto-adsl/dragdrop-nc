@@ -102,7 +102,7 @@ function ncHeadMeta(sectionsStr){
   if(url){out.push(`<link rel="canonical" href="${esc(url)}">`,`<meta property="og:url" content="${esc(url)}">`);}
   out.push(`<meta property="og:locale" content="es_ES">`,`<meta property="og:site_name" content="${esc(b.name||'')}">`,`<meta property="og:description" content="${desc}">`);
   let og=(st.ogImage||'').trim();
-  if(!og){const m=sectionsStr.match(/<img[^>]+fetchpriority="high"[^>]*>/)||[];const src=(m[0]||'').match(/src="(https?:[^"]+)"/);if(src)og=src[1];}
+  if(!og){const m=sectionsStr.match(/<img[^>]+fetchpriority="high"[^>]*>/)||[];const src=(m[0]||'').match(/src="(https?:[^"]+)"/);if(src)og=src[1].replace(/&amp;/g,'&');}
   if(og&&!/^data:/.test(og))out.push(`<meta property="og:image" content="${esc(og)}">`,`<meta name="twitter:card" content="summary_large_image">`);
   else out.push(`<meta name="twitter:card" content="summary">`);
   out.push(`<meta name="twitter:title" content="${title}">`,`<meta name="twitter:description" content="${desc}">`);
@@ -110,7 +110,7 @@ function ncHeadMeta(sectionsStr){
   if(st.favicon)out.push(`<link rel="icon" href="${esc(st.favicon)}">`);
   else{const svg=`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='${col}'/></svg>`;out.push(`<link rel="icon" href="data:image/svg+xml,${encodeURIComponent(svg)}">`);}
   // Preload de la imagen del hero (LCP)
-  const hero=(sectionsStr.match(/<img[^>]+fetchpriority="high"[^>]*>/)||[])[0];const hs=hero&&(hero.match(/src="(https?:[^"]+)"/)||[])[1];
+  const hero=(sectionsStr.match(/<img[^>]+fetchpriority="high"[^>]*>/)||[])[0];const hs=hero&&((hero.match(/src="(https?:[^"]+)"/)||[])[1]||'').replace(/&amp;/g,'&');
   if(hs)out.push(`<link rel="preload" as="image" href="${esc(hs)}" fetchpriority="high">`);
   // FAQPage (datos estructurados a partir de los acordeones)
   try{const r=ncParse(sectionsStr);const qa=[...r.querySelectorAll('.accordion-item')].map(it=>{const q=it.querySelector('.accordion-button,.accordion-header');const a=it.querySelector('.accordion-body');return(q&&a)?{"@type":"Question",name:q.textContent.trim(),acceptedAnswer:{"@type":"Answer",text:a.textContent.trim()}}:null;}).filter(x=>x&&x.name&&x.acceptedAnswer.text&&!/\{\{/.test(x.name+x.acceptedAnswer.text));

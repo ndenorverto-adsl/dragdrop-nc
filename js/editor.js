@@ -55,6 +55,10 @@ function fieldHTML(f,obj){
   if(f.t==="ta")return `<textarea data-fk="${f.k}">${esc(v||"")}</textarea><div class="help">Una fila por línea; campos separados por “|”.</div>`;
   if(f.t==="select")return `<select data-fk="${f.k}">${f.opts.map(o=>`<option value="${o[0]}" ${String(v)===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select>`;
   if(f.t==="image")return `<div class="up"><input type="file" accept="image/*" data-file="${f.k}" style="display:none"><div class="thumbrow">${v?`<img class="thumb" src="${v}">`:""}<button type="button" class="btn sm" data-upbtn="${f.k}">${v?"Cambiar":"Subir imagen"}</button>${v?`<button type="button" class="btn sm ghost" data-rm="${f.k}">Quitar</button>`:""}</div><div class="help">Se incrusta en el HTML (Base64).</div></div>`;
+  if(f.t==="photo"){const ext=v&&!/^data:/.test(v);return `<div class="up"><input type="file" accept="image/*" data-file="${f.k}" style="display:none"><div class="thumbrow">${v?`<img class="thumb" src="${esc(v)}" alt="">`:""}<button type="button" class="btn sm" data-upbtn="${f.k}">${v?"Cambiar":"Subir foto"}</button>${v?`<button type="button" class="btn sm ghost" data-rm="${f.k}">Quitar</button>`:""}</div>
+    <input data-fk="${f.k}" value="${ext?esc(v):""}" placeholder="…o pega la URL de una imagen" style="margin-top:6px">
+    <div class="help" style="margin:8px 0 4px">Fotos libres (licencia Unsplash):</div><div class="nc-freeph">${NC_PHOTOS.map(id=>`<button type="button" data-pick="${f.k}" data-url="${ncPhotoUrl(id)}" title="Usar esta foto" class="${v===ncPhotoUrl(id)?'on':''}"><img src="${ncPhotoUrl(id,200)}" alt="" loading="lazy"></button>`).join("")}</div>
+    <div class="help">Sin foto se muestra una ilustración con los colores de la marca. Más fotos en <a href="https://unsplash.com/es" target="_blank" rel="noopener" style="color:inherit">unsplash.com</a> (clic derecho en la foto → copiar dirección de imagen).</div></div>`;}
   if(f.t==="images"){const L=arr(v);return `<div class="up"><input type="file" accept="image/*" multiple data-filem="${f.k}" style="display:none"><div class="thumbs">${L.map((s,i)=>`<div class="t"><img src="${s}"><button type="button" data-rmi="${f.k}" data-i="${i}">×</button></div>`).join("")}</div><button type="button" class="btn sm" data-upbtnm="${f.k}">+ Añadir imágenes</button></div>`;}
   return `<input data-fk="${f.k}" value="${esc(v||"")}" placeholder="${esc(f.ph||"")}">`;
 }
@@ -64,6 +68,7 @@ function bindContentFields(container,obj,after,fields){
   container.querySelectorAll('select[data-fk]').forEach(inp=>inp.addEventListener('change',()=>{commit();obj[inp.dataset.fk]=inp.value;after();renderRight();}));
   container.querySelectorAll('[data-upbtn]').forEach(btn=>btn.addEventListener('click',()=>container.querySelector('[data-file="'+btn.dataset.upbtn+'"]').click()));
   container.querySelectorAll('[data-file]').forEach(inp=>inp.addEventListener('change',e=>readImg(e.target.files[0],url=>{commit();obj[inp.dataset.file]=url;renderRight();renderPreview();})));
+  container.querySelectorAll('[data-pick]').forEach(btn=>btn.addEventListener('click',()=>{commit();obj[btn.dataset.pick]=btn.dataset.url;renderRight();renderPreview();}));
   container.querySelectorAll('[data-rm]').forEach(btn=>btn.addEventListener('click',()=>{commit();obj[btn.dataset.rm]="";renderRight();renderPreview();}));
   container.querySelectorAll('[data-upbtnm]').forEach(btn=>btn.addEventListener('click',()=>container.querySelector('[data-filem="'+btn.dataset.upbtnm+'"]').click()));
   container.querySelectorAll('[data-filem]').forEach(inp=>inp.addEventListener('change',e=>{const fs=Array.from(e.target.files);commit();obj[inp.dataset.filem]=arr(obj[inp.dataset.filem]);let n=fs.length;fs.forEach(file=>readImg(file,url=>{obj[inp.dataset.filem].push(url);if(--n===0){renderRight();renderPreview();}}));}));
@@ -131,15 +136,20 @@ function renderGlobal(){
     <div class="fld inline"><label>Radio botón (${CUSTOM.btnr}px)</label><input type="range" min="0" max="40" data-ct="btnr" value="${CUSTOM.btnr}"></div>
     <div class="fld inline"><label>Radio card (${CUSTOM.cardr}px)</label><input type="range" min="0" max="30" data-ct="cardr" value="${CUSTOM.cardr}"></div>`;}
   else theme=`<div class="note">${b.note}</div><button class="btn sm" id="dupBrand">Duplicar en marca editable</button>`;
+  ncEnsureLookFonts();const LK=LOOKS[ncLook()];
   gf.innerHTML=`
     <div class="fld"><label>Marca</label><select id="gBrand">${brandOptions(state.settings.brand)}</select></div>
+    <div class="paneltitle" style="padding:10px 0 4px">Estilo de diseño</div>
+    <div class="lk-grid">${LOOK_ORDER.map(k=>{const L=LOOKS[k];return `<button type="button" class="lk-tile ${ncLook()===k?'on':''}" data-look="${k}" title="${esc(L.desc)} Ideal: ${esc(L.best)}."><span class="sw">${L.sample.map(c=>`<i style="background:${c.indexOf('var(')===0?ncBrandColor():c}"></i>`).join("")}</span><b style="font-family:${L.head?`'${L.head}',`:''}Inter,sans-serif;font-weight:${L.hw||700}">${esc(L.name)}</b><small>${esc(L.head||'Tipografía de la marca')}</small></button>`;}).join("")}</div>
+    <div class="help" style="margin:6px 0 8px">${esc(LK.desc)} <b>Ideal:</b> ${esc(LK.best)}. Los colores siempre son los de la marca.</div>
+    <div class="fld inline"><label>Usar tipografía de la marca</label><input type="checkbox" id="gLookFont" ${st.lookBrandFont?'checked':''} ${ncLook()==='base'?'disabled':''}></div>
     ${theme}
     <div class="paneltitle" style="padding:10px 0 4px">Contacto (tel: · wa.me · form)</div>
     <div class="fld"><label>Teléfono</label><input id="gTel" value="${esc(state.settings.tel)}" placeholder="{{TELEFONO}}"></div>
     <div class="fld"><label>WhatsApp (con prefijo)</label><input id="gWa" value="${esc(state.settings.wa)}" placeholder="{{WHATSAPP}}"></div>
     <div class="fld"><label>Endpoint del formulario</label><input id="gEp" value="${esc(state.settings.endpoint)}" placeholder="{{ENDPOINT_FORMULARIO}}"></div>
     <div class="paneltitle" style="padding:10px 0 4px">Botones y acciones</div>
-    <div class="fld"><label>Estilo visual (UI)</label><select id="gStyleKit">${STYLEKIT_LIST.map(o=>`<option value="${o[0]}" ${state.settings.styleKit===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Capa de diseño (glass, neumorphism, brutalism…) sobre la marca.</div></div>
+    <div class="fld"><label>Capa UI extra (bloques clásicos)</label><select id="gStyleKit">${STYLEKIT_LIST.map(o=>`<option value="${o[0]}" ${state.settings.styleKit===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Capa de diseño (glass, neumorphism, brutalism…) sobre la marca.</div></div>
     <div class="fld inline"><label>Animaciones (reveal + micro-interacciones)</label><input type="checkbox" id="gMotion" ${state.settings.motion?'checked':''}></div>
     <div class="fld"><label>Estilo de botón (CTA)</label><select id="gCtaStyle">${[["brand","Marca"],["apple","Apple (pill azul)"],["instagram","Instagram (degradado)"],["ncgreen","Verde NC (botonazo)"],["neon","Neón"],["outline","Contorno"],["dark","Oscuro"],["pill","Pastilla marca"]].map(o=>`<option value="${o[0]}" ${state.settings.ctaStyle===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select></div>
     <div class="fld"><label>Acción del CTA principal</label><select id="gCtaAction">${[["scroll","Ir al formulario"],["popup","Abrir popup de contacto"],["popupimg","Popup de contacto con imagen"],["call","Llamar (tel:)"],["whatsapp","WhatsApp"]].map(o=>`<option value="${o[0]}" ${state.settings.ctaAction===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Aplica a todos los botones “Ir al formulario”.</div></div>
@@ -183,6 +193,8 @@ function renderGlobal(){
   const cnt=(id,out,lo,hi)=>{const el=document.getElementById(id),o=document.getElementById(out);if(!el||!o)return;const u=()=>{const n=el.value.length;o.textContent=n+' caracteres · ideal '+lo+'–'+hi;o.style.color=(n&&(n<lo||n>hi))?'var(--danger)':'';};el.addEventListener('input',u);u();};
   cnt("gTitle","gTitleCnt",30,60);cnt("gDesc","gDescCnt",70,155);
   const cs=document.getElementById("gCtaStyle");if(cs)cs.addEventListener('change',()=>{commit();state.settings.ctaStyle=cs.value;renderPreview();});
+  gf.querySelectorAll('[data-look]').forEach(b=>b.addEventListener('click',()=>{commit();state.settings.look=b.dataset.look;renderPreview();renderGlobal();if(state.selected)renderRight();}));
+  const lf=document.getElementById("gLookFont");if(lf)lf.addEventListener('change',()=>{commit();state.settings.lookBrandFont=lf.checked;renderPreview();});
   const sk=document.getElementById("gStyleKit");if(sk)sk.addEventListener('change',()=>{commit();state.settings.styleKit=sk.value;renderPreview();});
   const mo=document.getElementById("gMotion");if(mo)mo.addEventListener('change',()=>{commit();state.settings.motion=mo.checked;renderPreview();});
   const ca=document.getElementById("gCtaAction");if(ca)ca.addEventListener('change',()=>{commit();state.settings.ctaAction=ca.value;renderPreview();renderGlobal();});
@@ -269,3 +281,6 @@ function exportHTML(){const html=buildDoc(true);const kb=Math.round(html.length/
   const blob=new Blob([html],{type:"text/html;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(state.settings.slug||"landing")+".html";document.body.appendChild(a);a.click();a.remove();
   toast("HTML exportado ✓ ("+kb+" KB)");}
 const TEMPLATE_BRAND={"Apple (literal)":"apple","Movistar (literal)":"movistar","T-Mobile (literal)":"tmobile","O2 (literal)":"o2","MyTraffic (literal)":"mytraffic","AB Tasty (literal)":"abtasty","Cliente · Jazztel":"c_jazztel","Cliente · MásMóvil":"c_masmovil","Cliente · Simyo":"c_simyo","Cliente · Yoigo":"c_yoigo","Cliente · Vodafone":"c_vodafone","Cliente · Lowi":"c_lowi","Cliente · MásAhorro":"c_masahorro","Cliente · Prosegur":"c_prosegur"};
+
+function ncEnsureLookFonts(){if(document.getElementById("lkFonts"))return;const l=document.createElement("link");l.id="lkFonts";l.rel="stylesheet";
+  l.href=fontsHrefMany(LOOK_ORDER.map(k=>LOOKS[k].head).filter(Boolean));document.head.appendChild(l);}

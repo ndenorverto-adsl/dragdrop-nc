@@ -134,3 +134,16 @@ iframe#pv{border:0;display:block;width:100%;height:calc(100vh - 150px);backgroun
 .tpl-meta .btn{align-self:flex-start}
 .tpl-filters .br{flex-basis:100%;height:0}
 .chipf.sm{padding:4px 10px;font-size:11.5px}
+
+/* Estilos de diseño */
+.lk-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.lk-tile{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 9px;color:var(--ink);cursor:pointer;min-width:0}
+.lk-tile:hover{border-color:var(--line2)}.lk-tile.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset;background:var(--panel2)}
+.lk-tile .sw{display:flex;gap:3px}.lk-tile .sw i{width:14px;height:14px;border-radius:4px;border:1px solid rgba(255,255,255,.12)}
+.lk-tile b{font-size:15px;line-height:1.1;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.lk-tile small{font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.nc-freeph{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.nc-freeph button{padding:0;border:1px solid var(--line);border-radius:7px;overflow:hidden;aspect-ratio:1;background:var(--panel2);cursor:pointer}
+.nc-freeph button.on{outline:2px solid var(--acc);outline-offset:1px}.nc-freeph img{width:100%;height:100%;object-fit:cover;display:block}
+.tpl-looks{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:0 14px 10px}
+.nci{width:1.1em;height:1.1em;flex:0 0 auto;display:inline-block;vertical-align:-.16em}

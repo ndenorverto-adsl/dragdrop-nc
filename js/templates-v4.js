@@ -56,8 +56,10 @@ const V4_SECTORS={
     compare:{title:"Lo que pagas",head:"Concepto|Con nosotros|Abogado tradicional",rows:"Estudio del caso|{{COSTE}}|{{COSTE}}\nPago por adelantado|{{COSTE}}|{{COSTE}}\nSi no ganamos|{{CONDICION}}|{{CONDICION}}"},
     faq:"¿Cuánto cuesta?|{{RESPUESTA}}\n¿Cuánto tarda una reclamación?|{{RESPUESTA}}\n¿Qué documentación necesito?|{{RESPUESTA}}\n¿Y si pierdo?|{{RESPUESTA}}"}
 };
+const V4_SEC_ILLUS={"Telco":"wifi","Energía":"bolt","Alarmas":"shield","Seguros":"umbrella","Salud":"heart","Legal":"scale","Agua":"water"};
 function v4SectorSections(sec,canal,over){
-  const S=V4_SECTORS[sec],o=over||{};const h=Object.assign({},S.hero,{canal},o.hero||{});
+  const S=V4_SECTORS[sec],o=over||{};const h=Object.assign({illus:V4_SEC_ILLUS[sec]||"spark"},S.hero,{canal},o.hero||{});
+  if(!h.badge){const src=S.dir==="A"?S.trust:h.proof;const first=String(src||"").split("\n")[0];if(first)h.badge=first;}
   if(S.dir==="A"){
     if(canal==="call"){h.eyebrow=h.eyebrow||"Atención inmediata";h.cardSub="Un asesor te atiende ahora y te confirma el precio final.";}
     if(canal==="wa")h.cardSub="Te respondemos por WhatsApp en minutos.";
@@ -97,36 +99,38 @@ v4Tpl("Cliente · Tuawa",{group:"Cliente",client:"Tuawa",sector:"Agua",dir:"C",c
 (function(){const g=BRAND_GROUPS.find(x=>/Referencia externa/.test(x[0]));if(g){g[0]="Estilos visuales";g[1]=g[1].filter(k=>k!=="o2");}})();
 
 /* ---------- GALERÍA ---------- */
-const tplGal={f:"Todas",dir:"",q:"",sec:"",canal:""};
+const tplGal={f:"Todas",dir:"",q:"",sec:"",canal:"",look:null};
 function tplSections(name){const t=TEMPLATES[name]||[];return t.map(ty=>{const type=(typeof ty==="string")?ty:ty.type;return LIB[type]?{id:"p"+Math.random().toString(36).slice(2,7),type,props:Object.assign(LIB[type].def(),(typeof ty==="object"&&ty.props)||{}),style:(typeof ty==="object"&&ty.style)||{}}:null;}).filter(Boolean);}
 function tplPreviewDoc(name){ // renderiza la plantilla sin tocar la landing abierta
-  const bak={s:state.sections,sel:state.selected,b:state.settings.brand,f:state.freeMode};
-  try{state.sections=tplSections(name);state.selected=null;state.freeMode=false;const bk=TEMPLATE_BRAND[name];if(bk&&BRANDS[bk])state.settings.brand=bk;
+  const bak={s:state.sections,sel:state.selected,b:state.settings.brand,f:state.freeMode,lk:state.settings.look};
+  try{state.sections=tplSections(name);state.selected=null;state.freeMode=false;if(tplGal.look)state.settings.look=tplGal.look;const bk=TEMPLATE_BRAND[name];if(bk&&BRANDS[bk])state.settings.brand=bk;
     return buildDoc(false).replace(/<script[\s\S]*?<\/script>/g,"").replace("<head>",'<head><base target="_blank"><style>html{overflow:hidden}body{pointer-events:none}.da-sticky,.db-sticky,.dc-sticky,#ncCookies{display:none!important}</style>');}
-  finally{state.sections=bak.s;state.selected=bak.sel;state.settings.brand=bak.b;state.freeMode=bak.f;}
+  finally{state.sections=bak.s;state.selected=bak.sel;state.settings.brand=bak.b;state.freeMode=bak.f;state.settings.look=bak.lk;}
 }
 function tplTags(m){return [m.group,m.sector,m.client,m.dir&&m.dir!=="—"?"Dirección "+m.dir:"",m.canal?({form:"Formulario",call:"Llamada",wa:"WhatsApp"}[m.canal]):""].filter(Boolean);}
 function openTplGallery(){
   let ov=document.getElementById("tplOverlay");
   if(!ov){ov=document.createElement("div");ov.id="tplOverlay";ov.className="nc-ov";document.body.appendChild(ov);
     ov.innerHTML=`<div class="nc-ov-box tpl-box"><div class="nc-ov-head"><b>Plantillas</b><span class="lbl" id="tplCount" style="margin-left:10px"></span><input class="txt" id="tplQ" placeholder="Buscar…" style="max-width:220px;margin-left:auto;margin-right:8px"><button class="btn sm ghost" data-tg="close">Cerrar</button></div>
-      <div class="tpl-filters" id="tplF"></div><div class="tpl-grid" id="tplGrid"></div></div>`;
+      <div class="tpl-filters" id="tplF"></div><div class="tpl-looks" id="tplL"></div><div class="tpl-grid" id="tplGrid"></div></div>`;
     ov.addEventListener("click",e=>{const b=e.target.closest("[data-tg]");if(e.target===ov||(b&&b.dataset.tg==="close")){ov.style.display="none";return;}
       if(b&&b.dataset.tg==="f"){tplGal.f=b.dataset.v;renderTplGallery();}
       if(b&&b.dataset.tg==="d"){tplGal.dir=tplGal.dir===b.dataset.v?"":b.dataset.v;renderTplGallery();}
       if(b&&b.dataset.tg==="s"){tplGal.sec=tplGal.sec===b.dataset.v?"":b.dataset.v;renderTplGallery();}
       if(b&&b.dataset.tg==="c"){tplGal.canal=tplGal.canal===b.dataset.v?"":b.dataset.v;renderTplGallery();}
-      const u=e.target.closest("[data-use]");if(u){ov.style.display="none";loadTemplate(u.dataset.use);}});
+      if(b&&b.dataset.tg==="lk"){tplGal.look=b.dataset.v;renderTplGallery();}
+      const u=e.target.closest("[data-use]");if(u){ov.style.display="none";const prevS=state.sections,prevL=state.settings.look;if(tplGal.look)state.settings.look=tplGal.look;loadTemplate(u.dataset.use);if(state.sections===prevS)state.settings.look=prevL;else{renderPreview();if(typeof renderGlobal==="function")renderGlobal();}}});
     ov.querySelector("#tplQ").addEventListener("input",e=>{tplGal.q=e.target.value.toLowerCase();renderTplGallery();});}
-  ov.style.display="grid";renderTplGallery();
+  tplGal.look=ncLook();ov.style.display="grid";renderTplGallery();
 }
 function renderTplGallery(){
   const groups=["Todas","Arquetipo","Sector","Cliente"],dirs=["A","B","C"];
   document.getElementById("tplF").innerHTML=groups.map(g=>`<button class="chipf ${tplGal.f===g?'on':''}" data-tg="f" data-v="${g}">${g}</button>`).join("")+'<span class="sep"></span>'+dirs.map(d=>`<button class="chipf ${tplGal.dir===d?'on':''}" data-tg="d" data-v="${d}">${{A:"A · Oferta directa",B:"B · Confianza",C:"C · Premium"}[d]}</button>`).join("")
     +'<span class="br"></span>'+[...new Set(Object.values(TEMPLATE_META).map(m=>m.sector).filter(Boolean))].map(x=>`<button class="chipf sm ${tplGal.sec===x?'on':''}" data-tg="s" data-v="${esc(x)}">${esc(x)}</button>`).join("")
     +'<span class="sep"></span>'+Object.entries(V4_CANAL_TXT).map(([k,v])=>`<button class="chipf sm ${tplGal.canal===k?'on':''}" data-tg="c" data-v="${k}">${v4Icon[k]} ${v}</button>`).join("");
+  document.getElementById("tplL").innerHTML='<span class="lbl">Ver con estilo:</span>'+LOOK_ORDER.map(k=>`<button class="chipf sm ${tplGal.look===k?'on':''}" data-tg="lk" data-v="${k}">${esc(LOOKS[k].name)}</button>`).join("");
   const names=Object.keys(TEMPLATES).filter(n=>{const m=TEMPLATE_META[n]||{};return (tplGal.f==="Todas"||m.group===tplGal.f)&&(!tplGal.dir||m.dir===tplGal.dir)&&(!tplGal.sec||m.sector===tplGal.sec)&&(!tplGal.canal||m.canal===tplGal.canal)&&(!tplGal.q||(n+" "+(m.desc||"")+" "+tplTags(m).join(" ")).toLowerCase().includes(tplGal.q));})
-    .sort((a,b)=>{const g={Arquetipo:0,Sector:1,Cliente:2};return (g[TEMPLATE_META[a].group]||9)-(g[TEMPLATE_META[b].group]||9);});
+    .sort((a,b)=>{const g={Arquetipo:0,Sector:1,Cliente:2};return (g[TEMPLATE_META[a].group]??9)-(g[TEMPLATE_META[b].group]??9);});
   const grid=document.getElementById("tplGrid");document.getElementById("tplCount").textContent=names.length+" de "+Object.keys(TEMPLATES).length;
   grid.innerHTML=names.length?names.map(n=>{const m=TEMPLATE_META[n]||{};return `<div class="tpl-card ${m.legacy?'legacy':''}"><div class="tpl-thumb" data-thumb="${esc(n)}"><div class="empty">…</div></div>
     <div class="tpl-meta"><b>${esc(n)}</b><div class="tpl-tags">${tplTags(m).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}${m.legacy?'<span class="tag">anterior</span>':''}</div><p>${esc(m.desc||"")}</p><button class="btn sm primary" data-use="${esc(n)}">Usar plantilla</button></div></div>`;}).join(""):`<div class="empty">Sin plantillas con esos filtros.</div>`;

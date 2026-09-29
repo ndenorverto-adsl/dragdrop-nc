@@ -75,8 +75,8 @@ async function delLanding(id){
 }
 function newLanding(){
   if(state.sections.length&&!confirm('¿Empezar una landing nueva? La actual queda en la nube si la guardaste; el borrador local se sustituye.'))return;
-  commit();const brand=state.settings.brand;cloud.id=null;document.getElementById("landingName").value='';
-  state.settings=Object.assign(JSON.parse(JSON.stringify(SETTINGS_DEFAULT)),{brand}); // no arrastrar teléfono/endpoint/GTM de otro cliente
+  commit();const brand=state.settings.brand,look=state.settings.look,lookBrandFont=state.settings.lookBrandFont;cloud.id=null;document.getElementById("landingName").value='';
+  state.settings=Object.assign(JSON.parse(JSON.stringify(SETTINGS_DEFAULT)),{brand,look,lookBrandFont}); // no arrastrar teléfono/endpoint/GTM de otro cliente
   state.sections=[];state.selected=null;past=[];future=[];updHist();ws.savedCloud=null;
   renderPalette();renderPreview();renderRight();wsOnChange();document.getElementById("mineOverlay").style.display='none';toast('Nueva landing (ajustes de contacto y medición reiniciados)');
 }

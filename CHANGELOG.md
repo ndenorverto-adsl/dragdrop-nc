@@ -1,5 +1,16 @@
 # Changelog
 
+## v3.4 — 2026-09-29 · Estilos de diseño
+- **8 estilos de diseño** (panel Global → "Estilo de diseño"): Editorial, Swiss grid, Brutalista táctil, Suave orgánico, Tech aurora, Corporativo premium, Retro cálido y Minimal lujo, además de Base. Cambian tipografía, formas, sombras, fondos, texturas y adornos de todos los bloques A/B/C a la vez. **Los colores siguen siendo los de la marca.**
+- Interruptor **"Usar tipografía de la marca"**: mantiene las fuentes del cliente con la forma y la profundidad del estilo.
+- **Heros con foto o ilustración protagonista** (campo "Composición"; en automático se activa con cualquier estilo que no sea Base): foto con la forma del estilo (arco, blob, píldora, foto a sangre…), sello flotante opcional y mockup de móvil en la dirección C. Sin foto se dibuja una **ilustración propia** con los colores de la marca y el icono del sector.
+- Campo de foto nuevo: subir, pegar URL o elegir entre **fotos libres (licencia Unsplash)**.
+- **Iconos SVG (Lucide)** en lugar de emojis en botones, formularios, ventajas, opciones del multipaso y comparativas. Los emojis que ya estaban en los textos se convierten solos.
+- Galería de plantillas: fila **"Ver con estilo"** para previsualizar las 42 plantillas con cualquier estilo y aplicarlo al elegir.
+- Vista previa: los `{{PLACEHOLDER}}` se ven como etiquetas (en el export siguen siendo texto y el checklist los avisa).
+- Correcciones: el preload y el og:image de la imagen del hero salían con `&amp;` doble; las plantillas de arquetipo salían al final de la galería; precios largos en tarifas y cifras ya no desbordan en móvil; con un estilo con tipografía propia ya no se descargan las fuentes de la marca que no se usan.
+- Tests: `tests/shots-looks.js` (plantillas × estilos en escritorio y móvil, con aviso de scroll horizontal).
+
 ## v3.3 — 2026-09-29 · Plantillas nuevas (entrega 2)
 - **19 plantillas por sector × canal**: Telco y Energía (A), Alarmas, Seguros, Salud y Legal (B), cada una en Formulario / Llamada / WhatsApp, más "Energía · Premium" (C). Copy de sector real; ofertas, precios, cifras y respuestas como `{{PLACEHOLDER}}`.
 - **17 plantillas por cliente** con su marca: Jazztel, MásMóvil, Simyo, Yoigo, Vodafone, Lowi, Orange, Finetwork, MásAhorro, TotalEnergies, Prosegur, ADT, Segurma, Sicor, AlarmaFácil, SICOR Teleasistencia (llamada como canal principal) y Tuawa (C). Sustituyen a las plantillas de cliente anteriores.
