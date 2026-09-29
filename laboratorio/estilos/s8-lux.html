@@ -1,0 +1,32 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Minimal lujo · Nubo (demo)</title></head><body>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--k:#0e0e0e;--w:#f7f6f3;--m:#8a8780;--g:#b89b5e}
+*{box-sizing:border-box}body{margin:0;background:var(--w);color:var(--k);font:300 16px/1.7 Inter,sans-serif}
+.w{max-width:1240px;margin:0 auto;padding:0 32px}
+nav{position:absolute;inset:0 0 auto 0;z-index:3;color:#fff}nav .w{display:flex;justify-content:space-between;align-items:center;height:84px}
+.logo{font:500 26px 'Cormorant Garamond',serif;letter-spacing:.32em;text-transform:uppercase}.nt{color:#fff;text-decoration:none;font-size:13px;letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid #ffffff80;padding-bottom:4px}
+.hero{position:relative;min-height:92vh;display:flex;align-items:flex-end;color:#fff;overflow:hidden}
+.bg{position:absolute;inset:0;background:url(https://images.unsplash.com/photo-1646807006787-84f8e2b8aa26?auto=format&fit=crop&w=1400&q=70) center/cover;filter:grayscale(1) contrast(1.05) brightness(.7)}
+.bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0e0e0e55,#0e0e0e 95%),linear-gradient(90deg,#b89b5e40,transparent 60%);mix-blend-mode:normal}
+.hc{position:relative;padding-bottom:70px;display:grid;grid-template-columns:1.4fr 1fr;gap:60px;align-items:end;width:100%}
+.ey{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--g)}
+h1{font:300 clamp(48px,7vw,110px)/.95 'Cormorant Garamond',serif;letter-spacing:-.01em;margin:18px 0 0}h1 em{font-style:italic;color:#e8dcc0}
+.side p{color:#d6d3cc;margin:0 0 26px}.price{font:300 44px 'Cormorant Garamond',serif;color:#fff;border-top:1px solid #ffffff40;padding-top:16px;margin-bottom:20px}.price small{font:300 13px Inter,sans-serif;color:#bdb9b0;letter-spacing:.1em;margin-left:8px}
+.f{display:flex;border-bottom:1px solid #fff}.f input{flex:1;min-width:0;background:transparent;border:0;color:#fff;padding:14px 0;font:300 17px Inter,sans-serif;outline:0}.f input::placeholder{color:#bdb9b0}
+.f button{background:transparent;border:0;color:#fff;font:400 13px Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:10px;cursor:pointer}.f svg{width:18px;height:18px;stroke-width:1.25}
+.lg{font-size:11.5px;color:#9b978e;margin-top:10px;letter-spacing:.04em}
+.sec{padding:110px 0}.sh{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-bottom:70px}.sh h2{font:300 clamp(36px,4.4vw,64px)/1 'Cormorant Garamond',serif;margin:0}.sh p{color:var(--m);margin:0;align-self:end;max-width:460px}
+.list{border-top:1px solid var(--k)}.li{display:grid;grid-template-columns:80px 1fr 1.2fr 40px;gap:30px;align-items:center;padding:30px 0;border-bottom:1px solid #d9d6cf}
+.li .n{font:300 18px 'Cormorant Garamond',serif;color:var(--g)}.li h3{font:300 34px/1 'Cormorant Garamond',serif;margin:0}.li p{margin:0;color:var(--m)}.li svg{width:22px;height:22px;stroke-width:1.1}
+.stat{display:flex;gap:70px;margin-top:70px}.stat b{font:300 64px/1 'Cormorant Garamond',serif;display:block}.stat span{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--m)}
+@media(max-width:820px){.f{flex-wrap:wrap}.f button{padding:12px 0}.hc{grid-template-columns:1fr;gap:30px;padding-bottom:40px}.hero{min-height:88vh}.sh{grid-template-columns:1fr;gap:20px}.li{grid-template-columns:40px 1fr;gap:10px 16px}.li p{grid-column:2}.li svg{display:none}.stat{gap:30px;flex-wrap:wrap}.stat b{font-size:46px}.w{padding:0 22px}}
+</style>
+<nav><div class="w"><div class="logo">Nubo</div><a class="nt" href="#">900 000 000</a></div></nav>
+<section class="hero"><div class="bg"></div><div class="w hc"><div><div class="ey">Fibra 1 Gb · Móvil ilimitado</div><h1>Conexión sin esfuerzo, <em>sin ataduras.</em></h1></div>
+<div class="side"><p>Instalación gratuita en 48 horas y un único precio mensual. Sin permanencia, con atención personal.</p><div class="price">29,90 €<small>AL MES · EJEMPLO</small></div>
+<form class="f" onsubmit="return false"><input placeholder="Su número de teléfono" inputmode="tel"><button>Solicitar llamada <svg aria-hidden="true" class="lucide lucide-arrow-right" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></button></form><div class="lg">Le llamamos en minutos · Política de privacidad</div></div></div></section>
+<section class="sec"><div class="w"><div class="sh"><h2>Lo esencial, cuidado al detalle.</h2><p>Tres compromisos sencillos que hacen que 250.000 hogares confíen en nosotros.</p></div>
+<div class="list"><div class="li"><span class="n">I</span><h3>Instalación</h3><p>Un técnico en su casa en 48 horas.</p><svg aria-hidden="true" class="lucide lucide-arrow-up-right" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg></div><div class="li"><span class="n">II</span><h3>Precio final</h3><p>Con impuestos incluidos, sin sorpresas.</p><svg aria-hidden="true" class="lucide lucide-arrow-up-right" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg></div><div class="li"><span class="n">III</span><h3>Libertad</h3><p>Sin permanencia de ningún tipo.</p><svg aria-hidden="true" class="lucide lucide-arrow-up-right" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg></div></div>
+<div class="stat"><div><b>4,8</b><span>Valoración</span></div><div><b>48 h</b><span>Instalación</span></div><div><b>0 €</b><span>Permanencia</span></div></div></div></section>
+</body></html>
