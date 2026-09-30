@@ -34,10 +34,10 @@ xWrap("da_plans",(p,o)=>{const v=v4Var(p,"plans");if(v==="cards")return o(p);con
   const head=`<div class="text-center mb-5"><h2 class="da-h2">${esc(p.title)}</h2><p class="da-muted">${esc(p.sub)}</p></div>`;
   if(v==="table")return `<section class="da da-sec" id="tarifas"><div class="container">${head}<div class="dx-ptab" style="--n:${P.length}">${P.map(pl=>`<div class="col ${pl.tag?'best':''}">
       <div class="h">${pl.tag?`<span class="tag">${esc(pl.tag)}</span>`:""}<h3>${esc(pl.name)}</h3></div><div class="pp">${esc(pl.price)}<small>${esc(pl.unit||'')}</small></div>
-      ${v4Checks(pl.feats,"f")}<a href="#form" data-cta="form" class="da-btn ${pl.tag?'pri':'sec'} w-100 justify-content-center">${esc(pl.cta||'La quiero')}</a></div>`).join("")}</div></div></section>`;
+      ${v4Checks(pl.feats,"f")}<a href="#form" data-cta="form"${v4ActA(p,pl)} class="da-btn ${pl.tag?'pri':'sec'} w-100 justify-content-center">${esc(pl.cta||'La quiero')}</a></div>`).join("")}</div></div></section>`;
   return `<section class="da da-sec" id="tarifas"><div class="container" style="max-width:1040px">${head}<div class="dx-prows">${P.map((pl,i)=>`<div class="r ${pl.tag?'best':''}">
       <span class="n">${String(i+1).padStart(2,"0")}</span><div class="m"><h3>${esc(pl.name)}${pl.tag?` <span class="tag">${esc(pl.tag)}</span>`:""}</h3>${v4Checks(pl.feats,"f")}</div>
-      <div class="pp">${esc(pl.price)}<small>${esc(pl.unit||'')}</small></div><a href="#form" data-cta="form" class="da-btn ${pl.tag?'pri':'sec'} justify-content-center">${esc(pl.cta||'La quiero')}</a></div>`).join("")}</div></div></section>`;});
+      <div class="pp">${esc(pl.price)}<small>${esc(pl.unit||'')}</small></div><a href="#form" data-cta="form"${v4ActA(p,pl)} class="da-btn ${pl.tag?'pri':'sec'} justify-content-center">${esc(pl.cta||'La quiero')}</a></div>`).join("")}</div></div></section>`;});
 
 /* Opiniones */
 xWrap("db_reviews",(p,o)=>{const v=v4Var(p,"rev");if(v==="cards")return o(p);const R=v4L(p.items).map(v4C);
@@ -78,13 +78,13 @@ dx_coverage:{label:"✚ Cobertura por código postal",ico:"⌖",cat:"Extras CRO"
     <div class="col-lg-6"><div class="da-card"><form data-callback action="${v4Act()}" method="post" class="dx-covf"><input required name="codigo_postal" class="form-control" placeholder="Código postal" inputmode="numeric" maxlength="5"><input required name="telefono" type="tel" class="form-control" placeholder="${esc(vt("phone"))}"><button type="submit" class="da-go">${esc(p.btn)} ${I_GO()}</button></form><p class="dx-note">${esc(p.note)}</p></div></div></div></div></section>`},
 dx_calc:{label:"✚ Calculadora de ahorro",ico:"∑",cat:"Extras CRO",raw:true,
   def:()=>({title:"¿Cuánto podrías ahorrar?",sub:"Pon lo que pagas ahora al mes y te enseñamos una estimación.",unit:"€/mes",pct:"{{PORCENTAJE_AHORRO}}",note:"Estimación orientativa con un ahorro medio del {{PORCENTAJE_AHORRO}} %. Te damos el precio exacto por teléfono.",btn:"Quiero ese ahorro"}),
-  fields:[{k:"title",l:"Título"},{k:"sub",l:"Texto"},{k:"pct",l:"% de ahorro medio (número real del cliente)"},{k:"unit",l:"Unidad"},{k:"note",l:"Nota legal",t:"ta"},{k:"btn",l:"Botón"}],
+  fields:[{k:"title",l:"Título"},{k:"sub",l:"Texto"},{k:"pct",l:"% de ahorro medio (número real del cliente)"},{k:"unit",l:"Unidad"},{k:"note",l:"Nota legal",t:"ta"},{k:"btn",l:"Botón"},V4_ACTF],
   render:p=>{const pct=parseFloat(String(p.pct).replace(',','.'));const ok=!isNaN(pct)&&pct>0;const note=String(p.note||"").replace(/\{\{PORCENTAJE_AHORRO\}\}/g,ok?String(p.pct):"{{PORCENTAJE_AHORRO}}");
     return `<section class="da da-sec soft"><div class="container" style="max-width:980px"><div class="dx-calc da-card" data-calc data-pct="${ok?pct:0}">
     <div class="row g-4 align-items-center"><div class="col-md-6"><h2 class="da-h2">${esc(p.title)}</h2><p class="da-muted">${esc(p.sub)}</p>
       <label class="dx-lbl" for="calc_in">Lo que pagas ahora</label><div class="dx-calcin"><input id="calc_in" data-calc-input type="number" inputmode="decimal" min="0" class="form-control" placeholder="0"><span>${esc(p.unit)}</span></div></div>
     <div class="col-md-6"><div class="dx-calcout"><div><span>Ahorro al mes</span><b data-calc-m>0 €</b></div><div><span>Ahorro al año</span><b data-calc-y>0 €</b></div></div>
-      <a href="#form" data-cta="form" class="da-btn pri w-100 justify-content-center mt-3">${esc(p.btn)} ${I_GO()}</a></div></div>
+      <a href="#form" data-cta="form"${v4ActA(p)} class="da-btn pri w-100 justify-content-center mt-3">${esc(p.btn)} ${I_GO()}</a></div></div>
     <p class="dx-note mt-3 mb-0">${esc(note)}</p></div></div></section>`;}},
 dx_guarantee:{label:"✚ Garantía",ico:"✓",cat:"Extras CRO",raw:true,
   def:()=>({title:"{{GARANTIA}}",text:"{{CONDICIONES_GARANTIA}}",label:"Nuestra garantía"}),
@@ -140,3 +140,33 @@ function ncXCSS(){if(!state.sections.some(s=>!s.hidden&&/^d[abcx]_/.test(s.type)
  .dx-calcout b{font-size:24px}.dx-guar{flex-direction:column;align-items:flex-start;padding:24px}.dx-seal{flex-basis:auto;width:76px;height:76px;font-size:34px}
  .dx-cd{font-size:14px}.dx-letter{padding:28px 22px}.dx-ltxt{font-size:16.5px;line-height:30px}
  .dx-wa{bottom:16px;padding:14px}.dx-wa span{display:none}body:has(.da-sticky,.db-sticky,.dc-sticky) .dx-wa{bottom:92px}}`;}
+
+/* ============ POPUP DE CTA (v3.8) ============
+   Se abre desde cualquier botón con "Al pulsar el botón → Abrir el popup" (o el ajuste global).
+   Muestra la tarifa elegida (se envía en el campo oculto "tarifa"), formulario de callback, llamar y WhatsApp. */
+Object.assign(NC_VOICE.neutral,{popChosen:"Has elegido",popTitle:"Te llamamos y lo dejamos listo",popSub:"Déjanos tu teléfono y un asesor te confirma el precio final.",popBtn:"Llamadme gratis",popOr:"o si lo prefieres"});
+Object.assign(NC_VOICE.cercano,{popChosen:"Te quedas con",popTitle:"¡Buena elección! ¿Te llamamos?",popSub:"Déjanos tu número y te lo contamos todo en una llamada corta.",popBtn:"Sí, llamadme",popOr:"¿Mejor de otra forma?"});
+function ncPopNeeded(){return state.settings.ctaAction==="popup"||state.sections.some(s=>!s.hidden&&s.props&&s.props.act==="popup");}
+function ncPopHTML(){if(!ncPopNeeded())return "";const st=state.settings,call=st.popCall!==false,wa=st.popWa!==false;
+  const title=(st.popupTitle&&st.popupTitle!=="¿Necesitas ayuda?")?st.popupTitle:vt("popTitle");
+  return `<div class="modal fade nc-pop" id="ncPop" tabindex="-1" aria-labelledby="ncPopT" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content da da-card">
+  <button type="button" class="nc-pop-x" data-bs-dismiss="modal" aria-label="Cerrar">${ncIco("x")}</button>
+  ${st.popPlan!==false?`<div class="nc-pop-plan" data-pop-plan hidden><span>${vt("popChosen")}</span><b data-pop-name></b><em data-pop-price></em></div>`:""}
+  <h2 class="nc-pop-t" id="ncPopT">${esc(title)}</h2><p class="nc-pop-s">${esc(st.popSub||vt("popSub"))}</p>
+  <form data-callback action="${esc(ph(st.endpoint,'ENDPOINT_FORMULARIO'))}" method="post" class="nc-pop-f"><input type="hidden" name="tarifa" value="" data-pop-field><input required name="telefono" type="tel" class="form-control" placeholder="${esc(vt("phone"))}"><button type="submit" class="da-go">${esc(st.popBtn||vt("popBtn"))} ${ncIco("arrow-right")}</button></form>
+  ${call||wa?`<div class="nc-pop-or">${vt("popOr")}</div><div class="nc-pop-alt">${call?`<a href="${telHref()}" data-cta="call" class="da-btn sec">${ncIco("phone")} ${esc(telText())}</a>`:""}${wa?`<a href="${waHref()}" target="_blank" rel="noopener" data-cta="whatsapp" data-pop-wa class="da-btn pri wa">${ncIco("message-circle")} WhatsApp</a>`:""}</div>`:""}
+  </div></div></div>`;}
+function ncPopCSS(){if(!ncPopNeeded())return "";return `
+.nc-pop .modal-dialog{max-width:460px}
+.nc-pop .modal-content{padding:30px 28px 24px;box-shadow:0 30px 80px -20px rgba(0,0,0,.45);text-align:left;color:var(--ink0)}
+.nc-pop-x{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:0;background:color-mix(in srgb,var(--ink0) 7%,transparent);color:var(--ink0);display:grid;place-items:center;z-index:4;cursor:pointer}
+.nc-pop-plan{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:12px 14px;margin:0 40px 16px 0;border:1px dashed color-mix(in srgb,var(--bp) 50%,transparent);border-radius:12px;background:color-mix(in srgb,var(--bp) 6%,#fff)}
+.nc-pop-plan[hidden]{display:none}
+.nc-pop-plan span{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:#6b6472;width:100%}.nc-pop-plan b{font:800 18px var(--fhead);color:var(--ink0)}.nc-pop-plan em{font-style:normal;font-weight:700;color:var(--bpt,var(--bp))}
+body.nc-annot.nc-handf .nc-pop-plan span{font:700 21px/1 var(--fhand);text-transform:none;letter-spacing:0;color:var(--bpt,var(--bp))}
+.nc-pop-t{font:var(--lk-hw,800) 26px/1.12 var(--fhead);letter-spacing:-.02em;margin:0 36px 8px 0;color:var(--ink0)}.nc-pop-s{color:#6b6472;font-size:15px;margin:0 0 16px}
+.nc-pop-f .form-control{margin-bottom:8px;min-height:52px;font-size:16px}.nc-pop-f .da-go{width:100%;min-height:52px;display:flex;align-items:center;justify-content:center;gap:8px}
+.nc-pop-f .nc-legal,.nc-pop-f .nc-legal-info{color:#6b6472}
+.nc-pop-or{text-align:center;font-size:13px;color:#6b6472;margin:16px 0 10px}.nc-pop-alt{display:grid;grid-template-columns:1fr 1fr;gap:8px}.nc-pop-alt .da-btn{justify-content:center;padding:12px 10px;font-size:15px;min-height:48px}.nc-pop-alt>:only-child{grid-column:1/-1}
+@media (max-width:575px){.nc-pop .modal-dialog{margin:0;min-height:100%;align-items:flex-end;max-width:none}.nc-pop .modal-content{border-radius:22px 22px 0 0!important;padding-bottom:calc(22px + env(safe-area-inset-bottom));transform:none!important;border-bottom:0!important}
+ .nc-pop.fade .modal-dialog{transform:translateY(60px)}.nc-pop.show .modal-dialog{transform:none}}`;}

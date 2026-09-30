@@ -1,5 +1,14 @@
 # Changelog
 
+## v3.8 — 2026-09-30 · Popup en los botones
+- **Acción por botón**: el hero, las tarifas, el CTA oscuro de la dirección C, la calculadora y la barra fija tienen **"Al pulsar el botón"**, con estas opciones: como el ajuste global, ir al formulario, abrir el popup, llamar o WhatsApp. Los botones **"La quiero" de las tarifas abren el popup por defecto**.
+- **Popup nuevo** que se viste con el estilo de diseño activo (cupón en Prensa, cinta en Cuaderno…). En móvil sube desde abajo como una hoja.
+  - Muestra la **tarifa elegida** (nombre y precio) y la envía con el lead en el campo oculto `tarifa`.
+  - Incluye el formulario de callback con RGPD, atribución y eventos, más los botones de **llamar** y **WhatsApp**. El de WhatsApp lleva un mensaje con la tarifa.
+  - Evento `popup_open` en el dataLayer (con la tarifa).
+- Global → **Popup de los botones**: título, texto y botón (con la voz del estilo si los dejas vacíos), e interruptores para la tarifa, llamar y WhatsApp.
+- El popup antiguo con imagen sigue disponible como "Popup antiguo con imagen".
+
 ## v3.7 — 2026-09-30 · Variantes de bloques y extras CRO
 - **Variantes nuevas** (campo "Variante"; en "Automática" cada estilo elige la suya):
   - **Tarifas**: tarjetas, comparador en tabla (carrusel en móvil) y filas.
