@@ -24,11 +24,14 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   cloud.js            #   Supabase: guardar, Mis landings, login
   workspace.js        #   autoguardado, atajos, copiar/pegar, versiones, .json
   cro.js              #   puntuación CRO, ideas A/B del hero y exportación A/B
+  growth.js           #   texto dinámico por keyword, horario de llamada, teléfono en vivo y bloques CRO nuevos
+  team.js             #   biblioteca del equipo (bloques y plantillas en Supabase o local)
   lorem.js · import.js · listeners.js · boot.js
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 config.js             # claves públicas de Supabase (a partir de config.example.js)
 supabase-schema.sql   # esquema completo (instalación nueva)
 supabase-migration-v3.1.sql  # añade el historial de versiones a una instalación existente
+supabase-migration-v4.3.sql  # añade la tabla team_blocks (biblioteca del equipo)
 tests/                # tests locales (no se despliegan)
 vercel.json · .vercelignore · .gitignore
 ```

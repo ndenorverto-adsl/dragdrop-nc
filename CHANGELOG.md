@@ -1,5 +1,14 @@
 # Changelog
 
+## v4.3 — 2026-09-30 · Texto dinámico, horario de llamada, bloques CRO y biblioteca del equipo
+- **Texto dinámico por keyword** (Global): reglas `palabras | titular | parte destacada | botón` que se aplican según `?kw=` o `utm_term` (configurable). Gana la primera regla que encaja; la keyword nunca se escribe en la página (solo elige el texto), así que no hay textos raros ni inyección. Lanza `dtr_match` y el lead llega con `dtr_regla`. Campo "Probar en la vista previa con…" para verlo en el editor.
+- **Horario de llamada** (hora de Madrid): días, horario, sábado aparte y festivos (vienen los nacionales de fecha fija; añade Semana Santa y los autonómicos/locales). Fuera de horario se ocultan los botones de llamar (salvo en el footer), el formulario avisa de cuándo llamaremos ("mañana a partir de las 9:00"), el lead llega con `fuera_horario=si` y se lanza `hours_state`. Simulación abierto/cerrado en la vista previa.
+- **Teléfono validado mientras se escribe** en todos los formularios (9 cifras, empieza por 6, 7, 8 o 9; admite +34/0034), con aviso accesible.
+- **Bloques nuevos** en Extras CRO: **Popup de salida** (ratón hacia fuera en escritorio o subida rápida en móvil, una vez por visita, evento `exit_intent_show`), **Formulario en 2 pasos** (teléfono primero, luego nombre/CP opcionales, barra de progreso, evento `form_step`, casilla RGPD en el paso 2), **Nosotros vs. otros** (sin nombrar competidores) y **Banda de garantías**.
+- 2 plantillas nuevas que los usan: **Conversión máxima · Telco** y **Conversión máxima · Alarmas** (111 en total).
+- **Biblioteca del equipo**: botón ☁ en cada sección de Estructura para guardarla (nombre, cliente, etiquetas) y "☁ Guardar la actual como plantilla" en la galería. Los bloques aparecen arriba en la paleta ("Del equipo", con búsqueda por nombre, cliente o etiqueta) y las landings en el grupo **Equipo** de la galería. Se guarda en Supabase (tabla `team_blocks`, ejecuta `supabase-migration-v4.3.sql`) o, sin sesión, solo en el navegador. No se guardan teléfono, endpoint ni GTM.
+- La puntuación CRO avisa si el texto dinámico está activo sin reglas y si hay botones de llamada sin horario.
+
 ## v4.2 — 2026-09-30 · Tablet, fotos por sector, test A/B y 6 estilos más
 - **Tablet (768-991 px)**: 3 tarifas en una sola fila (antes quedaba una huérfana), márgenes laterales de 28 px, visuales del hero contenidos (16:10, máx. 380 px), formularios de una línea y ritmo vertical intermedio. Las secciones con composición editorial (título a un lado, contenido al otro) ya no pierden el margen lateral en tablet.
 - **Móvil**: los carruseles (tarifas, opiniones, ventajas) llevan **indicador de puntos** que sigue al desplazamiento.
