@@ -26,6 +26,7 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   cro.js              #   puntuación CRO, ideas A/B del hero y exportación A/B
   growth.js           #   texto dinámico por keyword, horario de llamada, teléfono en vivo y bloques CRO nuevos
   team.js             #   biblioteca del equipo (bloques y plantillas en Supabase o local)
+  motion.js           #   animaciones y efectos (entrada, destacados, CTA, fondo)
   lorem.js · import.js · listeners.js · boot.js
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 config.js             # claves públicas de Supabase (a partir de config.example.js)

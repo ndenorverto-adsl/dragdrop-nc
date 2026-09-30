@@ -1,5 +1,15 @@
 # Changelog
 
+## v4.4 — 2026-09-30 · Animaciones y efectos
+- **Global → Animaciones y efectos**: intensidad **Desactivadas / Sutil / Media / Llamativa** y 4 grupos que se activan por separado:
+  - **Entrada al hacer scroll**: subir, fundido, zoom, desde la izquierda/derecha, cortina o enfoque (en "Automática" cada estilo elige la suya), con **tarjetas escalonadas**. Cada bloque puede cambiarla en **Estilo → Animación**. El hero solo se mueve, sin opacidad, para no retrasar la carga (LCP); barra fija, nav, WhatsApp y popups nunca se ocultan.
+  - **Destacar textos, precios y cifras**: subrayado que se dibuja bajo la parte destacada, **cifras que cuentan** hasta su valor (solo números escritos; los {{PLACEHOLDER}} no se animan) y **palabras que rotan** en el titular (campo nuevo en los heros A, B y C).
+  - **Llamar la atención al CTA**: reflejo al pasar el ratón, efecto al pulsar, **latido** del botón principal visible cada pocos segundos si nadie interactúa (Media/Llamativa), flecha que empuja y **sacudida** del formulario si falta un dato.
+  - **Fondo y movimiento**: tarjetas flotantes y sellos que se mecen; parallax en la foto del hero e **inclinación 3D** de tarjetas (solo escritorio con ratón).
+- Se respeta siempre **"reducir movimiento"** del sistema; si el JavaScript falla, el contenido se ve igual (nada queda oculto).
+- En el editor la vista previa no se anima al editar; botón **▶ Reproducir animaciones** para verlas.
+- Comprobado: 111 plantillas × 6 estilos × 4 tipos de entrada en móvil, sin desbordes y con todo visible tras el scroll.
+
 ## v4.3 — 2026-09-30 · Texto dinámico, horario de llamada, bloques CRO y biblioteca del equipo
 - **Texto dinámico por keyword** (Global): reglas `palabras | titular | parte destacada | botón` que se aplican según `?kw=` o `utm_term` (configurable). Gana la primera regla que encaja; la keyword nunca se escribe en la página (solo elige el texto), así que no hay textos raros ni inyección. Lanza `dtr_match` y el lead llega con `dtr_regla`. Campo "Probar en la vista previa con…" para verlo en el editor.
 - **Horario de llamada** (hora de Madrid): días, horario, sábado aparte y festivos (vienen los nacionales de fecha fija; añade Semana Santa y los autonómicos/locales). Fuera de horario se ocultan los botones de llamar (salvo en el footer), el formulario avisa de cuándo llamaremos ("mañana a partir de las 9:00"), el lead llega con `fuera_horario=si` y se lanza `hours_state`. Simulación abierto/cerrado en la vista previa.
