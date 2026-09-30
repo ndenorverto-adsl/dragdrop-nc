@@ -1,5 +1,14 @@
 # Changelog
 
+## v4.1 — 2026-09-30 · Puntuación CRO e ideas A/B
+- **Botón “📈 CRO”** en la barra superior: mide la landing exportada en **móvil (390×844)** y **escritorio (1440×900)** y le da una nota de 0 a 100, repartida en 4 bloques:
+  - **Above the fold**: titular visible, titular de 12 palabras o menos, botón de acción en el primer pantallazo (móvil y escritorio), formulario o teléfono a la vista y barra fija en móvil.
+  - **Datos pendientes**: teléfono, WhatsApp, endpoint del formulario y placeholders sin rellenar (con la lista).
+  - **Fricción y CTAs**: campos del formulario, botones por pantalla, textos genéricos (“Enviar”, “Más info”…), coherencia del mensaje, zonas táctiles de menos de 40 px y canales disponibles.
+  - **Confianza y técnica**: prueba social, RGPD, contraste WCAG del titular, subtítulo y botón, peso del HTML, texto alternativo, SEO y GTM con consentimiento.
+  - Cada aviso tiene su botón: **Corregir** (lleva al campo), **Añadir** (inserta la barra fija u opiniones) o **Ideas A/B**. La nota queda en el botón de la barra.
+- **Ideas A/B de titular y botón** en el panel de cada hero (A, B y C): 5 ángulos (**beneficio, precio, urgencia, confianza y sencillez**) por sector (Telco, Energía, Alarmas, Seguros, Salud, Legal o genérico), con botones según el canal. Se aplica el titular, el botón o los dos, y **“Volver al original”** recupera la versión A. Las cifras, fechas y precios salen como {{PLACEHOLDER}}.
+
 ## v4.0 — 2026-09-30 · 11 estilos nuevos y colección de plantillas por estilo
 - **20 estilos de diseño** (antes 9), agrupados en el panel Global por categoría: **Editorial**, **Gráfico**, **Hecho a mano** y **Carácter**. Los nombres largos ya no se cortan.
   - Editorial: **Revista** (Didone Playfair, cursivas y pie de foto) y **Expediente** (casillas, referencia, sello de tinta; para legal y seguros).

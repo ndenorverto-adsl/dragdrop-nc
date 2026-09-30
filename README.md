@@ -23,6 +23,7 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   templates-uc.js · templates-looks.js  # plantillas por caso de uso y colección de estilos
   cloud.js            #   Supabase: guardar, Mis landings, login
   workspace.js        #   autoguardado, atajos, copiar/pegar, versiones, .json
+  cro.js              #   puntuación CRO (medición en móvil/escritorio) + ideas A/B del hero
   lorem.js · import.js · listeners.js · boot.js
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 config.js             # claves públicas de Supabase (a partir de config.example.js)
