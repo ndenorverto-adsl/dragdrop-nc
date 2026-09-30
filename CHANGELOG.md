@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.0 — 2026-09-30 · 11 estilos nuevos y colección de plantillas por estilo
+- **20 estilos de diseño** (antes 9), agrupados en el panel Global por categoría: **Editorial**, **Gráfico**, **Hecho a mano** y **Carácter**. Los nombres largos ya no se cortan.
+  - Editorial: **Revista** (Didone Playfair, cursivas y pie de foto) y **Expediente** (casillas, referencia, sello de tinta; para legal y seguros).
+  - Gráfico: **Bauhaus** (círculo, cuadrado y triángulo), **Cartel tipográfico** (Anton gigante sobre el color de la marca), **Señalética** (rótulos, franjas de aviso, pictogramas en placa) y **Plano técnico** (milimetrado, cotas y marcas de corte).
+  - Hecho a mano: **Risografía** (dos tintas, registro desplazado) y **Ticket de caja** (monoespaciada, bordes dentados, código de barras).
+  - Carácter: **Años 70** (serif redonda, arcos y franjas), **Cómic pop** (bocadillos, trama de puntos, explosión de precio) y **Terminal** (modo oscuro, prompts, cursor y ventanas; el popup y los avisos siguen en claro).
+  - Como siempre, los colores salen de la marca; cada estilo solo aporta papel, tipografía y oficio. Cada uno elige sus variantes automáticas (tarifas, opiniones, FAQ, CTA, pasos, footer) y su voz.
+- **Colección "Estilos"** en la galería: 22 plantillas nuevas que nacen con su estilo (dos por estilo nuevo), p. ej. Portada · Salud, Estudio de caso · Legal, Cartel flash · Telco, Rótulo · Alarmas, Plano · Placas solares, Ticket · Tu factura, Viñeta · Quiz de fibra o Consola · Fibra empresas. En total, **97 plantillas**.
+- Galería: chip **"Su estilo"** (por defecto) para ver cada plantilla con su estilo sugerido; el resto de chips siguen forzando un estilo concreto.
+- Corregido: el CTA final en variante "dos columnas" o "titular grande" en páginas de la dirección B/C salía sin estilos de tarjeta y botón.
+- Tests: `shots-looks.js` acepta `SHOTS_VP` y `NOSHOT=1` para barridos de desbordes en móvil y tablet.
+
 ## v3.9 — 2026-09-30 · 33 plantillas por caso de uso
 - **Grupo nuevo "Casos de uso"** en la galería, con 4 familias filtrables:
   - **Conversión rápida** (10): una pantalla (Telco, Energía, Alarmas), solo llamada (Telco, Seguros, Teleasistencia), oferta flash (Telco, Energía) y páginas de gracias (llamada y WhatsApp).

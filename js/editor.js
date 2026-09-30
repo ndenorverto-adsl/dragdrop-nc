@@ -143,7 +143,8 @@ function renderGlobal(){
   gf.innerHTML=`
     <div class="fld"><label>Marca</label><select id="gBrand">${brandOptions(state.settings.brand)}</select></div>
     <div class="paneltitle" style="padding:10px 0 4px">Estilo de diseño</div>
-    <div class="lk-grid">${LOOK_ORDER.map(k=>{const L=LOOKS[k];return `<button type="button" class="lk-tile ${ncLook()===k?'on':''}" data-look="${k}" title="${esc(L.desc)} Ideal: ${esc(L.best)}."><span class="sw">${L.sample.map(c=>`<i style="background:${c.indexOf('var(')===0?ncBrandColor():c}"></i>`).join("")}</span><b style="font-family:${L.head?`'${L.head}',`:''}Inter,sans-serif;font-weight:${L.hw||700}">${esc(L.name)}</b><small>${esc(L.head||'Tipografía de la marca')}</small></button>`;}).join("")}</div>
+    <div class="lk-cats">${["Todos",...(typeof LOOK_CATS!=="undefined"?LOOK_CATS:[])].map(c=>`<button type="button" class="chipf sm ${(window.ncLkCat||"Todos")===c?'on':''}" data-lkcat="${c}">${c}</button>`).join("")}</div>
+    <div class="lk-grid">${LOOK_ORDER.filter(k=>{const c=window.ncLkCat||"Todos";return c==="Todos"||k===ncLook()||LOOKS[k].cat===c;}).map(k=>{const L=LOOKS[k];return `<button type="button" class="lk-tile ${ncLook()===k?'on':''}" data-look="${k}" title="${esc(L.desc)} Ideal: ${esc(L.best)}."><span class="sw">${L.sample.map(c=>`<i style="background:${c.indexOf('var(')===0?ncBrandColor():c}"></i>`).join("")}</span><b style="font-family:${L.head?`'${L.head}',`:''}Inter,sans-serif;font-weight:${L.hw||700}">${esc(L.name)}</b><small>${esc(L.head||'Tipografía de la marca')}</small></button>`;}).join("")}</div>
     <div class="help" style="margin:6px 0 8px">${esc(LK.desc)} <b>Ideal:</b> ${esc(LK.best)}. Los colores siempre son los de la marca.</div>
     <div class="fld inline"><label>Usar tipografía de la marca</label><input type="checkbox" id="gLookFont" ${st.lookBrandFont?'checked':''} ${ncLook()==='base'?'disabled':''}></div>
     <div class="paneltitle" style="padding:10px 0 4px">Toques personales</div>
@@ -215,6 +216,7 @@ function renderGlobal(){
   const cnt=(id,out,lo,hi)=>{const el=document.getElementById(id),o=document.getElementById(out);if(!el||!o)return;const u=()=>{const n=el.value.length;o.textContent=n+' caracteres · ideal '+lo+'–'+hi;o.style.color=(n&&(n<lo||n>hi))?'var(--danger)':'';};el.addEventListener('input',u);u();};
   cnt("gTitle","gTitleCnt",30,60);cnt("gDesc","gDescCnt",70,155);
   const cs=document.getElementById("gCtaStyle");if(cs)cs.addEventListener('change',()=>{commit();state.settings.ctaStyle=cs.value;renderPreview();});
+  gf.querySelectorAll('[data-lkcat]').forEach(b=>b.addEventListener('click',()=>{window.ncLkCat=b.dataset.lkcat;renderGlobal();}));
   gf.querySelectorAll('[data-look]').forEach(b=>b.addEventListener('click',()=>{commit();state.settings.look=b.dataset.look;renderPreview();renderGlobal();if(state.selected)renderRight();}));
   [["gMTitle","mTitle"],["gMSpace","mSpace"],["gStkShow","stickyShow"],["gStkStyle","stickyStyle"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{commit();state.settings[k]=el.value;renderPreview();});});
   [["gAnnot","annot"],["gHand","hand"],["gEd","editorial"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{commit();state.settings[k]=el.checked;renderPreview();});});

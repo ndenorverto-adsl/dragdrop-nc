@@ -1,8 +1,11 @@
 // Capturas de plantillas × estilos de diseño (fuentes reales vía @fontsource, fotos sustituidas). Uso: node shots-looks.js <app> <outdir> "<plantilla|…>" "<look,…>" [marca]
+// Opcional: SHOTS_VP="390x844:m,768x1024:t" (viewports) · NOSHOT=1 (solo informe de desbordes, sin capturas)
 const { open } = require('./harness'); const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
 const FS = path.join(__dirname, 'node_modules/@fontsource'); const BS = path.join(__dirname, 'node_modules/bootstrap/dist');
 const PHOTO = process.env.NC_PHOTO && fs.existsSync(process.env.NC_PHOTO) ? fs.readFileSync(process.env.NC_PHOTO) : null;
+const VPS = (process.env.SHOTS_VP || '1440x900:d,390x844:m').split(',').map(v => { const [wh, t] = v.split(':'); const [w, h] = wh.split('x').map(Number); return [w, h, t]; });
+const NOSHOT = !!process.env.NOSHOT;
 (async () => {
   const [root, out, tplArg, lookArg, brand, extra] = process.argv.slice(2); fs.mkdirSync(out, { recursive: true });
   const app = await open(path.resolve(root));
@@ -14,7 +17,7 @@ const PHOTO = process.env.NC_PHOTO && fs.existsSync(process.env.NC_PHOTO) ? fs.r
   if (app.errors.length) console.log('ERR', app.errors);
   await app.close();
   const b = await chromium.launch(); const report = [];
-  for (const [k, html] of Object.entries(docs)) for (const [w, h, tag] of [[1440, 900, 'd'], [390, 844, 'm']]) {
+  for (const [k, html] of Object.entries(docs)) for (const [w, h, tag] of VPS) {
     const ctx = await b.newContext({ viewport: { width: w, height: h } });
     await ctx.route('**/*', r => { const u = r.request().url();
       if (u.startsWith('https://landing.test')) return r.fulfill({ body: html, contentType: 'text/html; charset=utf-8' });
@@ -36,7 +39,7 @@ const PHOTO = process.env.NC_PHOTO && fs.existsSync(process.env.NC_PHOTO) ? fs.r
     const ov = await p.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     const ovEl = ov > 0 ? await p.evaluate(() => [...document.querySelectorAll('body *')].filter(e => e.getBoundingClientRect().right > window.innerWidth + 1 || (e.scrollWidth > e.clientWidth + 2 && e.clientWidth > 0 && !['hidden','clip','auto'].includes(getComputedStyle(e).overflowX))).map(e => e.tagName + '.' + (e.className || '').toString().slice(0, 30)).slice(0, 4).join(',')) : '';
     report.push(`${k} ${tag} overflow=${ov} errs=${errs.length} ${ovEl} ${errs.join('|').slice(0, 120)}`);
-    await p.screenshot({ path: path.join(out, `${k.replace(/[^a-z0-9_]+/gi, '-')}-${tag}.png`), fullPage: true });
+    if (!NOSHOT) await p.screenshot({ path: path.join(out, `${k.replace(/[^a-z0-9_]+/gi, '-')}-${tag}.png`), fullPage: true });
     await ctx.close();
   }
   await b.close(); console.log(report.join('\n'));

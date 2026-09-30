@@ -13,11 +13,14 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   blocks.js           #   librería de bloques (LIB)
   looks.js            #   iconos SVG, fotos libres, ilustración y estilos de diseño
   blocks-v4.js        #   familias A/B/C (da_ / db_ / dc_) + su CSS
+  blocks-x.js · blocks-uc.js  # variantes, extras CRO (dx_), popup y bloques por caso de uso
+  looks-x.js          #   11 estilos de diseño extra (v4.0) + categorías
   templates.js        #   plantillas
   render.js           #   genera el documento HTML (preview y export)
   export-pro.js       #   formularios, consentimiento, tracking, SEO y checklist
   editor.js           #   preview, paneles, historial, export ZIP/HTML
   templates-v4.js     #   catálogo de plantillas + galería
+  templates-uc.js · templates-looks.js  # plantillas por caso de uso y colección de estilos
   cloud.js            #   Supabase: guardar, Mis landings, login
   workspace.js        #   autoguardado, atajos, copiar/pegar, versiones, .json
   lorem.js · import.js · listeners.js · boot.js
@@ -88,7 +91,7 @@ npx playwright install chromium   # solo la primera vez
 npm test                          # smoke del editor + E2E de la landing exportada + validación HTML
 ```
 
-`node shots-looks.js .. out/looks "Oferta con precio|Confianza + multipaso" "editorial,aurora" nc` captura plantillas × estilos.
+`node shots-looks.js .. out/looks "Oferta con precio|Confianza + multipaso" "editorial,revista" nc` captura plantillas × estilos. Con `SHOTS_VP="390x844:m,768x1024:t" NOSHOT=1` solo informa de desbordes en móvil y tablet.
 
 `snapshot.js` + `compare.js` sirven para comprobar que un refactor no cambia el HTML exportado.
 

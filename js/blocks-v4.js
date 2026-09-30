@@ -200,6 +200,7 @@ ORDER.unshift(...Object.keys(LIB).filter(k=>/^d[abc]_/.test(k)));
 function ncDirCSS(){
   const used=new Set(state.sections.filter(s=>!s.hidden).map(s=>{const m=(s.type.match(/^(d[abcx])_/)||[])[1];return m==='dx'?'da':m;}).filter(Boolean));
   if(typeof ncPopNeeded==='function'&&ncPopNeeded())used.add('da');
+  if(state.sections.some(s=>!s.hidden&&/^d[bc]_cta$/.test(s.type)))used.add('da'); /* variantes split/big del CTA usan piezas A */
   if(!used.size)return "";
   const common=ncHxCSS()+ncMobileCSS()+`.da,.db,.dc{--dline:var(--line,#e7e4f0)}.da h1,.da h2,.da h3,.db h1,.db h2,.db h3,.dc h1,.dc h2,.dc h3{font-family:var(--fhead)}
   .da .form-control,.db .form-control,.dc .form-control{font-size:16px}

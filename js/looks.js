@@ -99,7 +99,7 @@ function ncLookCSS(){
   const hw=own?L.hw:(L.hwBrand||(L.hw<500?600:L.hw>800?800:L.hw));
   const onBa=ncLum(ncBrandAccent())>.5?"var(--bink)":"#fff";
   const css=(LOOK_CSS[k]||(()=>""))({hw,own,onBa});
-  const mh={editorial:1.1,swiss:.96,retro:.84,lux:1.12,prensa:1.06}[k]||1;
+  const mh=L.mh||{editorial:1.1,swiss:.96,retro:.84,lux:1.12,prensa:1.06}[k]||1;
   return ":root{--ink0:var(--bink)}"+(`body.lk-${k}{--lk-hw:${hw};--lkmh:${own?mh:1}}`+css).replace(/&/g,"body.lk-"+k);
 }
 function ncBrandAccent(){const b=BRANDS[state.settings.brand]||{};const m=String(b.vars||"").match(/--ba:\s*([^;]+)/);return m?m[1].trim():"#C1FF33";}
