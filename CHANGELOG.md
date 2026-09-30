@@ -1,5 +1,15 @@
 # Changelog
 
+## v3.9 — 2026-09-30 · 33 plantillas por caso de uso
+- **Grupo nuevo "Casos de uso"** en la galería, con 4 familias filtrables:
+  - **Conversión rápida** (10): una pantalla (Telco, Energía, Alarmas), solo llamada (Telco, Seguros, Teleasistencia), oferta flash (Telco, Energía) y páginas de gracias (llamada y WhatsApp).
+  - **Cualificación** (10): quiz de 3 preguntas (Alarmas, Seguros, Salud, Placas solares), comparador (Telco, Energía), calculadora (Energía, Telco) y cobertura (Telco, Alarmas).
+  - **Contenido que vende** (7): advertorial etiquetado como publicidad (Energía, Legal, Alarmas), historia larga (Seguros, Legal) y guía descargable (Energía, Seguros).
+  - **Confianza local** (6): instalador local (Alarmas, Placas solares), profesional (Abogado, Clínica) y reseñas primero (Telco, Alarmas).
+- **Bloques nuevos**: quiz de varios pasos, advertorial (párrafos, subtítulos, citas y caja de CTA), historia en filas, guía descargable (email + teléfono opcional), zona de servicio, profesional, resumen de valoraciones y página de gracias (lanza `thank_you_view`).
+- En total, 75 plantillas; cada una se puede ver con los 9 estilos.
+- Los titulares con palabras muy largas ya no desbordan en los estilos de tipografía ancha.
+
 ## v3.8 — 2026-09-30 · Popup en los botones
 - **Acción por botón**: el hero, las tarifas, el CTA oscuro de la dirección C, la calculadora y la barra fija tienen **"Al pulsar el botón"**, con estas opciones: como el ajuste global, ir al formulario, abrir el popup, llamar o WhatsApp. Los botones **"La quiero" de las tarifas abren el popup por defecto**.
 - **Popup nuevo** que se viste con el estilo de diseño activo (cupón en Prensa, cinta en Cuaderno…). En móvil sube desde abajo como una hoja.

@@ -109,6 +109,7 @@ function ncHxCSS(){return `
 :root{--ink0:var(--bink)}
 .nci{width:1.1em;height:1.1em;flex:0 0 auto;display:inline-block;vertical-align:-.16em}
 .nc-hx{overflow-x:clip}
+.da h1,.da h2,.db h1,.db h2,.dc h1,.dc h2,.da h3,.db h3,.dx-rate .sc b,.dx-book b{overflow-wrap:anywhere;min-width:0}.dx-pro>*,.dx-rategrid>*{min-width:0}
 .nc-hx .nc-hx-form{margin-top:26px;max-width:540px}
 .nc-hx .nc-hx-form .da-inline .nc-legal,.nc-hx .nc-hx-form .da-inline .nc-legal-info{color:var(--bmuted)}
 .nc-hx .nc-hx-alt{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-top:16px;font-size:14.5px}
@@ -500,7 +501,7 @@ html body .nc-s.nc-pad-L>*{padding-top:100px!important;padding-bottom:100px!impo
 /* Ajustes globales de móvil (Global → Móvil) */
 function ncMobileVars(){const st=state.settings;const mh={S:.9,M:1,L:1.12}[st.mTitle]||1,ms={S:.75,M:1,L:1.25}[st.mSpace]||1;return `:root{--mh:${mh};--msp:${ms}}`;}
 function ncBodyMobileClasses(){const st=state.settings;return (st.stickyShow==="always"?"":" stk-scroll")+(st.stickyStyle==="float"?" stk-float":st.stickyStyle==="single"?" stk-single":"");}
-const NC_STICKY_JS=`(function(){var st=document.querySelectorAll('.da-sticky,.db-sticky,.dc-sticky');if(!st.length||!document.body.classList.contains('stk-scroll'))return;var f=document.getElementById('form');function set(v){for(var i=0;i<st.length;i++)st[i].classList.toggle('nc-stk-on',v);}if(!f||!('IntersectionObserver' in window)){set(true);return;}new IntersectionObserver(function(e){set(!e[0].isIntersecting&&e[0].boundingClientRect.top<window.innerHeight*3);}).observe(f);})();`;
+const NC_STICKY_JS=`(function(){if(document.querySelector('[data-nc-thanks]')){try{(window.dataLayer=window.dataLayer||[]).push({event:'thank_you_view'});}catch(e){}}})();(function(){var st=document.querySelectorAll('.da-sticky,.db-sticky,.dc-sticky');if(!st.length||!document.body.classList.contains('stk-scroll'))return;var f=document.getElementById('form');function set(v){for(var i=0;i<st.length;i++)st[i].classList.toggle('nc-stk-on',v);}if(!f||!('IntersectionObserver' in window)){set(true);return;}new IntersectionObserver(function(e){set(!e[0].isIntersecting&&e[0].boundingClientRect.top<window.innerHeight*3);}).observe(f);})();`;
 
 /* ===== TOQUES PERSONALES (todos los estilos) =====
    Anotaciones a mano · letra manuscrita · papel y texturas · composición editorial · voz de los textos */
