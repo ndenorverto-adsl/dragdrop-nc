@@ -47,6 +47,13 @@ function subField(sf,it,repk,i){
   return `<input data-rf="${repk}" data-ri="${i}" data-rk="${sf.k}" value="${esc(v||"")}">`;
 }
 function defRepItem(f){const o={};(f.item||[]).forEach(sf=>{o[sf.k]=(sf.def!==undefined?sf.def:"");});return o;}
+function ncPhotoSecOf(obj){if(obj&&obj._phSec&&NC_PHOTO_BANK[obj._phSec])return obj._phSec;const cur=ncPhotoInfo(obj&&obj.img);if(cur)return cur.sec;
+  const a=typeof abSector==="function"?abSector(obj||{}):"gen";return NC_PHOTO_BANK[a]?a:"telco";}
+function ncPhotoPickerHTML(k,v,obj){const sec=ncPhotoSecOf(obj);
+  return `<div class="help" style="margin:8px 0 4px">Fotos libres por sector (licencia Unsplash, uso comercial gratuito):</div>
+  <div class="nc-phsec">${Object.entries(NC_PHOTO_SECT).map(([x,l])=>`<button type="button" class="chipf sm ${x===sec?'on':''}" data-phsec="${x}">${l}</button>`).join("")}</div>
+  <div class="nc-freeph">${NC_PHOTO_BANK[sec].map(([id,alt,by])=>`<button type="button" data-pick="${k}" data-url="${ncPhotoUrl(id)}" data-alt="${esc(alt)}" title="${esc(alt)} · Foto: ${esc(by)} (Unsplash)" class="${v===ncPhotoUrl(id)?'on':''}"><img src="${ncPhotoUrl(id,200)}" alt="" loading="lazy"></button>`).join("")}</div>
+  <div class="help">Combínalas con “Tratamiento de la foto” (duotono con el color de la marca, blanco y negro o cálido) para que parezcan de la marca.</div>`;}
 function fieldHTML(f,obj){
   const v=obj[f.k];
   if(f.t==="elements"){const L=arr(v);const lbl={};(f.parts||[]).forEach(pp=>lbl[pp[0]]=pp[1]);
@@ -57,7 +64,7 @@ function fieldHTML(f,obj){
   if(f.t==="image")return `<div class="up"><input type="file" accept="image/*" data-file="${f.k}" style="display:none"><div class="thumbrow">${v?`<img class="thumb" src="${v}">`:""}<button type="button" class="btn sm" data-upbtn="${f.k}">${v?"Cambiar":"Subir imagen"}</button>${v?`<button type="button" class="btn sm ghost" data-rm="${f.k}">Quitar</button>`:""}</div><div class="help">Se incrusta en el HTML (Base64).</div></div>`;
   if(f.t==="photo"){const ext=v&&!/^data:/.test(v);return `<div class="up"><input type="file" accept="image/*" data-file="${f.k}" style="display:none"><div class="thumbrow">${v?`<img class="thumb" src="${esc(v)}" alt="">`:""}<button type="button" class="btn sm" data-upbtn="${f.k}">${v?"Cambiar":"Subir foto"}</button>${v?`<button type="button" class="btn sm ghost" data-rm="${f.k}">Quitar</button>`:""}</div>
     <input data-fk="${f.k}" value="${ext?esc(v):""}" placeholder="…o pega la URL de una imagen" style="margin-top:6px">
-    <div class="help" style="margin:8px 0 4px">Fotos libres (licencia Unsplash):</div><div class="nc-freeph">${NC_PHOTOS.map(id=>`<button type="button" data-pick="${f.k}" data-url="${ncPhotoUrl(id)}" title="Usar esta foto" class="${v===ncPhotoUrl(id)?'on':''}"><img src="${ncPhotoUrl(id,200)}" alt="" loading="lazy"></button>`).join("")}</div>
+    ${ncPhotoPickerHTML(f.k,v,obj)}
     <div class="help">Sin foto se muestra una ilustración con los colores de la marca. Más fotos en <a href="https://unsplash.com/es" target="_blank" rel="noopener" style="color:inherit">unsplash.com</a> (clic derecho en la foto → copiar dirección de imagen).</div></div>`;}
   if(f.t==="images"){const L=arr(v);return `<div class="up"><input type="file" accept="image/*" multiple data-filem="${f.k}" style="display:none"><div class="thumbs">${L.map((s,i)=>`<div class="t"><img src="${s}"><button type="button" data-rmi="${f.k}" data-i="${i}">×</button></div>`).join("")}</div><button type="button" class="btn sm" data-upbtnm="${f.k}">+ Añadir imágenes</button></div>`;}
   return `<input data-fk="${f.k}" value="${esc(v||"")}" placeholder="${esc(f.ph||"")}">`;
@@ -68,7 +75,9 @@ function bindContentFields(container,obj,after,fields){
   container.querySelectorAll('select[data-fk]').forEach(inp=>inp.addEventListener('change',()=>{commit();obj[inp.dataset.fk]=inp.value;after();renderRight();}));
   container.querySelectorAll('[data-upbtn]').forEach(btn=>btn.addEventListener('click',()=>container.querySelector('[data-file="'+btn.dataset.upbtn+'"]').click()));
   container.querySelectorAll('[data-file]').forEach(inp=>inp.addEventListener('change',e=>readImg(e.target.files[0],url=>{commit();obj[inp.dataset.file]=url;renderRight();renderPreview();})));
-  container.querySelectorAll('[data-pick]').forEach(btn=>btn.addEventListener('click',()=>{commit();obj[btn.dataset.pick]=btn.dataset.url;renderRight();renderPreview();}));
+  container.querySelectorAll('[data-pick]').forEach(btn=>btn.addEventListener('click',()=>{commit();const prev=ncPhotoInfo(obj[btn.dataset.pick]);obj[btn.dataset.pick]=btn.dataset.url;
+    if("imgAlt" in obj&&(!obj.imgAlt||(prev&&obj.imgAlt===prev.alt)))obj.imgAlt=btn.dataset.alt||"";renderRight();renderPreview();}));
+  container.querySelectorAll('[data-phsec]').forEach(btn=>btn.addEventListener('click',()=>{obj._phSec=btn.dataset.phsec;renderRight();}));
   container.querySelectorAll('[data-rm]').forEach(btn=>btn.addEventListener('click',()=>{commit();obj[btn.dataset.rm]="";renderRight();renderPreview();}));
   container.querySelectorAll('[data-upbtnm]').forEach(btn=>btn.addEventListener('click',()=>container.querySelector('[data-filem="'+btn.dataset.upbtnm+'"]').click()));
   container.querySelectorAll('[data-filem]').forEach(inp=>inp.addEventListener('change',e=>{const fs=Array.from(e.target.files);commit();obj[inp.dataset.filem]=arr(obj[inp.dataset.filem]);let n=fs.length;fs.forEach(file=>readImg(file,url=>{obj[inp.dataset.filem].push(url);if(--n===0){renderRight();renderPreview();}}));}));

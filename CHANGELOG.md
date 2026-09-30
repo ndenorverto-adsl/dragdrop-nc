@@ -1,5 +1,14 @@
 # Changelog
 
+## v4.2 — 2026-09-30 · Tablet, fotos por sector, test A/B y 6 estilos más
+- **Tablet (768-991 px)**: 3 tarifas en una sola fila (antes quedaba una huérfana), márgenes laterales de 28 px, visuales del hero contenidos (16:10, máx. 380 px), formularios de una línea y ritmo vertical intermedio. Las secciones con composición editorial (título a un lado, contenido al otro) ya no pierden el margen lateral en tablet.
+- **Móvil**: los carruseles (tarifas, opiniones, ventajas) llevan **indicador de puntos** que sigue al desplazamiento.
+- **Fotos libres por sector** en el campo Foto de los heros: Telco, Energía, Alarmas, Seguros, Salud y Legal (4-5 por sector). Todas con licencia Unsplash gratuita y comprobadas en su ficha (descripción, autor y licencia). Al elegir una se rellena el texto alternativo. Sustituyen a las 5 fotos genéricas anteriores.
+- **Exportar A/B (botón “A/B ↓”)**: descarga un ZIP con `a/index.html` (original) y `b/index.html` (con la idea A/B aplicada), cada uno con `ab_test`/`ab_variant` en el dataLayer (evento `ab_view`) y como campos ocultos del lead, más un README con cómo repartir el tráfico en Google Ads/Meta y medir en GA4.
+- **6 estilos nuevos** (26 en total): **Postal** (sellos, matasellos, correo aéreo), **Azulejo** (mosaico mediterráneo), **Ficha técnica** (etiqueta de producto), **Memphis** (años 80), **Industrial** (chapa, remaches, stencil, cinta de peligro) y **Píxel** (8 bits).
+- **12 plantillas nuevas** en la colección Estilos (109 en total): Carta · Seguro de hogar, Carta · Teleasistencia, Mosaico · Placas solares, Mosaico · Luz de tu zona, Ficha · Compara tarifas, Ficha · Tarifa de luz, Memphis · Tarifa móvil, Memphis · Oferta flash, Taller · Alarma para negocios, Taller · Autoconsumo empresas, Píxel · Fibra para jugar y Píxel · Quiz gamer.
+- Corregido: las opciones del multipaso en “Solo llamada · Teleasistencia” y “Profesional · Clínica” salían en un solo botón (separador “,” en lugar de “|”).
+
 ## v4.1 — 2026-09-30 · Puntuación CRO e ideas A/B
 - **Botón “📈 CRO”** en la barra superior: mide la landing exportada en **móvil (390×844)** y **escritorio (1440×900)** y le da una nota de 0 a 100, repartida en 4 bloques:
   - **Above the fold**: titular visible, titular de 12 palabras o menos, botón de acción en el primer pantallazo (móvil y escritorio), formulario o teléfono a la vista y barra fija en móvil.

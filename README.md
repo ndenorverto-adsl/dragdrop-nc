@@ -14,7 +14,7 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   looks.js            #   iconos SVG, fotos libres, ilustración y estilos de diseño
   blocks-v4.js        #   familias A/B/C (da_ / db_ / dc_) + su CSS
   blocks-x.js · blocks-uc.js  # variantes, extras CRO (dx_), popup y bloques por caso de uso
-  looks-x.js          #   11 estilos de diseño extra (v4.0) + categorías
+  looks-x.js · looks-y.js  # estilos de diseño extra (v4.0 y v4.2) + categorías
   templates.js        #   plantillas
   render.js           #   genera el documento HTML (preview y export)
   export-pro.js       #   formularios, consentimiento, tracking, SEO y checklist
@@ -23,7 +23,7 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   templates-uc.js · templates-looks.js  # plantillas por caso de uso y colección de estilos
   cloud.js            #   Supabase: guardar, Mis landings, login
   workspace.js        #   autoguardado, atajos, copiar/pegar, versiones, .json
-  cro.js              #   puntuación CRO (medición en móvil/escritorio) + ideas A/B del hero
+  cro.js              #   puntuación CRO, ideas A/B del hero y exportación A/B
   lorem.js · import.js · listeners.js · boot.js
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 config.js             # claves públicas de Supabase (a partir de config.example.js)

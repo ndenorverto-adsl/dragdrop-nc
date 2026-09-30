@@ -173,3 +173,43 @@ function abBind(cf,s){const p=s.props,F=AB_FIELDS[s.type];
   cf.insertAdjacentHTML("beforeend",abPanelHTML(s));abBind(cf,s);};})();
 
 document.getElementById("btnCro")&&document.getElementById("btnCro").addEventListener("click",ncOpenCro);
+
+/* ---- EXPORTAR A/B: dos HTML autocontenidos (A = original, B = variante aplicada) ---- */
+function abHeroesWithVariant(){return state.sections.filter(s=>!s.hidden&&AB_FIELDS[s.type]&&s.props._abOrig);}
+function abTag(html,v,test){
+  const dl=`<script>window.dataLayer=window.dataLayer||[];window.dataLayer.push({ab_test:${JSON.stringify(test)},ab_variant:${JSON.stringify(v)}});window.dataLayer.push({event:'ab_view',ab_test:${JSON.stringify(test)},ab_variant:${JSON.stringify(v)}});<\/script>`;
+  html=html.replace(/<head>/i,"<head>"+dl);
+  html=html.replace(/<input type="hidden" name="form_id"/g,`<input type="hidden" name="ab_test" value="${esc(test)}"><input type="hidden" name="ab_variant" value="${v}"><input type="hidden" name="form_id"`);
+  return html.replace(/<body([^>]*)>/i,(m,a)=>`<body${a} data-ab="${v}">`);}
+function abReadme(test,diffs){return `# Test A/B · ${test}
+
+Dos versiones de la misma landing. Solo cambia lo siguiente (el resto es idéntico):
+
+${diffs.map(d=>`- **${d.f}**\n  - A: ${d.a||"—"}\n  - B: ${d.b||"—"}`).join("\n")}
+
+## Cómo publicarlo
+1. Sube \`a/index.html\` y \`b/index.html\` por FTP a dos rutas, por ejemplo \`/${test}/a/\` y \`/${test}/b/\`.
+2. Reparte el tráfico al 50 %:
+   - **Google Ads** → Experimentos → "Experimento personalizado": mismo anuncio, cambia solo la URL final (A en la campaña base, B en el experimento).
+   - **Meta Ads** → Prueba A/B con la URL de destino como variable.
+3. Deja correr el test hasta tener **al menos 100 conversiones por versión** (o 2-4 semanas) antes de decidir.
+
+## Medición
+- Al cargar, cada versión envía al dataLayer \`{event:'ab_view', ab_test:'${test}', ab_variant:'A'|'B'}\`, y deja \`ab_test\` y \`ab_variant\` como variables para el resto de eventos (form_submit, click_to_call, whatsapp_click…).
+- En GTM crea dos variables de capa de datos (\`ab_test\` y \`ab_variant\`) y añádelas como parámetros a tus etiquetas de GA4. En GA4, regístralas como dimensiones personalizadas.
+- Cada lead llega con los campos ocultos \`ab_test\` y \`ab_variant\`, así puedes cruzarlo con la venta en el CRM.
+- Las llamadas no llevan campo: mide \`click_to_call\` por \`ab_variant\` o usa un número distinto por versión si tu centralita lo permite.
+`;}
+function ncExportAB(){
+  const hs=abHeroesWithVariant();
+  if(!hs.length){toast("Primero aplica una idea A/B en el hero (Contenido → Ideas A/B)");const h=croHero();if(h){select(h.id);setTimeout(()=>{const p=document.getElementById("abPanel");if(p)p.scrollIntoView({block:"start",behavior:"smooth"});},80);}return;}
+  const test=(String(state.settings.slug||"landing").toLowerCase().replace(/[^a-z0-9-]+/g,"-").replace(/^-+|-+$/g,"")||"landing")+"-ab";
+  const diffs=[];hs.forEach(s=>Object.keys(s.props._abOrig).forEach(k=>{const a=s.props._abOrig[k],b=s.props[k];if(a!==b)diffs.push({f:({headline:"Titular",highlight:"Titular (parte destacada)",italic:"Titular (parte destacada)",gradient:"Titular (parte destacada)",cardBtn:"Botón de la tarjeta",cta:"Botón principal",btn:"Botón"}[k]||k),a,b});}));
+  if(!diffs.length){toast("La variante B es igual que la A: aplica un titular o un botón distinto");return;}
+  const B=abTag(buildDoc(true),"B",test);
+  const bak=hs.map(s=>[s,Object.assign({},s.props)]);
+  let A;try{hs.forEach(s=>Object.assign(s.props,s.props._abOrig));A=abTag(buildDoc(true),"A",test);}finally{bak.forEach(([s,p])=>{s.props=p;});}
+  if(!window.JSZip){dlBlob(A,test+"-a.html","text/html;charset=utf-8");setTimeout(()=>dlBlob(B,test+"-b.html","text/html;charset=utf-8"),400);toast("Descargadas las versiones A y B");return;}
+  const zip=new JSZip(),root=zip.folder(test);root.file("a/index.html",A);root.file("b/index.html",B);root.file("README.md",abReadme(test,diffs));
+  zip.generateAsync({type:"blob"}).then(b=>{dlBlob(b,test+".zip");toast("Test A/B exportado ✓ ("+diffs.length+" cambio"+(diffs.length>1?"s":"")+")");});}
+document.getElementById("btnExportAB")&&document.getElementById("btnExportAB").addEventListener("click",()=>ncOpenChecklist(ncExportAB));

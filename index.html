@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NC Landing Builder — v4.1</title>
+<title>NC Landing Builder — v4.2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
 <body>
 <div class="app">
   <div class="topbar">
-    <div class="brandmark"><span class="dot"></span> NC Landing Builder <small>· v4.1</small></div>
+    <div class="brandmark"><span class="dot"></span> NC Landing Builder <small>· v4.2</small></div>
     <input id="landingName" class="txt" style="max-width:180px" placeholder="Nombre de la landing" title="Nombre" autocomplete="off" name="nc_landing_name" data-lpignore="true" data-1p-ignore data-form-type="other">
     <span class="savechip" id="saveChip"></span>
     <button class="btn" id="btnSave" title="Guardar en la nube (Ctrl+S)">💾 Guardar</button>
@@ -39,6 +39,7 @@
     <button class="btn" id="btnCro" title="Puntuación CRO: above the fold, datos pendientes, fricción y confianza">📈 CRO</button>
     <button class="btn" id="btnCheck" title="Checklist antes de publicar">✓ Revisar</button>
     <button class="btn" id="btnExportHtml" title="Un único HTML autocontenido (FTP)">HTML ↓</button>
+    <button class="btn" id="btnExportAB" title="Test A/B: dos HTML (original y con la idea A/B aplicada) + guía de medición">A/B ↓</button>
     <button class="btn primary" id="btnExport" title="ZIP con index.html + css/ + js/ + README">ZIP ↓</button>
   </div>
 
@@ -130,6 +131,7 @@
 <script src="js/blocks-x.js"></script>
 <script src="js/blocks-uc.js"></script>
 <script src="js/looks-x.js"></script>
+<script src="js/looks-y.js"></script>
 <script src="js/templates.js"></script>
 <script src="js/render.js"></script>
 <script src="js/export-pro.js"></script>

@@ -143,7 +143,8 @@ iframe#pv{border:0;display:block;width:100%;height:calc(100vh - 150px);backgroun
 .lk-tile b{font-size:15px;line-height:1.1;letter-spacing:-.01em;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 .lk-cats{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 8px}
 .lk-tile small{font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.nc-freeph{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.nc-freeph{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:4px}
+.nc-phsec{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 6px}
 .nc-freeph button{padding:0;border:1px solid var(--line);border-radius:7px;overflow:hidden;aspect-ratio:1;background:var(--panel2);cursor:pointer}
 .nc-freeph button.on{outline:2px solid var(--acc);outline-offset:1px}.nc-freeph img{width:100%;height:100%;object-fit:cover;display:block}
 .tpl-looks{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:0 14px 10px}

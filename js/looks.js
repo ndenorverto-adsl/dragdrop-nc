@@ -17,7 +17,19 @@ function ncIconOrText(v,cls){v=String(v||"").trim();if(NC_ICONS[v])return ncIco(
 function ncMark(s){s=String(s||"");const m=s.match(/^\s*(✓|✔|✗|✕|×)\s*/);if(!m)return esc(s);return (/[✓✔]/.test(m[1])?ncIco("check","ok"):ncIco("x","no"))+esc(s.slice(m[0].length));}
 
 /* Fotos libres (Unsplash License: uso comercial gratuito, sin atribución obligatoria) */
-const NC_PHOTOS=["photo-1758876023053-3aa541a0935b","photo-1758273705867-c7d3d0eac839","photo-1646807006787-84f8e2b8aa26","photo-1758598304346-1b01479f681a","photo-1556566370-56b798c0d15a"];
+/* Banco de fotos libres por sector (licencia Unsplash, gratuitas; comprobadas una a una en su ficha: id, descripción y licencia).
+   by = autor (no es obligatorio citarlo, pero se agradece). Sin marcas ni productos de terceros reconocibles. */
+const NC_PHOTO_BANK={
+  telco:[["photo-1665827491450-c6f329f2285c","Madre e hijos viendo una película en casa con palomitas","Wemax Projectors"],["photo-1758687125866-6b9d86d41cc5","Padre e hijo viendo la tele en el sofá","Vitaly Gariev"],["photo-1758598306251-f68bda7168a2","Mujer hablando por el móvil con el portátil en el sofá","Vitaly Gariev"],["photo-1758273705845-095eaa831790","Chica sonriendo con el móvil en el sofá de casa","Vitaly Gariev"],["photo-1713942590404-d6981e63fb56","Familia usando el móvil y la tableta en casa","Vitaly Gariev"]],
+  energia:[["photo-1655300256335-beef51a914fe","Casa con placas solares en el tejado","Watt A Lot"],["photo-1658298775754-5839ffd434cc","Placas solares en un tejado","Soren H"],["photo-1660330589257-813305a4a383","Técnico instalando placas en un tejado","Raze Solar"],["flagged/photo-1566838616631-f2618f74a6a2","Casa de ladrillo con placas solares","Vivint Solar"],["photo-1762115106003-30a83b29f609","Contadores de luz en una pared","stephan de MARANTHI"]],
+  alarmas:[["photo-1494526585095-c41746248156","Casa moderna con la entrada iluminada al anochecer","Brian Babb"],["photo-1737442886747-9fb768b96ed2","Persona abriendo la puerta de casa con la llave","Jakub Żerdzicki"],["photo-1510849911856-cdc9335e5597","Cámara de seguridad en una fachada","Nathy dog"],["photo-1758687126864-96b61e1b3af0","Familia sonriendo en el sofá de casa","Vitaly Gariev"]],
+  seguros:[["photo-1758687126864-96b61e1b3af0","Familia sonriendo en el sofá de casa","Vitaly Gariev"],["photo-1758227365187-016878604d94","Figuras de familia y casa de madera con llaves","IGOR LOLATTO"],["photo-1770871821382-60ea99b0a941","Familia corriendo en un jardín","Aleksandra Sapozhnikova"],["photo-1494526585095-c41746248156","Casa moderna con la entrada iluminada al anochecer","Brian Babb"]],
+  salud:[["photo-1631217868264-e5b90bb7e133","Médica sonriendo mientras habla con una paciente","National Cancer Institute"],["photo-1758691461935-202e2ef6b69f","Médico hablando con una paciente en la consulta","Vitaly Gariev"],["photo-1758691462878-6edc3d3da1be","Médica atendiendo a un paciente en consulta","Vitaly Gariev"],["photo-1631815590058-860e4f83c1e8","Sanitaria tomando la tensión a una paciente","CDC"]],
+  legal:[["photo-1758518731462-d091b0b4ed0d","Firma de un contrato en una mesa","Vitaly Gariev"],["photo-1564846824194-346b7871b855","Persona firmando un documento","Leon Seibert"],["photo-1642522029691-029b5a432954","Reunión de dos personas en una mesa blanca","Carrie Allen"],["photo-1758519288445-5847dd89f313","Profesional hablando por teléfono con su libreta","Vitaly Gariev"]]
+};
+const NC_PHOTO_SECT={telco:"Telco",energia:"Energía",alarmas:"Alarmas",seguros:"Seguros",salud:"Salud",legal:"Legal"};
+const NC_PHOTOS=[].concat(...Object.values(NC_PHOTO_BANK).map(l=>l.map(x=>x[0]))).filter((x,i,a)=>a.indexOf(x)===i);
+function ncPhotoInfo(url){for(const k in NC_PHOTO_BANK)for(const x of NC_PHOTO_BANK[k])if(String(url||"").indexOf(x[0]+"?")>=0)return {sec:k,id:x[0],alt:x[1],by:x[2]};return null;}
 function ncPhotoUrl(id,w){return `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w||1400}&q=70`;}
 const NC_ILLUS=[["auto","Según el sector"],["wifi","Router y tarifa (telco)"],["bolt","Factura de luz (energía)"],["shield","App de alarma (seguridad)"],["umbrella","Póliza (seguros)"],["heart","Tarjeta y cita (salud)"],["scale","Expediente (legal)"],["water","Agua filtrada"],["spark","Tipográfico (precio o titular)"]];
 const NC_VIS=[["auto","Automático (foto si hay; si no, mockup)"],["mock","Mockup del producto"],["photo","Foto"],["type","Solo tipografía"],["none","Sin imagen"]];
@@ -461,6 +473,24 @@ function ncMobileCSS(){return `
  body.stk-scroll .nc-stk-on{transform:none!important}
  body.stk-float .da-sticky{left:12px;right:12px;bottom:12px;border-radius:16px;border:1px solid var(--dline);box-shadow:0 14px 34px rgba(0,0,0,.18)}
  body.stk-single .da-sticky .da-btn.sec,body.stk-single .db-sticky a:not(.pri),body.stk-single .dc-sticky .dc-pill.g{display:none}
+ /* indicador de carrusel */
+ .nc-dots{display:flex;justify-content:center;gap:6px;margin:-4px 0 6px}.nc-dots i{width:7px;height:7px;border-radius:99px;background:color-mix(in srgb,var(--ink0) 22%,transparent);transition:width .25s,background .25s}
+ .nc-dots i.on{width:20px;background:var(--bp)}
+}
+@media (min-width:768px){.nc-dots{display:none}}
+/* TABLET (768-991 px): 3 tarifas en una fila, visuales contenidos y ritmo intermedio */
+@media (min-width:768px) and (max-width:991px){
+ .da .container,.db .container,.dc .container{padding-left:28px;padding-right:28px}
+ .row:has(>.col-md-6.col-lg-4:nth-child(3):last-child)>.col-md-6{flex:0 0 33.3333%;max-width:33.3333%}
+ .row:has(>.col-md-6.col-lg-4:nth-child(3):last-child) .da-plan{padding:20px 16px}.row:has(>.col-md-6.col-lg-4:nth-child(3):last-child) .da-plan .pp{font-size:clamp(24px,3.6vw,32px)}
+ .row:has(>.col-md-6.col-lg-4:nth-child(3):last-child) .da-plan h3{font-size:16px}.row:has(>.col-md-6.col-lg-4:nth-child(3):last-child) .da-plan li{font-size:13.5px}
+ .da-sec,.db-sec,.dc-sec{padding-top:calc(var(--msp,1)*68px)!important;padding-bottom:calc(var(--msp,1)*68px)!important}
+ .da-hero,.db-hero{padding-top:calc(var(--msp,1)*36px)!important}
+ .nc-hx .nc-vis-wrap{max-width:620px;margin-left:auto;margin-right:auto}.nc-hx .nc-vis{aspect-ratio:16/10;max-height:380px}
+ .db-hero.nc-hx .db-form{margin:-70px 32px 0}
+ .da-card,.db-form{max-width:620px}.da-hero:not(.nc-hx) .da-card{margin-left:0}
+ .da-inline{flex-wrap:nowrap}.da .da-inline .form-control{flex:1 1 auto;min-width:0}
+ .da-btns{flex-wrap:wrap}
 }`;}
 /* Envoltorio de sección para los bloques v4 (fondo, espaciado y ajustes de móvil por bloque) */
 const V4_STYLE_FIELDS=[
@@ -501,7 +531,7 @@ html body .nc-s.nc-pad-L>*{padding-top:100px!important;padding-bottom:100px!impo
 /* Ajustes globales de móvil (Global → Móvil) */
 function ncMobileVars(){const st=state.settings;const mh={S:.9,M:1,L:1.12}[st.mTitle]||1,ms={S:.75,M:1,L:1.25}[st.mSpace]||1;return `:root{--mh:${mh};--msp:${ms}}`;}
 function ncBodyMobileClasses(){const st=state.settings;return (st.stickyShow==="always"?"":" stk-scroll")+(st.stickyStyle==="float"?" stk-float":st.stickyStyle==="single"?" stk-single":"");}
-const NC_STICKY_JS=`(function(){if(document.querySelector('[data-nc-thanks]')){try{(window.dataLayer=window.dataLayer||[]).push({event:'thank_you_view'});}catch(e){}}})();(function(){var st=document.querySelectorAll('.da-sticky,.db-sticky,.dc-sticky');if(!st.length||!document.body.classList.contains('stk-scroll'))return;var f=document.getElementById('form');function set(v){for(var i=0;i<st.length;i++)st[i].classList.toggle('nc-stk-on',v);}if(!f||!('IntersectionObserver' in window)){set(true);return;}new IntersectionObserver(function(e){set(!e[0].isIntersecting&&e[0].boundingClientRect.top<window.innerHeight*3);}).observe(f);})();`;
+const NC_STICKY_JS=`(function(){if(!window.matchMedia||!matchMedia('(max-width:767px)').matches)return;var R=document.querySelectorAll('.row.nc-m-rail');for(var r=0;r<R.length;r++)(function(row){var n=row.children.length;if(n<2||row.closest('.da-trust'))return;var d=document.createElement('div');d.className='nc-dots';d.setAttribute('aria-hidden','true');for(var i=0;i<n;i++)d.appendChild(document.createElement('i'));row.parentNode.insertBefore(d,row.nextSibling);var dots=d.children;function up(){var w=row.children[0].getBoundingClientRect().width||1;var k=Math.min(n-1,Math.round(row.scrollLeft/w));if(row.scrollLeft+row.clientWidth>=row.scrollWidth-4)k=n-1;for(var j=0;j<n;j++)dots[j].className=j===k?'on':'';}row.addEventListener('scroll',up,{passive:true});up();})(R[r]);})();(function(){if(document.querySelector('[data-nc-thanks]')){try{(window.dataLayer=window.dataLayer||[]).push({event:'thank_you_view'});}catch(e){}}})();(function(){var st=document.querySelectorAll('.da-sticky,.db-sticky,.dc-sticky');if(!st.length||!document.body.classList.contains('stk-scroll'))return;var f=document.getElementById('form');function set(v){for(var i=0;i<st.length;i++)st[i].classList.toggle('nc-stk-on',v);}if(!f||!('IntersectionObserver' in window)){set(true);return;}new IntersectionObserver(function(e){set(!e[0].isIntersecting&&e[0].boundingClientRect.top<window.innerHeight*3);}).observe(f);})();`;
 
 /* ===== TOQUES PERSONALES (todos los estilos) =====
    Anotaciones a mano · letra manuscrita · papel y texturas · composición editorial · voz de los textos */
@@ -564,7 +594,7 @@ body.nc-ed .da-sec .da-h2::before,body.nc-ed .db-sec .db-h2::before,body.nc-ed .
 body.nc-ed .da-sec .text-center,body.nc-ed .dc-sec .text-center{text-align:left!important}
 body.nc-ed .da-sec div.text-center.mb-5{display:grid;grid-template-columns:1.1fr 1fr;gap:10px 56px;align-items:end}body.nc-ed .da-sec div.text-center.mb-5 p{margin:0 0 6px;max-width:420px;justify-self:end}
 body.nc-ed .dc-sec .dc-lead{margin-left:0}body.nc-ed .da-faq,body.nc-ed .db-faq,body.nc-ed .dc-faq{margin-left:0}
-body.nc-ed .da-sec>.container[style*="max-width:780px"],body.nc-ed .db-sec>.container[style*="max-width:780px"],body.nc-ed .dc-sec>.container[style*="max-width:780px"]{max-width:1140px!important;display:grid;grid-template-columns:.8fr 1.2fr;gap:0 56px;align-items:start}
+@media (min-width:992px){body.nc-ed .da-sec>.container[style*="max-width:780px"],body.nc-ed .db-sec>.container[style*="max-width:780px"],body.nc-ed .dc-sec>.container[style*="max-width:780px"]{max-width:1140px!important;display:grid;grid-template-columns:.8fr 1.2fr;gap:0 56px;align-items:start}}
 
 @media (max-width:767px){body.nc-annot .nc-ann{position:static;display:flex;margin:14px 0 -6px;align-self:flex-start;order:5}body.nc-annot .nc-ann-in{margin:0 0 10px}.nc-ann .arr{width:40px;height:32px;transform:rotate(18deg)!important}body.nc-handf .nc-ann .t{font-size:22px}
  body.nc-ed .da-sec div.text-center.mb-5{display:block}body.nc-ed .da-sec div.text-center.mb-5 p{margin-top:8px}
