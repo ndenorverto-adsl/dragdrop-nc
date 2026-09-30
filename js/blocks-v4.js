@@ -15,12 +15,12 @@ const v4Icon={get call(){return ncIco("phone")},get wa(){return ncIco("message-c
 const v4ML=(p,d)=>"nc-m-"+(((p._st||{}).mLayout)&&p._st.mLayout!=="auto"?p._st.mLayout:d);
 const v4MO=p=>{const t=p._st||{};return " nc-mo-"+(t.mOrder||"form")+(t.mVis==="hide"?" nc-mv-hide":"");};
 const I_TEL=()=>ncIco("phone"),I_WA=()=>ncIco("message-circle"),I_GO=()=>ncIco("arrow-right");
-const V4_VISF=[{k:"layout",l:"Composición",t:"select",opts:[["auto","Automática (según el estilo)"],["std","Estándar"],["photo","Con imagen protagonista"]]},{k:"vis",l:"Imagen protagonista",t:"select",opts:NC_VIS},{k:"img",l:"Foto",t:"photo"},{k:"photoFx",l:"Tratamiento de la foto",t:"select",opts:NC_FX},{k:"imgAlt",l:"Texto alternativo de la foto"},{k:"illus",l:"Mockup",t:"select",opts:NC_ILLUS},{k:"badge",l:"Sello sobre la imagen (valor|texto, opcional)"}];
+const V4_VISF=[{k:"layout",l:"Composición",t:"select",opts:[["auto","Automática (según el estilo)"],["std","Estándar"],["photo","Con imagen protagonista"]]},{k:"vis",l:"Imagen protagonista",t:"select",opts:NC_VIS},{k:"img",l:"Foto",t:"photo"},{k:"photoFx",l:"Tratamiento de la foto",t:"select",opts:NC_FX},{k:"imgAlt",l:"Texto alternativo de la foto"},{k:"illus",l:"Mockup",t:"select",opts:NC_ILLUS},{k:"badge",l:"Sello sobre la imagen (valor|texto, opcional)"},{k:"annot",l:"Nota a mano (vacío = automática)"}];
 function v4Checks(s,cls){return `<ul class="${cls}">${v4L(s).map(l=>`<li>${esc(l)}</li>`).join("")}</ul>`;}
 function v4PhoneForm(o){ // formulario de callback de un campo (+ nombre opcional)
   return `<form data-callback action="${v4Act()}" method="post" class="${o.cls||''}">
     ${o.name?`<input required name="nombre" class="form-control mb-2" placeholder="Nombre" autocomplete="name">`:""}
-    <input required name="telefono" type="tel" class="form-control mb-2" placeholder="${esc(o.ph||'Tu teléfono')}">
+    <input required name="telefono" type="tel" class="form-control mb-2" placeholder="${esc(o.ph||vt("phone"))}">
     <button type="submit" class="${o.btnCls}">${esc(o.btn)}${o.arrow?' '+I_GO():''}</button></form>`;
 }
 function v4Faq(p,fam){const id="faq"+fam+Math.random().toString(36).slice(2,6);
@@ -47,21 +47,21 @@ da_hero:{label:"A · Hero oferta + precio",ico:"◧",cat:"A · Oferta directa",r
   def:()=>({canal:"form",eyebrow:"Asesores disponibles ahora",headline:"Fibra y móvil",highlight:"sin permanencia",sub:"Todo lo que usas en casa y en el móvil, en una sola factura.",price:"{{PRECIO}}",priceUnit:"€/mes",priceNote:"IVA incluido · precio final",oldPrice:"",checks:"Instalación gratis\nRouter incluido\nMantienes tu número",cta:"Quiero esta oferta",cardTitle:"Te llamamos gratis",cardSub:"Déjanos tu teléfono y un asesor te confirma el precio.",cardBtn:"Llamadme gratis",live:"Te llamamos en menos de {{MINUTOS}} min · {{HORARIO}}",img:"",imgAlt:"",layout:"auto",illus:"auto",badge:""}),
   fields:[{k:"canal",l:"Canal principal",t:"select",opts:V4_CANAL},{k:"eyebrow",l:"Etiqueta"},{k:"headline",l:"Titular"},{k:"highlight",l:"Parte subrayada del titular"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"price",l:"Precio"},{k:"priceUnit",l:"Unidad (€/mes)"},{k:"priceNote",l:"Nota del precio"},{k:"oldPrice",l:"Precio anterior (opcional)"},{k:"checks",l:"Ventajas (una por línea)",t:"ta"},{k:"cta",l:"Botón principal"},{k:"cardTitle",l:"Título tarjeta"},{k:"cardSub",l:"Texto tarjeta"},{k:"cardBtn",l:"Botón tarjeta"},{k:"live",l:"Línea de disponibilidad"},...V4_VISF],
   render:p=>{const c=p.canal||"form";if(ncHeroLayout(p)==="photo")return v4HeroAPhoto(p);
-    const pri=c==="call"?`${v4Tel()} class="da-btn pri">${I_TEL()} Llamar gratis</a>`:c==="wa"?`${v4Wa()} class="da-btn pri wa">${I_WA()} WhatsApp</a>`:`<a href="#form" data-cta="form" class="da-btn pri">${esc(p.cta)} ${I_GO()}</a>`;
-    const sec=c==="call"?`<a href="#form" data-cta="form" class="da-btn sec">Te llamamos</a>`:`${v4Tel()} class="da-btn sec">${I_TEL()} ${esc(telText())}</a>`;
-    const card=c==="call"?`<h2>Llama gratis</h2><p>${esc(p.cardSub)}</p>${v4Tel()} class="da-bigcall">${I_TEL()} ${esc(telText())}</a><div class="da-or">o te llamamos nosotros</div>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go alt"})}`
-      :c==="wa"?`<h2>Escríbenos por WhatsApp</h2><p>${esc(p.cardSub)}</p>${v4Wa()} class="da-bigwa">${I_WA()} Abrir WhatsApp</a><div class="da-or">o déjanos tu teléfono</div>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go alt"})}`
+    const pri=c==="call"?`${v4Tel()} class="da-btn pri">${I_TEL()} ${vt("callFree")}</a>`:c==="wa"?`${v4Wa()} class="da-btn pri wa">${I_WA()} WhatsApp</a>`:`<a href="#form" data-cta="form" class="da-btn pri">${esc(p.cta)} ${I_GO()}</a>`;
+    const sec=c==="call"?`<a href="#form" data-cta="form" class="da-btn sec">${vt("weCall")}</a>`:`${v4Tel()} class="da-btn sec">${I_TEL()} ${esc(telText())}</a>`;
+    const card=c==="call"?`<h2>${vt("callNow")}</h2><p>${esc(p.cardSub)}</p>${v4Tel()} class="da-bigcall">${I_TEL()} ${esc(telText())}</a><div class="da-or">${vt("orWeCall")}</div>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go alt"})}`
+      :c==="wa"?`<h2>${vt("waWrite")}</h2><p>${esc(p.cardSub)}</p>${v4Wa()} class="da-bigwa">${I_WA()} ${vt("waOpen")}</a><div class="da-or">${vt("orPhone")}</div>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go alt"})}`
       :`<h2>${esc(p.cardTitle)}</h2><p>${esc(p.cardSub)}</p>${v4PhoneForm({btn:p.cardBtn,btnCls:"da-go"})}`;
     return `<header class="da da-hero${v4MO(p)}"><div class="container"><div class="row g-4 g-lg-5 align-items-center">
     <div class="col-lg-7">${p.eyebrow?`<span class="da-eyebrow"><span class="dot"></span>${esc(p.eyebrow)}</span>`:""}
       <h1 class="da-h1">${esc(p.headline)} ${p.highlight?`<mark>${esc(p.highlight)}</mark>`:""}</h1>
       <p class="da-sub">${esc(p.sub)}</p>
-      ${p.price?`<div class="da-price"><div class="p">${esc(p.price)}</div><div class="u"><b>${esc(p.priceUnit)}</b>${esc(p.priceNote)}</div></div>`:""}
-      ${p.oldPrice?`<div class="da-old"><s>${esc(p.oldPrice)}</s> precio habitual</div>`:""}
+      ${p.price?`<div class="da-price"><div class="p">${esc(p.price)}${NC_SVG.circle}</div><div class="u"><b>${esc(p.priceUnit)}</b>${esc(p.priceNote)}</div></div>`:""}
+      ${p.oldPrice?`<div class="da-old"><s>${esc(p.oldPrice)}</s> ${vt("old")}</div>`:""}
       ${v4Checks(p.checks,"da-checks")}
       <div class="da-btns">${pri}${sec}</div>
       ${p.img?`<img src="${p.img}" alt="" class="da-img">`:""}</div>
-    <div class="col-lg-5"><div class="da-card" id="form">${card}${p.live?`<div class="da-live"><span class="dot"></span><span>${esc(p.live)}</span></div>`:""}</div></div>
+    <div class="col-lg-5 position-relative">${ncAnn(v4AnnA(p),"nc-ann-card")}<div class="da-card" id="form">${card}${p.live?`<div class="da-live"><span class="dot"></span><span>${esc(p.live)}</span></div>`:""}</div></div>
     </div></div></header>`;}},
 da_trust:{label:"A · Barra de confianza",ico:"★",cat:"A · Oferta directa",raw:true,
   def:()=>({items:"{{VALORACION}}★|en Google\n{{CLIENTES}}|clientes\n{{PLAZO}}|instalación\n0 €|permanencia"}),
@@ -104,16 +104,16 @@ db_hero:{label:"B · Hero confianza + multipaso",ico:"◫",cat:"B · Confianza e
   def:()=>({canal:"form",kicker:"Alarma para tu hogar",headline:"La tranquilidad de saber que tu casa",italic:"está protegida",sub:"Un experto estudia tu caso y te propone lo que de verdad necesitas. Sin compromiso.",proof:"{{VALORACION}} ★★★★★|{{N_OPINIONES}} opiniones verificadas\n24 h|Central Receptora\n{{AÑOS}}|de experiencia",quote:"{{TESTIMONIO_REAL}}",author:"{{NOMBRE}}, {{CIUDAD}}",formTitle:"Tu estudio gratuito",formSub:"Responde 1 pregunta y te llamamos con una propuesta a medida.",question:"¿Dónde lo necesitas?",options:"🏠 Casa|🏢 Piso|🏪 Negocio|🏡 2ª vivienda",step2:"¡Perfecto! ¿A qué teléfono te llamamos?",btn:"Quiero mi estudio gratis",safe:"Tus datos están protegidos · no hacemos spam",img:"",imgAlt:"",layout:"auto",illus:"auto",badge:""}),
   fields:[{k:"canal",l:"Canal principal",t:"select",opts:V4_CANAL},{k:"kicker",l:"Antetítulo"},{k:"headline",l:"Titular"},{k:"italic",l:"Final del titular (cursiva)"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"proof",l:"Prueba (valor|texto, una por línea)",t:"ta"},{k:"quote",l:"Testimonio (real)"},{k:"author",l:"Autor del testimonio"},{k:"formTitle",l:"Título del formulario"},{k:"formSub",l:"Texto del formulario"},{k:"question",l:"Pregunta del paso 1"},{k:"options",l:"Opciones (separadas por |)"},{k:"step2",l:"Texto del paso 2"},{k:"btn",l:"Botón final"},{k:"safe",l:"Texto de seguridad"},...V4_VISF],
   render:p=>{const c=p.canal||"form";const opts=v4C(p.options).filter(Boolean);
-    const top=c==="call"?`${v4Tel()} class="db-chan">${I_TEL()} Llama gratis · ${esc(telText())}</a><div class="db-or">o solicita tu estudio y te llamamos</div>`:c==="wa"?`${v4Wa()} class="db-chan wa">${I_WA()} Escríbenos por WhatsApp</a><div class="db-or">o solicita tu estudio y te llamamos</div>`:"";
+    const top=c==="call"?`${v4Tel()} class="db-chan">${I_TEL()} ${vt("callNow")} · ${esc(telText())}</a><div class="db-or">o solicita tu estudio y te llamamos</div>`:c==="wa"?`${v4Wa()} class="db-chan wa">${I_WA()} ${vt("waWrite")}</a><div class="db-or">o solicita tu estudio y te llamamos</div>`:"";
     const L=ncHeroLayout(p),bg=L==="photo"&&ncLookBg(p);
     return `<header class="db db-hero${L==="photo"?' nc-hx':''}${bg?' nc-bg':''}${v4MO(p)}">${bg?`<div class="nc-bgvis">${ncVisual(p)}</div>`:''}<div class="container"><div class="row g-4 g-lg-5 align-items-${L==="photo"&&!bg?'center':'start'}">
     <div class="col-lg-6 nc-hx-txt"><div class="db-kicker">${esc(p.kicker)}</div><h1 class="db-h1">${esc(p.headline)} ${p.italic?`<em>${esc(p.italic)}</em>`:""}</h1><p class="db-sub">${esc(p.sub)}</p>
       <div class="db-proof">${v4L(p.proof).map(l=>{const x=v4C(l);return `<div><b>${esc(x[0])}</b>${esc(x[1]||'')}</div>`;}).join("")}</div>
       ${p.quote?`<blockquote class="db-quote">“${esc(p.quote)}”<span>— ${esc(p.author)}</span></blockquote>`:""}</div>
-    <div class="col-lg-5 offset-lg-1">${L==="photo"&&!bg?ncVisual(p):''}<div class="db-form" id="form" data-live data-quiz>
+    <div class="col-lg-5 offset-lg-1">${L==="photo"&&!bg?ncVisual(p):''}<div class="db-form" id="form" data-live data-quiz>${ncAnn(p.annot||vt("oneQ"),"nc-ann-in")}
       ${top}<div class="db-bar"><i data-quiz-bar></i></div><h2>${esc(p.formTitle)}</h2>
       <div data-step><p>${esc(p.formSub)}</p><div class="db-q">${esc(p.question)}</div><div class="db-opts">${opts.map(o=>{const e=ncSplitEmoji(o);return `<button type="button" class="db-opt" data-opt="${esc(e.text||o)}" data-q="${esc(p.question)}">${e.ico?ncIco(e.ico):''}${esc(e.text||o)}</button>`;}).join("")}</div></div>
-      <div data-step style="display:none"><p>${esc(p.step2)}</p>${v4PhoneForm({btn:p.btn,btnCls:"db-go",ph:"600 000 000"})}<button type="button" class="db-back" data-quiz-back>← Cambiar respuesta</button></div>
+      <div data-step style="display:none"><p>${esc(p.step2)}</p>${v4PhoneForm({btn:p.btn,btnCls:"db-go",ph:"600 000 000"})}<button type="button" class="db-back" data-quiz-back>${vt("back")}</button></div>
       <div class="db-safe">${ncIco("lock")} ${esc(p.safe)}</div></div></div>
     </div></div></header>`;}},
 db_seals:{label:"B · Sellos y certificados",ico:"🛡️",cat:"B · Confianza editorial",raw:true,
@@ -155,8 +155,8 @@ dc_hero:{label:"C · Hero oscuro + buscador",ico:"◨",cat:"C · Premium product
   def:()=>({canal:"form",chip:"Nuevo",chipText:"{{NOVEDAD}}",headline:"Paga solo",gradient:"lo que usas",sub:"Sin márgenes escondidos ni letra pequeña. Todo claro desde el primer día.",ph:"Tu teléfono",btn:"Calcular mi ahorro",note:"Te llamamos en minutos",kpis:"{{DATO_1}}|{{ETIQUETA_1}}\n0 €|permanencia\n100%|online",img:"",imgAlt:"",layout:"auto",illus:"auto",badge:""}),
   fields:[{k:"canal",l:"Canal principal",t:"select",opts:V4_CANAL},{k:"chip",l:"Chip (destacado)"},{k:"chipText",l:"Chip (texto)"},{k:"headline",l:"Titular"},{k:"gradient",l:"Parte en degradado"},{k:"sub",l:"Subtítulo",t:"ta"},{k:"ph",l:"Placeholder del campo"},{k:"btn",l:"Botón"},{k:"note",l:"Nota bajo el campo"},{k:"kpis",l:"Cifras (valor|texto)",t:"ta"},...V4_VISF.filter(f=>f.k!=="illus"&&f.k!=="badge")],
   render:p=>{const c=p.canal||"form";
-    const big=c==="call"?`<div class="dc-big">${v4Tel()} class="dc-pill w lg">${I_TEL()} Llama gratis · ${esc(telText())}</a></div><div class="dc-or">o déjanos tu teléfono</div>`:c==="wa"?`<div class="dc-big">${v4Wa()} class="dc-pill wa lg">${I_WA()} Escríbenos por WhatsApp</a></div><div class="dc-or">o déjanos tu teléfono</div>`:"";
-    const alts=[c!=="call"?`${v4Tel()} class="dc-pill g">${I_TEL()} Prefiero llamar</a>`:"",c!=="wa"?`${v4Wa()} class="dc-pill wa">${I_WA()} WhatsApp</a>`:""].join("");
+    const big=c==="call"?`<div class="dc-big">${v4Tel()} class="dc-pill w lg">${I_TEL()} ${vt("callNow")} · ${esc(telText())}</a></div><div class="dc-or">${vt("orPhone")}</div>`:c==="wa"?`<div class="dc-big">${v4Wa()} class="dc-pill wa lg">${I_WA()} ${vt("waWrite")}</a></div><div class="dc-or">${vt("orPhone")}</div>`:"";
+    const alts=[c!=="call"?`${v4Tel()} class="dc-pill g">${I_TEL()} ${vt("preferCall")}</a>`:"",c!=="wa"?`${v4Wa()} class="dc-pill wa">${I_WA()} WhatsApp</a>`:""].join("");
     if(ncHeroLayout(p)==="photo")return v4HeroCPhoto(p,big,alts);
     return `<header class="dc dc-hero"><div class="dc-glow a"></div><div class="dc-glow b"></div><div class="container position-relative text-center">
     ${p.chipText?`<span class="dc-chip">${p.chip?`<b>${esc(p.chip)}</b> `:""}${esc(p.chipText)}</span>`:""}
@@ -359,17 +359,17 @@ function ncLum(hex){const m=String(hex||"").trim().match(/^#?([0-9a-f]{3}|[0-9a-
 /* ---------- Heros con foto / ilustración protagonista ---------- */
 function v4HeroAPhoto(p){const c=p.canal||"form",bg=ncLookBg(p);
   const form=v4PhoneForm({btn:p.cardBtn||p.cta,btnCls:"da-go",cls:"da-inline",arrow:true});
-  const top=c==="call"?`<div class="nc-hx-big">${v4Tel()} class="da-btn pri">${I_TEL()} Llamar gratis · ${esc(telText())}</a></div><div class="nc-hx-or">o te llamamos nosotros</div>`
-    :c==="wa"?`<div class="nc-hx-big">${v4Wa()} class="da-btn pri wa">${I_WA()} Escríbenos por WhatsApp</a></div><div class="nc-hx-or">o déjanos tu teléfono y te llamamos</div>`:"";
-  const alt=`<div class="nc-hx-alt">${c==="call"?"":`${v4Tel()}>${I_TEL()} ${c==="form"?"o llama gratis al ":""}${esc(telText())}</a>`}${p.live?`<span class="da-muted d-inline-flex align-items-center gap-2" style="font-size:13.5px"><span class="dot"></span>${esc(p.live)}</span>`:""}</div>`;
+  const top=c==="call"?`<div class="nc-hx-big">${v4Tel()} class="da-btn pri">${I_TEL()} ${vt("callFree")} · ${esc(telText())}</a></div><div class="nc-hx-or">${vt("orWeCall")}</div>`
+    :c==="wa"?`<div class="nc-hx-big">${v4Wa()} class="da-btn pri wa">${I_WA()} ${vt("waWrite")}</a></div><div class="nc-hx-or">${vt("orPhone")}</div>`:"";
+  const alt=`<div class="nc-hx-alt">${c==="call"?"":`${v4Tel()}>${I_TEL()} ${c==="form"?vt("orCallAt")+" ":""}${esc(telText())}</a>`}${p.live?`<span class="da-muted d-inline-flex align-items-center gap-2" style="font-size:13.5px"><span class="dot"></span>${esc(p.live)}</span>`:""}</div>`;
   return `<header class="da da-hero nc-hx${bg?' nc-bg':''}${v4MO(p)}">${bg?`<div class="nc-bgvis">${ncVisual(p)}</div>`:''}<div class="container"><div class="row g-4 g-lg-5 align-items-center">
     <div class="${bg?'col-lg-8 col-xl-7':'col-lg-6'} nc-hx-txt">${p.eyebrow?`<span class="da-eyebrow"><span class="dot"></span>${esc(p.eyebrow)}</span>`:""}
       <h1 class="da-h1">${esc(p.headline)} ${p.highlight?`<mark>${esc(p.highlight)}</mark>`:""}</h1>
       <p class="da-sub">${esc(p.sub)}</p>
-      ${p.price?`<div class="da-price"><div class="p">${esc(p.price)}</div><div class="u"><b>${esc(p.priceUnit)}</b>${esc(p.priceNote)}</div></div>`:""}
-      ${p.oldPrice?`<div class="da-old"><s>${esc(p.oldPrice)}</s> precio habitual</div>`:""}
+      ${p.price?`<div class="da-price"><div class="p">${esc(p.price)}${NC_SVG.circle}</div><div class="u"><b>${esc(p.priceUnit)}</b>${esc(p.priceNote)}</div></div>`:""}
+      ${p.oldPrice?`<div class="da-old"><s>${esc(p.oldPrice)}</s> ${vt("old")}</div>`:""}
       ${v4Checks(p.checks,"da-checks")}
-      <div class="nc-hx-form" id="form">${top}${form}</div>${alt}</div>
+      <div class="nc-hx-form position-relative" id="form">${ncAnn(v4AnnA(p),"nc-ann-form")}${top}${form}</div>${alt}</div>
     ${bg?'':`<div class="col-lg-6">${ncVisual(p)}</div>`}
     </div></div></header>`;}
 function v4HeroCPhoto(p,big,alts){const kp=v4L(p.kpis).map(l=>v4C(l));
@@ -386,5 +386,8 @@ function v4HeroCPhoto(p,big,alts){const kp=v4L(p.kpis).map(l=>v4C(l));
 function ncLookBg(p){const v=p.vis||"auto";return ncLook()==="lux"&&!!p.img&&(v==="auto"||v==="photo");}
 
 /* Variante "automática": cada estilo elige la composición que mejor le encaja */
-const V4_AUTO_VAR={trust:{brutal:"ticker",retro:"ticker",swiss:"big",lux:"big",editorial:"big"},ben:{editorial:"num",swiss:"num",lux:"rows",corporate:"cards"}};
+const V4_AUTO_VAR={trust:{brutal:"ticker",retro:"ticker",swiss:"big",lux:"big",editorial:"big",prensa:"big",papel:"ticker"},ben:{editorial:"num",swiss:"num",lux:"rows",prensa:"num"}};
 function v4Var(p,k){const v=p.variant||"auto";if(v!=="auto")return v;return (V4_AUTO_VAR[k]||{})[ncLook()]||({trust:"row",ben:"cards"})[k];}
+
+/* Nota a mano del hero A: la primera ventaja del propio bloque (no se inventa nada) */
+function v4AnnA(p){if(p.annot)return p.annot;const c=v4L(p.checks||"")[0];return c||"";}

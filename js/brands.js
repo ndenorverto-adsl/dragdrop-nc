@@ -5,10 +5,10 @@
    ============================================================ */
 
 /* ---------- MARCAS ---------- */
-const FONTS=["Inter","Poppins","Montserrat","Outfit","Manrope","Sora","DM Sans","Work Sans","Space Grotesk","Nunito","Mulish","Lato","Roboto","Open Sans","Raleway","Rubik","Karla","Figtree","Plus Jakarta Sans","Onest","Archivo","Libre Franklin","Source Sans 3","IBM Plex Sans","Barlow","Josefin Sans","Quicksand","Urbanist","Epilogue","Red Hat Display","Bricolage Grotesque","Oswald","Bebas Neue","Anton","Playfair Display","Merriweather","Fraunces","DM Serif Display","Lora","Cormorant Garamond","Space Mono","JetBrains Mono","IBM Plex Mono","Instrument Serif","Inter Tight","Syne"];
+const FONTS=["Inter","Poppins","Montserrat","Outfit","Manrope","Sora","DM Sans","Work Sans","Space Grotesk","Nunito","Mulish","Lato","Roboto","Open Sans","Raleway","Rubik","Karla","Figtree","Plus Jakarta Sans","Onest","Archivo","Libre Franklin","Source Sans 3","IBM Plex Sans","Barlow","Josefin Sans","Quicksand","Urbanist","Epilogue","Red Hat Display","Bricolage Grotesque","Oswald","Bebas Neue","Anton","Playfair Display","Merriweather","Fraunces","DM Serif Display","Lora","Cormorant Garamond","Space Mono","JetBrains Mono","IBM Plex Mono","Instrument Serif","Inter Tight","Syne","Newsreader","Caveat"];
 const FONT_SERIF=["Playfair Display","Merriweather","Fraunces","Lora","Cormorant Garamond"];
 const FONT_ONE=["Bebas Neue","Anton","DM Serif Display"];
-const FONT_AXES={"Instrument Serif":"ital@0;1","Cormorant Garamond":"ital,wght@0,300;0,400;0,500;0,600;1,300;1,400","Syne":"wght@500;600;700;800","IBM Plex Mono":"wght@400;500","JetBrains Mono":"wght@400;500","Inter Tight":"wght@400;500;600;700;800;900"};
+const FONT_AXES={"Caveat":"wght@500;600;700","Newsreader":"ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500","Archivo":"wght@400;500;600;700;800;900","Instrument Serif":"ital@0;1","Cormorant Garamond":"ital,wght@0,300;0,400;0,500;0,600;1,300;1,400","Syne":"wght@500;600;700;800","IBM Plex Mono":"wght@400;500","JetBrains Mono":"wght@400;500","Inter Tight":"wght@400;500;600;700;800;900"};
 function fontWeights(n){return FONT_AXES[n]||(FONT_ONE.includes(n)?"wght@400":FONT_SERIF.includes(n)?"wght@400;500;600;700":"wght@400;500;600;700;800");}
 function fontsHref(head,body){
   const fam=n=>encodeURIComponent(n).replace(/%20/g,"+");

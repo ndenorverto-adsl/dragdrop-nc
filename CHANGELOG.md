@@ -1,5 +1,19 @@
 # Changelog
 
+## v3.6 — 2026-09-29 · Toque personal
+- **Fuera los estilos que sonaban a IA**: Tech aurora, Suave orgánico y Corporativo premium. Las landings que los usaban pasan a Minimal lujo, Cuaderno anotado y Prensa.
+- **3 estilos nuevos hechos "a mano"**:
+  - **Cuaderno anotado**: renglones de libreta con margen, subrayado de rotulador, cinta adhesiva, botones con relieve, cifras manuscritas y foto tipo polaroid.
+  - **Prensa**: papel de periódico, filetes dobles, serif de titular (Newsreader), capitular, formulario como cupón recortable (✂) y fotos con trama de imprenta.
+  - **Papel y sello**: collage de papel kraft, bordes rasgados, etiquetas con agujero, precio en ticket troquelado, sello de tinta con el precio y fotos sujetas con cinta.
+- **Toques personales en todos los estilos** (Global → Toques personales, con interruptores):
+  - **Anotaciones a mano**: el precio va rodeado con un círculo dibujado, y hay una flecha con nota junto al formulario (usa la primera ventaja del bloque o "Solo 1 pregunta"), un check dibujado en las ventajas y "La más elegida" como nota a mano.
+  - **Letra manuscrita** (Caveat) para las notas.
+  - **Textura** de grano o papel.
+  - **Composición editorial**: secciones numeradas y cabeceras asimétricas.
+- **Voz de los textos**: según el estilo, cercano o profesional. Solo cambia los textos que no has editado y el microcopy fijo; nunca inventa precios, plazos ni datos.
+- Campo "Nota a mano" en los heros para escribir la tuya.
+
 ## v3.5 — 2026-09-29 · Menos "IA" y móvil rehecho
 - **Fuera los tics de web generada**: sin ilustración abstracta de degradado, sin sello de estrella por defecto, sin iconos de purpurina, sin titulares con degradado; etiquetas sin "píldora" y brillos de la dirección C más sobrios. En Suave orgánico, subrayado dibujado en lugar de texto con degradado.
 - **Mockups de producto** dibujados con los datos de la landing: router y tarjeta de tarifa (telco), factura con curva de precios por horas (energía), app de alarma (seguridad), póliza (seguros), tarjeta sanitaria y cita (salud), expediente con sello y fases (legal), agua filtrada. Cada estilo los viste a su manera.

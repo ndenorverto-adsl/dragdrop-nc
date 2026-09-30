@@ -146,6 +146,12 @@ function renderGlobal(){
     <div class="lk-grid">${LOOK_ORDER.map(k=>{const L=LOOKS[k];return `<button type="button" class="lk-tile ${ncLook()===k?'on':''}" data-look="${k}" title="${esc(L.desc)} Ideal: ${esc(L.best)}."><span class="sw">${L.sample.map(c=>`<i style="background:${c.indexOf('var(')===0?ncBrandColor():c}"></i>`).join("")}</span><b style="font-family:${L.head?`'${L.head}',`:''}Inter,sans-serif;font-weight:${L.hw||700}">${esc(L.name)}</b><small>${esc(L.head||'Tipografía de la marca')}</small></button>`;}).join("")}</div>
     <div class="help" style="margin:6px 0 8px">${esc(LK.desc)} <b>Ideal:</b> ${esc(LK.best)}. Los colores siempre son los de la marca.</div>
     <div class="fld inline"><label>Usar tipografía de la marca</label><input type="checkbox" id="gLookFont" ${st.lookBrandFont?'checked':''} ${ncLook()==='base'?'disabled':''}></div>
+    <div class="paneltitle" style="padding:10px 0 4px">Toques personales</div>
+    <div class="fld inline"><label>Anotaciones a mano (flechas, círculo en el precio)</label><input type="checkbox" id="gAnnot" ${st.annot!==false?'checked':''}></div>
+    <div class="fld inline"><label>Letra manuscrita en las notas</label><input type="checkbox" id="gHand" ${st.hand!==false?'checked':''}></div>
+    <div class="fld"><label>Textura</label><select id="gTex">${[["grain","Grano suave"],["paper","Papel"],["none","Sin textura"]].map(o=>`<option value="${o[0]}" ${(st.texture||'grain')===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select></div>
+    <div class="fld inline"><label>Composición editorial (secciones numeradas, cabeceras asimétricas)</label><input type="checkbox" id="gEd" ${st.editorial!==false?'checked':''}></div>
+    <div class="fld"><label>Voz de los textos</label><select id="gVoice">${[["estilo","Según el estilo"],["cercano","Cercano y directo"],["neutral","Profesional sobrio"]].map(o=>`<option value="${o[0]}" ${(st.voice||'estilo')===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Cambia los textos que no has editado (botones, formularios, microcopy). Nunca inventa precios, plazos ni datos.</div></div>
     ${theme}
     <div class="paneltitle" style="padding:10px 0 4px">Contacto (tel: · wa.me · form)</div>
     <div class="fld"><label>Teléfono</label><input id="gTel" value="${esc(state.settings.tel)}" placeholder="{{TELEFONO}}"></div>
@@ -203,6 +209,8 @@ function renderGlobal(){
   const cs=document.getElementById("gCtaStyle");if(cs)cs.addEventListener('change',()=>{commit();state.settings.ctaStyle=cs.value;renderPreview();});
   gf.querySelectorAll('[data-look]').forEach(b=>b.addEventListener('click',()=>{commit();state.settings.look=b.dataset.look;renderPreview();renderGlobal();if(state.selected)renderRight();}));
   [["gMTitle","mTitle"],["gMSpace","mSpace"],["gStkShow","stickyShow"],["gStkStyle","stickyStyle"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{commit();state.settings[k]=el.value;renderPreview();});});
+  [["gAnnot","annot"],["gHand","hand"],["gEd","editorial"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{commit();state.settings[k]=el.checked;renderPreview();});});
+  [["gTex","texture"],["gVoice","voice"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{commit();state.settings[k]=el.value;renderPreview();});});
   const lf=document.getElementById("gLookFont");if(lf)lf.addEventListener('change',()=>{commit();state.settings.lookBrandFont=lf.checked;renderPreview();});
   const sk=document.getElementById("gStyleKit");if(sk)sk.addEventListener('change',()=>{commit();state.settings.styleKit=sk.value;renderPreview();});
   const mo=document.getElementById("gMotion");if(mo)mo.addEventListener('change',()=>{commit();state.settings.motion=mo.checked;renderPreview();});
