@@ -111,7 +111,7 @@ function renderRight(){
     bindContentFields(cf,s.props,()=>patchSection(s.id),LIB[s.type].fields);}
   const sf=document.getElementById("styleFields");
   if(!s){sf.innerHTML=`<div class="empty">Selecciona una sección para editar su estilo.</div>`;}
-  else if(LIB[s.type].raw&&/^d[abc]_/.test(s.type)){const st=Object.assign(v4Style(s),{_type:s.type});s.style=s.style||{};
+  else if(LIB[s.type].raw&&/^d[abcx]_/.test(s.type)){const st=Object.assign(v4Style(s),{_type:s.type});s.style=s.style||{};
     sf.innerHTML=V4_STYLE_FIELDS.filter(f=>!f.when||f.when(st)).map(f=>f.t==="head"?`<div class="paneltitle" style="padding:12px 0 4px">${f.l}</div>`:`<div class="fld"><label>${f.l}</label>${fieldHTML(f,st)}</div>`).join("")+`<div class="help">Los ajustes de móvil se aplican por debajo de 768 px. Revisa el resultado con el botón “Móvil”.</div>`;
     sf.querySelectorAll('select[data-fk]').forEach(inp=>inp.addEventListener('change',()=>{commit();s.style[inp.dataset.fk]=inp.value;renderPreview();}));}
   else if(LIB[s.type].raw){sf.innerHTML=`<div class="empty">Esta sección estructural no usa controles de estilo (formato fijo).</div>`;}

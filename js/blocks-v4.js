@@ -195,7 +195,7 @@ ORDER.unshift(...Object.keys(LIB).filter(k=>/^d[abc]_/.test(k)));
 
 /* ---------- CSS de las 3 direcciones (solo se incluye la familia que se usa) ---------- */
 function ncDirCSS(){
-  const used=new Set(state.sections.filter(s=>!s.hidden).map(s=>(s.type.match(/^(d[abc])_/)||[])[1]).filter(Boolean));
+  const used=new Set(state.sections.filter(s=>!s.hidden).map(s=>{const m=(s.type.match(/^(d[abcx])_/)||[])[1];return m==='dx'?'da':m;}).filter(Boolean));
   if(!used.size)return "";
   const common=ncHxCSS()+ncMobileCSS()+`.da,.db,.dc{--dline:var(--line,#e7e4f0)}.da h1,.da h2,.da h3,.db h1,.db h2,.db h3,.dc h1,.dc h2,.dc h3{font-family:var(--fhead)}
   .da .form-control,.db .form-control,.dc .form-control{font-size:16px}
@@ -375,7 +375,7 @@ function v4HeroAPhoto(p){const c=p.canal||"form",bg=ncLookBg(p);
 function v4HeroCPhoto(p,big,alts){const kp=v4L(p.kpis).map(l=>v4C(l));
   const scr=p.img?`<img src="${esc(p.img)}" alt="${esc(p.imgAlt||'')}">`:`<div class="lb">${esc((kp[0]||[])[1]||'')}</div><div class="big">${esc((kp[0]||[])[0]||'')}</div><div class="ln" style="width:70%"></div><div class="ln" style="width:45%"></div>
     <div class="bars"><i style="height:40%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:78%"></i><i style="height:66%"></i><i style="height:92%"></i></div>${kp.slice(1,3).map(x=>`<div class="tile"><span>${esc(x[1]||'')}</span><b>${esc(x[0]||'')}</b></div>`).join("")}`;
-  return `<header class="dc dc-hero nc-hx${v4MO(p)}"><div class="dc-glow a"></div><div class="dc-glow b"></div><div class="container position-relative"><div class="row g-5 align-items-center">
+  return `<header class="dc dc-hero nc-hx${v4MO(p)}"><div class="dc-glow a"></div><div class="dc-glow b"></div><div class="container position-relative"><div class="row g-4 g-lg-5 align-items-center">
     <div class="col-lg-7 nc-hx-txt">${p.chipText?`<span class="dc-chip">${p.chip?`<b>${esc(p.chip)}</b> `:""}${esc(p.chipText)}</span>`:""}
     <h1 class="dc-h1">${esc(p.headline)} ${p.gradient?`<span class="dc-grad">${esc(p.gradient)}</span>`:""}</h1><p class="dc-sub">${esc(p.sub)}</p>
     ${big}<div id="form">${v4PhoneForm({btn:p.btn,btnCls:"dc-go",cls:"dc-formbar",ph:p.ph,arrow:true})}</div><div class="dc-note">${esc(p.note)}</div>
@@ -387,7 +387,8 @@ function ncLookBg(p){const v=p.vis||"auto";return ncLook()==="lux"&&!!p.img&&(v=
 
 /* Variante "automática": cada estilo elige la composición que mejor le encaja */
 const V4_AUTO_VAR={trust:{brutal:"ticker",retro:"ticker",swiss:"big",lux:"big",editorial:"big",prensa:"big",papel:"ticker"},ben:{editorial:"num",swiss:"num",lux:"rows",prensa:"num"}};
-function v4Var(p,k){const v=p.variant||"auto";if(v!=="auto")return v;return (V4_AUTO_VAR[k]||{})[ncLook()]||({trust:"row",ben:"cards"})[k];}
+const v4VarDefault={trust:"row",ben:"cards"};
+function v4Var(p,k){const v=p.variant||"auto";if(v!=="auto")return v;return (V4_AUTO_VAR[k]||{})[ncLook()]||v4VarDefault[k];}
 
 /* Nota a mano del hero A: la primera ventaja del propio bloque (no se inventa nada) */
 function v4AnnA(p){if(p.annot)return p.annot;const c=v4L(p.checks||"")[0];return c||"";}

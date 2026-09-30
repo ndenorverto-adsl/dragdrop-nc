@@ -1,5 +1,22 @@
 # Changelog
 
+## v3.7 — 2026-09-30 · Variantes de bloques y extras CRO
+- **Variantes nuevas** (campo "Variante"; en "Automática" cada estilo elige la suya):
+  - **Tarifas**: tarjetas, comparador en tabla (carrusel en móvil) y filas.
+  - **Opiniones**: tarjetas, cita destacada con lista y muro de opiniones.
+  - **Preguntas frecuentes**: acordeón o abiertas en 2 columnas.
+  - **CTA final**: banda, dos columnas con tarjeta y teléfono grande, o titular grande con formulario.
+  - **Cómo funciona**: columnas o línea de tiempo.
+  - **Footer**: una línea o en columnas (marca, contacto y legal).
+- **Bloques "Extras CRO"** que heredan el estilo de diseño:
+  - **Cobertura por código postal**: pide CP y teléfono y se envía como lead, sin prometer una comprobación automática.
+  - **Calculadora de ahorro**: solo calcula si pones el % real del cliente.
+  - **Garantía**.
+  - **Cuenta atrás de la oferta**: con fecha real, o placeholder si no la hay.
+  - **Nota del equipo**: mensaje firmado por una persona real, en papel rayado.
+  - **WhatsApp flotante**: se aparta en móvil cuando hay barra fija.
+- Corrección: en composición editorial, los titulares con clase `text-center mb-5` se partían en dos columnas.
+
 ## v3.6 — 2026-09-29 · Toque personal
 - **Fuera los estilos que sonaban a IA**: Tech aurora, Suave orgánico y Corporativo premium. Las landings que los usaban pasan a Minimal lujo, Cuaderno anotado y Prensa.
 - **3 estilos nuevos hechos "a mano"**:

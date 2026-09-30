@@ -561,10 +561,10 @@ body.nc-ed{counter-reset:ncs}
 body.nc-ed .da-sec .da-h2,body.nc-ed .db-sec .db-h2,body.nc-ed .dc-sec .dc-h2{counter-increment:ncs;text-align:left!important;margin-left:0!important}
 body.nc-ed .da-sec .da-h2::before,body.nc-ed .db-sec .db-h2::before,body.nc-ed .dc-sec .dc-h2::before{content:counter(ncs,decimal-leading-zero);display:block;width:52px;margin-bottom:14px;padding-top:10px;border-top:2px solid currentColor;font:600 13px/1 var(--fmono,var(--fbody));letter-spacing:.1em;color:var(--bpt);-webkit-text-fill-color:currentColor}
 body.nc-ed .da-sec .text-center,body.nc-ed .dc-sec .text-center{text-align:left!important}
-body.nc-ed .da-sec .text-center.mb-5{display:grid;grid-template-columns:1.1fr 1fr;gap:10px 56px;align-items:end}body.nc-ed .da-sec .text-center.mb-5 p{margin:0 0 6px;max-width:420px;justify-self:end}
+body.nc-ed .da-sec div.text-center.mb-5{display:grid;grid-template-columns:1.1fr 1fr;gap:10px 56px;align-items:end}body.nc-ed .da-sec div.text-center.mb-5 p{margin:0 0 6px;max-width:420px;justify-self:end}
 body.nc-ed .dc-sec .dc-lead{margin-left:0}body.nc-ed .da-faq,body.nc-ed .db-faq,body.nc-ed .dc-faq{margin-left:0}
 body.nc-ed .da-sec>.container[style*="max-width:780px"],body.nc-ed .db-sec>.container[style*="max-width:780px"],body.nc-ed .dc-sec>.container[style*="max-width:780px"]{max-width:1140px!important;display:grid;grid-template-columns:.8fr 1.2fr;gap:0 56px;align-items:start}
 
 @media (max-width:767px){body.nc-annot .nc-ann{position:static;display:flex;margin:14px 0 -6px;align-self:flex-start;order:5}body.nc-annot .nc-ann-in{margin:0 0 10px}.nc-ann .arr{width:40px;height:32px;transform:rotate(18deg)!important}body.nc-handf .nc-ann .t{font-size:22px}
- body.nc-ed .da-sec .text-center.mb-5{display:block}body.nc-ed .da-sec .text-center.mb-5 p{margin-top:8px}
+ body.nc-ed .da-sec div.text-center.mb-5{display:block}body.nc-ed .da-sec div.text-center.mb-5 p{margin-top:8px}
  body.nc-ed .da-sec>.container[style*="max-width:780px"],body.nc-ed .db-sec>.container[style*="max-width:780px"],body.nc-ed .dc-sec>.container[style*="max-width:780px"]{display:block}}`;}
