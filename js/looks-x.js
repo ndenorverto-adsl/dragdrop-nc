@@ -388,6 +388,7 @@ ${LKX.allR}{border-radius:8px!important}
 & .da-sticky,& .db-sticky,& .dc-sticky{background:var(--lkc)!important;border-top:1px solid var(--lkb)}
 & .da-tick,& .da-ctab,& .da-foot,& .db-foot,& .dc-foot,& .db-ctabox,& .dc-cta,& .dx-cd{background:var(--lkc)!important;color:var(--bink)!important;border:1px solid var(--lkb)}& .da-ctab p,& .db-ctabox p{color:var(--bmuted)!important}
 & .da-go.alt,& .db-go{background:var(--bp)!important;color:var(--btntext,#fff)!important}
+html & .nc-s.nc-tone-d .da-card,html & .nc-s.nc-tone-d .db-form,html & .nc-s.nc-tone-d .da-plan,html & .nc-s.nc-tone-d .da-ben,html & .nc-s.nc-tone-d .db-rev,html & .nc-s.nc-tone-d .db-compare,html & .nc-s.nc-tone-d .accordion,html & .nc-s.nc-tone-d .nc-opts span{--bink:#E6EDF3;--bmuted:#9AA4AF;--dline:#30363D;color:#E6EDF3}
 & thead,& thead th,& .db-compare .hd,& .da-tbl th{background:#1c232c!important;color:var(--bmuted)!important}& tbody tr,& tbody td{background:transparent!important}
 & .nc-ann .t{color:var(--lkok)}
 & .dx-ptab,& .dx-guar,& .dx-cities li{background:var(--lkc)!important;color:var(--bink)!important;border-color:var(--lkb)!important}& .dx-ptab .col.best{background:#1c232c!important}& .dx-ptab .col{border-color:var(--lkb)!important}& .dx-ptab ul.f li{border-color:var(--lkb)}

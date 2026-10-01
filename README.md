@@ -27,7 +27,11 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   growth.js           #   texto dinámico por keyword, horario de llamada, teléfono en vivo y bloques CRO nuevos
   team.js             #   biblioteca del equipo (bloques y plantillas en Supabase o local)
   motion.js           #   animaciones y efectos (entrada, destacados, CTA, fondo)
+  typo.js             #   tipografía global (titulares / texto / display), fuentes subidas y marca propia
   lorem.js · import.js · listeners.js · boot.js
+  import-smart.js     #   conversión fiel a bloques nativos (lee el DOM pintado: textos, imágenes, colores y fuentes) + dx_media / dx_text
+  blocks-pro.js · looks-z.js · templates-pro.js  # bloques, estilos (Vitrina, Neobanco, Nocturno) y plantillas "Producto y tech"
+  palette.js          #   panel izquierdo por objetivo: miniaturas, vista previa, favoritos, recientes y filtros
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 config.js             # claves públicas de Supabase (a partir de config.example.js)
 supabase-schema.sql   # esquema completo (instalación nueva)
