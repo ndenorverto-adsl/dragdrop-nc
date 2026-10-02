@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.6.1 — 2026-10-02 · Favicon
+- Favicon del builder: tres bloques de landing apilándose (el último, en lima, entrando) sobre el morado de Next Conversion. `favicon.svg` (escala a cualquier tamaño y aclara el fondo en modo oscuro), `favicon.ico` (16/32/48), `icons/apple-touch-icon.png` (180), iconos 192/512 + versión *maskable* y `site.webmanifest` para instalarlo como app.
+
 ## v4.6 — 2026-10-02 · Edición en el lienzo, publicar, lote CSV, velocidad y diseño nuevo
 - **Edición en el lienzo**: doble clic en cualquier texto de la vista previa para escribir ahí mismo (Intro guarda, Esc cancela; funciona en titulares, partes destacadas, tarifas, ventajas, FAQ, botones… y en los placeholders). Doble clic en una imagen o **soltar una foto del ordenador encima** para cambiarla. La barra de la sección gana ✎ Contenido y 🎨 Estilo. Seleccionar una sección ya no recarga la vista previa (va más rápido).
 - **🚀 Publicar**: sube la landing por **FTP/FTPS** a la carpeta que elijas o la despliega como proyecto en **Vercel**, con **vista previa para el cliente** (copia con noindex) y el enlace listo para copiar. Las credenciales viven solo en variables de entorno de Vercel (`NC_PUBLISH_TARGETS`), se exige sesión del builder y, opcionalmente, email permitido. Las imágenes y fuentes en base64 se separan a `assets/`. Historial de las últimas publicaciones en la landing.
