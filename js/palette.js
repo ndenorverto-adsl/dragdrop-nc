@@ -5,9 +5,9 @@
    · Filtros de sector y canal: el bloque entra ya con el copy de ese sector y con ese canal como principal. */
 const PAL_GOALS=[
   ["top","Cabecera y hero","Lo primero que se ve: navegación, barra de oferta y hero.",/^(d[abc]_(nav|topbar|hero)|dx_(subnav|product)|topbar|navbar|hero_\w+)$/],
-  ["lead","Captar el lead","Formularios, CTAs, quiz y canales directos.",/(_cta|form|form2|quiz|leadmag|exit|_wa|thanks|^cal\w*|coverage|callback)$/],
-  ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|pricing|calc|countdown|ptab|comparison|_vs|offer)$/],
-  ["trust","Confianza y prueba","Cifras, sellos, opiniones, garantías y quién te atiende.",/(trust|seals|reviews|rating|logos|logowall|guarantee|_pro|letter|stats|testimonials|security|counters|marquee|area)$/],
+  ["lead","Captar el lead","Formularios, CTAs, quiz y canales directos.",/(_cta|form|form2|quiz|leadmag|exit|_wa|thanks|^cal\w*|coverage|callback|booking)$/],
+  ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|pricing|calc|countdown|ptab|comparison|_vs|offer|finder|bundle)$/],
+  ["trust","Confianza y prueba","Cifras, sellos, opiniones, garantías y quién te atiende.",/(trust|seals|reviews|rating|logos|logowall|guarantee|_pro|letter|stats|testimonials|security|counters|marquee|area|vtestis)$/],
   ["explain","Explicar y resolver dudas","Ventajas, pasos, imagen + texto, bento y preguntas.",/(benefits|steps|story|media|_text|tiles|article|compare|features|imagetext|gallery|video|richtext|faq)$/],
   ["close","Cierre y elementos fijos","Footer y barra fija de móvil.",/(footer|sticky)$/]
 ];
@@ -24,6 +24,10 @@ function palThumb(t){const P="var(--acc,#7c6cff)",L="currentColor";const r=(x,y,
   else if(/topbar/.test(t))s=r(0,12,56,10,L,.25)+r(14,15,28,4);
   else if(/dx_product|hero_center/.test(t))s=r(16,4,24,3,P,.8)+r(10,9,36,5)+r(18,16,20,4,P,.9)+r(12,22,32,10,L,.2);
   else if(/hero/.test(t))s=r(3,6,24,5)+r(3,13,18,3)+r(3,19,12,5,P,.9)+r(33,5,20,24,L,.2)+r(36,18,14,4,P,.9);
+  else if(/vtestis/.test(t))s=[3,21,39].map(x=>r(x,4,14,20,L,.3)+`<circle cx="${x+7}" cy="14" r="3.2" fill="${P}" opacity=".9"/>`+r(x+1,27,12,3)).join("");
+  else if(/booking/.test(t))s=[4,14,24,34,44].map(x=>r(x,5,8,9,L,.3)).join("")+[4,20,36].map(x=>r(x,18,14,5,L,.22)).join("")+r(4,26,48,5,P,.9);
+  else if(/bundle/.test(t))s=[5,13,21].map((y,i)=>r(3,y,4,4,i<2?P:L,i<2?.9:.35)+r(10,y,22,4,L,.3)).join("")+r(36,5,17,24,L,.2)+r(38,22,13,4,P,.9);
+  else if(/finder/.test(t))s=[3,13,23,33].map(x=>r(x,3,8,4,L,.35)).join("")+[3,21,39].map(x=>r(x,11,14,20,L,.2)+r(x+2,24,10,4,P,.9)).join("");
   else if(/plans|pricing|ptab/.test(t))s=[3,21,39].map(x=>r(x,5,14,24,L,.2)+r(x+2,9,10,3)+r(x+2,22,10,4,P,.9)).join("");
   else if(/faq|accordion/.test(t))s=[5,13,21].map(y=>r(6,y,44,6,L,.22)+r(45,y+2,3,2)).join("");
   else if(/tiles/.test(t))s=r(3,4,32,13,L,.45)+r(37,4,16,13,P,.85)+r(3,19,16,12,L,.2)+r(21,19,32,12,L,.2);
@@ -69,7 +73,7 @@ renderPalette=function(){
   const f=palGet("flt",{}),open=palGet("open",{top:true,lead:true}),fav=palGet("fav",[]);
   const groups={};ORDER.forEach(t=>{if(!palVisible(t,q))return;const g=palGoal(t);(groups[g]=groups[g]||[]).push(t);});
   const famOrder={"A":0,"B":1,"C":2,"✚":3,"·":4};Object.values(groups).forEach(a=>a.sort((x,y)=>famOrder[palFam(x)]-famOrder[palFam(y)]));
-  const fl=`<div class="pal-flt"><select id="palSec" title="Sector: el bloque entra con su copy"><option value="">Sector: todos</option>${PAL_SECTORS.map(s=>`<option ${f.sec===s?"selected":""}>${s}</option>`).join("")}</select>
+  const fl=`<div class="pal-flt"><select id="palSec" title="Sector: el bloque entra con su copy"><option value="">Sector: todos</option>${Object.keys(V4_SECTORS).map(s=>`<option ${f.sec===s?"selected":""}>${s}</option>`).join("")}</select>
     <select id="palCan" title="Canal principal de los bloques que lo admiten">${PAL_CANAL.map(c=>`<option value="${c[0]}" ${f.can===c[0]?"selected":""}>${c[0]?"Canal: "+c[1]:"Canal: todos"}</option>`).join("")}</select>
     <select id="palFam" title="Familia de diseño"><option value="">Familia: todas</option><option value="A" ${f.fam==="A"?"selected":""}>A · Oferta directa</option><option value="B" ${f.fam==="B"?"selected":""}>B · Confianza</option><option value="C" ${f.fam==="C"?"selected":""}>C · Premium</option><option value="·" ${f.fam==="·"?"selected":""}>Clásicos</option></select></div>`;
   let h=fl+(q?"":`<div id="palTop">${palTopHTML()}</div>`);

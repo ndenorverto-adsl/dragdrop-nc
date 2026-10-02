@@ -408,7 +408,7 @@ ${lkS('num')}{font-family:var(--fhead);font-weight:var(--lk-hw)!important;letter
 
 /* Vista previa: los {{PLACEHOLDER}} se ven como etiquetas (en el export siguen siendo texto y el checklist los avisa) */
 const NC_PH_PREVIEW_CSS=`.nc-phc{display:inline;font:600 .78em/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0;text-transform:none;font-style:normal;-webkit-text-fill-color:currentColor;background:repeating-linear-gradient(135deg,color-mix(in srgb,currentColor 9%,transparent) 0 6px,color-mix(in srgb,currentColor 4%,transparent) 6px 12px);outline:1px dashed color-mix(in srgb,currentColor 45%,transparent);outline-offset:-1px;border-radius:5px;padding:.08em .35em;white-space:nowrap;vertical-align:.08em}`;
-function ncPhChips(html){return String(html).replace(/>([^<]+)</g,(m,t)=>t.indexOf("{{")<0?m:">"+t.replace(/\{\{[^{}<>]{1,40}\}\}/g,x=>`<span class="nc-phc" title="Dato pendiente: se rellena antes de publicar">${x.slice(2,-2).replace(/_/g," ").toLowerCase()}</span>`)+"<");}
+function ncPhChips(html){return String(html).replace(/>([^<]+)</g,(m,t)=>t.indexOf("{{")<0?m:">"+t.replace(/\{\{[^{}<>]{1,40}\}\}/g,x=>`<span class="nc-phc" title="Dato pendiente: se rellena antes de publicar" data-ph="${x}">${x.slice(2,-2).replace(/_/g," ").toLowerCase()}</span>`)+"<");}
 
 /* ===== MÓVIL: sistema base para las familias A/B/C =====
    --mh = escala de titulares en móvil · --msp = escala de espaciado en móvil (global y por bloque) */

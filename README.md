@@ -32,7 +32,13 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   import-smart.js     #   conversión fiel a bloques nativos (lee el DOM pintado: textos, imágenes, colores y fuentes) + dx_media / dx_text
   blocks-pro.js · looks-z.js · templates-pro.js  # bloques, estilos (Vitrina, Neobanco, Nocturno) y plantillas "Producto y tech"
   palette.js          #   panel izquierdo por objetivo: miniaturas, vista previa, favoritos, recientes y filtros
+  canvas.js           #   edición en el lienzo: doble clic en textos e imágenes, barra de la sección
+  publish.js · batch.js  # publicar (FTP/Vercel, vista previa) y landings en lote desde CSV
+  perf.js             #   ⚡ Velocidad: optimización de imágenes (WebP), medición y schema
+  blocks-plus.js · looks-w.js · templates-plus.js  # comparador, pack, cita, vídeo · Ácido/Tipográfico/Crudo · sectores nuevos
 api/figma.js          # proxy a la API de Figma (función de Vercel)
+api/publish.js        # publicar por FTP/FTPS o en Vercel (credenciales solo en variables de entorno)
+package.json          # dependencias de las funciones de /api (basic-ftp); el sitio sigue sin build
 config.js             # claves públicas de Supabase (a partir de config.example.js)
 supabase-schema.sql   # esquema completo (instalación nueva)
 supabase-migration-v3.1.sql  # añade el historial de versiones a una instalación existente
@@ -90,6 +96,29 @@ Copia `config.example.js` a `config.js` y rellénalo. La clave publishable es p�
 Cada push a `main` despliega en el proyecto `dragdrop-nc` (Framework Preset: **Other**, sin build).
 - Opcional: variable de entorno `FIGMA_TOKEN` en Vercel para no tener que pegar el token en el importador de Figma.
 - **Acceso del equipo**: el proyecto tiene *Vercel Authentication* activa, así que solo entran miembros del equipo de Vercel. Si los gestores no son miembros, desactívala en **Settings → Deployment Protection** (el login de Supabase ya protege los datos) o usa un dominio propio.
+
+### 4. Publicar desde el builder (opcional)
+En Vercel → proyecto `dragdrop-nc` → Settings → Environment Variables (Production):
+
+| Variable | Valor |
+|---|---|
+| `NC_PUBLISH_TARGETS` | JSON con los destinos (ver ejemplo) |
+| `NC_PUBLISH_EMAILS` | opcional: quién puede publicar, p. ej. `@nextconversion.es` |
+| `NC_SUPABASE_URL` / `NC_SUPABASE_ANON` | opcional: si no están se leen de `config.js` |
+
+```json
+[
+  {"id":"nc","name":"Servidor NC","type":"ftp","host":"ftp.tudominio.com","port":21,"user":"USUARIO","password":"CONTRASEÑA","secure":true,
+   "base":"/public_html/landings","publicUrl":"https://landings.tudominio.com"},
+  {"id":"prev","name":"Vista previa","type":"ftp","preview":true,"host":"ftp.tudominio.com","user":"USUARIO","password":"CONTRASEÑA","secure":true,
+   "base":"/public_html/previews","publicUrl":"https://previews.tudominio.com"},
+  {"id":"vercel","name":"Vercel landings","type":"vercel","token":"TOKEN_DE_VERCEL","team":"team_xxx","prefix":"nc-"}
+]
+```
+- **FTP/FTPS** (`secure:true` = FTPS explícito). Cada landing va a `<base>/<carpeta>/index.html` + `assets/`. SFTP no está soportado todavía.
+- **Vercel**: crea (o actualiza) el proyecto `<prefix><carpeta>` y lo publica en producción (`https://<prefix><carpeta>.vercel.app`, luego puedes añadirle dominio). El token se crea en vercel.com/account/tokens con acceso solo a ese equipo.
+- **Vista previa para el cliente**: usa el destino con `"preview":true` (copia con `noindex`). Si usas Vercel para las vistas previas, desactiva *Vercel Authentication* en ese equipo o los clientes no podrán abrirlas.
+- Tras guardar las variables, haz **Redeploy**. Solo publica quien ha iniciado sesión en el builder (y, si la pones, con el email permitido).
 
 ## Tests (local)
 

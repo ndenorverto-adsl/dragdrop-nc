@@ -1,0 +1,8 @@
+{
+  "name": "nc-landing-builder",
+  "private": true,
+  "description": "NC Landing Builder (estático, sin build). Las dependencias solo las usan las funciones de /api.",
+  "dependencies": {
+    "basic-ftp": "^6.2.1"
+  }
+}
