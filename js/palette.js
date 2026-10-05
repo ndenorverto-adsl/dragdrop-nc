@@ -9,6 +9,7 @@ const PAL_GOALS=[
   ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|pricing|calc|countdown|ptab|comparison|_vs|offer|finder|bundle)$/],
   ["trust","Confianza y prueba","Cifras, sellos, opiniones, garantías y quién te atiende.",/(trust|seals|reviews|rating|logos|logowall|guarantee|_pro|letter|stats|testimonials|security|counters|marquee|area|vtestis)$/],
   ["explain","Explicar y resolver dudas","Ventajas, pasos, imagen + texto, bento y preguntas.",/(benefits|steps|story|media|_text|tiles|article|compare|features|imagetext|gallery|video|richtext|faq)$/],
+  ["web","Elementos de diseño web","Separadores, tablas, vídeo, mapa, pestañas, carrusel, galería, equipo, pie con columnas…",/^dx_(spacer|iconlist|badges|callout|table|video|map|tabs|slider|beforeafter|modalinfo|counters|logos|team|gallery|ctaimg|footcols)$/],
   ["close","Cierre y elementos fijos","Footer y barra fija de móvil.",/(footer|sticky)$/]
 ];
 const PAL_SECTORS=["Telco","Energía","Alarmas","Seguros","Salud","Legal"];
@@ -16,7 +17,7 @@ const PAL_CANAL=[["","Todos"],["form","Formulario"],["call","Llamada"],["wa","Wh
 const PAL_LS={fav:"nc_pal_fav_v1",rec:"nc_pal_rec_v1",open:"nc_pal_open_v1",flt:"nc_pal_flt_v1"};
 function palGet(k,d){try{const v=JSON.parse(localStorage.getItem(PAL_LS[k])||"null");return v==null?d:v;}catch(e){return d;}}
 function palSet(k,v){try{localStorage.setItem(PAL_LS[k],JSON.stringify(v));}catch(e){}}
-function palGoal(t){const g=PAL_GOALS.find(g=>g[3].test(t));return g?g[0]:"explain";}
+function palGoal(t){const W=PAL_GOALS.find(g=>g[0]==="web");if(W&&W[3].test(t))return "web";const g=PAL_GOALS.find(g=>g[3].test(t));return g?g[0]:"explain";}
 function palFam(t){const m=t.match(/^(d[abcx])_/);return m?{da:"A",db:"B",dc:"C",dx:"✚"}[m[1]]:"·";}
 /* miniatura esquemática (SVG 56×34) según la forma del bloque */
 function palThumb(t){const P="var(--acc,#7c6cff)",L="currentColor";const r=(x,y,w,h,f,o)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="${f||L}" opacity="${o==null?.35:o}"/>`;let s="";
@@ -24,6 +25,22 @@ function palThumb(t){const P="var(--acc,#7c6cff)",L="currentColor";const r=(x,y,
   else if(/topbar/.test(t))s=r(0,12,56,10,L,.25)+r(14,15,28,4);
   else if(/dx_product|hero_center/.test(t))s=r(16,4,24,3,P,.8)+r(10,9,36,5)+r(18,16,20,4,P,.9)+r(12,22,32,10,L,.2);
   else if(/hero/.test(t))s=r(3,6,24,5)+r(3,13,18,3)+r(3,19,12,5,P,.9)+r(33,5,20,24,L,.2)+r(36,18,14,4,P,.9);
+  else if(/dx_spacer/.test(t))s=r(3,16,50,2,L,.5)+`<circle cx="28" cy="17" r="3" fill="${P}" opacity=".9"/>`;
+  else if(/dx_iconlist/.test(t))s=[5,14,23].map(y=>`<circle cx="7" cy="${y+3}" r="3" fill="${P}" opacity=".85"/>`+r(13,y+1,30,4,L,.3)).join("");
+  else if(/dx_badges/.test(t))s=[[3,8,16],[21,8,14],[37,8,16],[10,19,16],[28,19,18]].map(([x,y,w])=>r(x,y,w,7,P,.35)).join("");
+  else if(/dx_callout/.test(t))s=r(3,9,50,16,P,.18)+`<circle cx="11" cy="17" r="4" fill="${P}" opacity=".9"/>`+r(18,13,24,3)+r(18,19,18,3,L,.25);
+  else if(/dx_table/.test(t))s=[4,11,18,25].map((y,i)=>r(3,y,50,6,i?L:P,i?.18:.7)).join("")+r(37,4,10,27,P,.25);
+  else if(/dx_video/.test(t))s=r(6,3,44,28,L,.3)+`<path d="M25 11v12l10-6z" fill="${P}" opacity=".95"/>`;
+  else if(/dx_map/.test(t))s=r(3,5,18,4)+r(3,12,14,3,L,.25)+r(3,22,12,5,P,.9)+r(25,3,28,28,L,.2)+`<circle cx="39" cy="15" r="4" fill="${P}" opacity=".95"/>`;
+  else if(/dx_tabs/.test(t))s=r(6,4,13,6,P,.9)+r(21,4,13,6,L,.3)+r(36,4,13,6,L,.3)+r(6,14,24,4)+r(6,21,20,3,L,.25)+r(34,13,16,16,L,.2);
+  else if(/dx_slider/.test(t))s=r(1,6,5,22,L,.15)+r(9,6,18,22,L,.3)+r(29,6,18,22,L,.3)+r(50,6,5,22,L,.15)+r(24,30,8,2,P,.9);
+  else if(/dx_beforeafter/.test(t))s=r(5,4,23,26,L,.35)+r(28,4,23,26,L,.15)+r(27,2,2,30,P,.95)+`<circle cx="28" cy="17" r="4" fill="${P}"/>`;
+  else if(/dx_modalinfo/.test(t))s=r(10,5,36,24,L,.22)+r(14,9,20,3)+r(14,15,28,2,L,.25)+r(14,20,24,2,L,.25)+r(40,8,3,3,P,.9);
+  else if(/dx_logos/.test(t))s=[3,17,31,45].map(x=>r(x,14,9,6,L,.4)).join("");
+  else if(/dx_team/.test(t))s=[9,28,47].map(x=>`<circle cx="${x}" cy="13" r="6" fill="${L}" opacity=".3"/>`+r(x-6,23,12,3)).join("");
+  else if(/dx_gallery/.test(t))s=r(3,4,24,26,L,.35)+r(29,4,24,12,L,.25)+r(29,18,11,12,L,.25)+r(42,18,11,12,P,.5);
+  else if(/dx_ctaimg/.test(t))s=r(0,3,56,28,L,.45)+r(14,9,28,4,"#fff",.9)+r(18,18,20,6,P,.95);
+  else if(/dx_footcols/.test(t))s=r(0,4,56,30,L,.4)+[5,20,35].map(x=>r(x,9,10,2,"#fff",.8)+r(x,14,12,2,"#fff",.4)+r(x,18,9,2,"#fff",.4)).join("");
   else if(/vtestis/.test(t))s=[3,21,39].map(x=>r(x,4,14,20,L,.3)+`<circle cx="${x+7}" cy="14" r="3.2" fill="${P}" opacity=".9"/>`+r(x+1,27,12,3)).join("");
   else if(/booking/.test(t))s=[4,14,24,34,44].map(x=>r(x,5,8,9,L,.3)).join("")+[4,20,36].map(x=>r(x,18,14,5,L,.22)).join("")+r(4,26,48,5,P,.9);
   else if(/bundle/.test(t))s=[5,13,21].map((y,i)=>r(3,y,4,4,i<2?P:L,i<2?.9:.35)+r(10,y,22,4,L,.3)).join("")+r(36,5,17,24,L,.2)+r(38,22,13,4,P,.9);

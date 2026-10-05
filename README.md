@@ -36,6 +36,7 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   publish.js · batch.js  # publicar (FTP/Vercel, vista previa) y landings en lote desde CSV
   perf.js             #   ⚡ Velocidad: optimización de imágenes (WebP), medición y schema
   blocks-plus.js · looks-w.js · templates-plus.js  # comparador, pack, cita, vídeo · Ácido/Tipográfico/Crudo · sectores nuevos
+  blocks-web.js                                   # v4.7: elementos de diseño web (17 bloques) + Estilo → Efectos
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 api/publish.js        # publicar por FTP/FTPS o en Vercel (credenciales solo en variables de entorno)
 package.json          # dependencias de las funciones de /api (basic-ftp); el sitio sigue sin build

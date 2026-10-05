@@ -62,3 +62,17 @@ plTpl("Crudo · Reclamación sin rodeos","crudo","Legal","B","form","Legal con e
   [NAV("db"),PLH("Legal"),{type:"db_compare",props:PL_S.Legal.compare},{type:"db_steps"},{type:"dx_booking",props:{title:"Reserva una llamada con un abogado",sub:"Elige día y franja. Estudiamos tu caso sin coste.",btn:"Reservar llamada"}},{type:"db_faq",props:{items:PL_S.Legal.faq}},FOOT("db"),STK("db")]);
 plTpl("Crudo · Fibra sin rollos","crudo","Telco","A","form","Telco con estilo Crudo: comparador con filtros y el precio sin adornos.",
   [NAV("da"),PLH("Telco",{layout:"std"}),{type:"dx_finder"},{type:"da_benefits",props:{items:PL_S.Telco.benefits}},{type:"da_faq",props:{items:PL_S.Telco.faq}},FOOT("da"),STK("da")]);
+/* ===== v4.7 · Plantillas de muestra con los elementos de diseño web y efectos por sección ===== */
+plTpl("Elementos web · Reforma con galería","editorial","Reformas","B","form","Reformas: antes/después, galería con ampliación, equipo, mapa, CTA con imagen y pie con columnas. Fondo en malla y bordes en ola.",
+  [NAV("db"),PLH("Reformas"),{type:"dx_badges",props:{items:"badge-check|Presupuesto cerrado\nhammer|{{OFICIOS}}\nclipboard-check|{{CONDICION_VISITA}}\nshield|{{GARANTIA}}"}},
+   {type:"dx_beforeafter",props:{title:"Así cambia una reforma",sub:"Arrastra para comparar."},style:{bg:"mesh",shapeTop:"wave",shapeBot:"wave"}},
+   {type:"dx_gallery",props:{title:"Trabajos recientes",layout:"feature",cols:"3"}},{type:"db_steps"},
+   {type:"dx_team",props:{title:"Quién hará tu reforma"},style:{bg:"dots"}},{type:"db_faq",props:{items:PL_S.Reformas.faq}},
+   {type:"dx_map",props:{title:"Dónde estamos"},style:{cardShadow:"soft"}},{type:"dx_ctaimg",props:{title:"Pide tu visita",sub:"Déjanos tu teléfono y te llamamos para agendarla.",btn:"Quiero mi visita"}},
+   {type:"dx_footcols"},STK("db")]);
+plTpl("Elementos web · Fibra con pestañas","neobanco","Telco","A","form","Telco: pestañas por perfil, tarifas sobre degradado con tarjetas de cristal, tabla comparativa, carrusel, vídeo y condiciones en ventana.",
+  [NAV("da"),PLH("Telco"),{type:"dx_iconlist",props:{title:"Todo lo que incluye"}},
+   {type:"dx_tabs",props:{title:"Elige según cómo vives",btn:"Me interesa"},style:{bg:"dots"}},
+   {type:"da_plans",style:{bg:"grad",glass:"on",hover:"lift",cardRadius:"28",shapeTop:"curve",shapeBot:"curve"}},
+   {type:"dx_modalinfo"},{type:"dx_table"},{type:"dx_slider",props:{title:"Lo que puedes hacer con tu fibra",per:"3"},style:{hover:"lift",cardShadow:"soft"}},
+   {type:"dx_video",props:{title:"Así es la instalación"}},{type:"da_faq",props:{items:PL_S.Telco.faq}},{type:"da_cta"},{type:"dx_footcols"},STK("da")]);
