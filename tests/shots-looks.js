@@ -6,14 +6,15 @@ const FS = path.join(__dirname, 'node_modules/@fontsource'); const BS = path.joi
 const PHOTO = process.env.NC_PHOTO && fs.existsSync(process.env.NC_PHOTO) ? fs.readFileSync(process.env.NC_PHOTO) : null;
 const VPS = (process.env.SHOTS_VP || '1440x900:d,390x844:m').split(',').map(v => { const [wh, t] = v.split(':'); const [w, h] = wh.split('x').map(Number); return [w, h, t]; });
 const NOSHOT = !!process.env.NOSHOT;
+const PROPS = process.env.SHOTS_PROPS ? JSON.parse(fs.readFileSync(process.env.SHOTS_PROPS, 'utf8')) : null; // solo pruebas: props de ejemplo por tipo de bloque
 (async () => {
   const [root, out, tplArg, lookArg, brand, extra] = process.argv.slice(2); fs.mkdirSync(out, { recursive: true });
   const app = await open(path.resolve(root));
-  const docs = await app.page.evaluate(([tpls, looks, brand, extra]) => { const r = {};
+  const docs = await app.page.evaluate(([tpls, looks, brand, extra, PROPS]) => { const r = {};
     const names = tpls ? tpls.split('|') : Object.keys(TEMPLATE_META); const L = looks ? looks.split(',') : LOOK_ORDER;
-    names.forEach(n => L.forEach(lk => { state.sections = tplSections(n); if (extra) { const e = JSON.parse(extra); state.sections.forEach(s => { if (/_hero$/.test(s.type)) Object.assign(s.props, e); }); }
+    names.forEach(n => L.forEach(lk => { state.sections = tplSections(n); if (PROPS) state.sections.forEach(s => { if (PROPS[s.type]) Object.assign(s.props, PROPS[s.type]); }); if (extra) { const e = JSON.parse(extra); state.sections.forEach(s => { if (/_hero$/.test(s.type)) Object.assign(s.props, e); }); }
       state.settings.brand = brand && brand !== 'auto' ? brand : (TEMPLATE_BRAND[n] || 'nc'); state.settings.look = lk; Object.assign(state.settings, { tel: '900 000 000', wa: '34600000000' });
-      r[lk + '__' + n] = buildDoc(true); })); return r; }, [tplArg || '', lookArg || '', brand || '', extra || '']);
+      r[lk + '__' + n] = buildDoc(true); })); return r; }, [tplArg || '', lookArg || '', brand || '', extra || '', PROPS]);
   if (app.errors.length) console.log('ERR', app.errors);
   await app.close();
   const b = await chromium.launch(); const report = [];

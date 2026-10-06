@@ -4,13 +4,13 @@
    · Favoritos (★) y recientes, guardados en este navegador.
    · Filtros de sector y canal: el bloque entra ya con el copy de ese sector y con ese canal como principal. */
 const PAL_GOALS=[
-  ["top","Cabecera y hero","Lo primero que se ve: navegación, barra de oferta y hero.",/^(d[abc]_(nav|topbar|hero)|dx_(subnav|product)|topbar|navbar|hero_\w+)$/],
+  ["top","Cabecera y hero","Lo primero que se ve: navegación, barra de oferta y hero.",/^(d[abc]_(nav|topbar|hero)|dx_(subnav|product|promohero)|topbar|navbar|hero_\w+)$/],
   ["lead","Captar el lead","Formularios, CTAs, quiz y canales directos.",/(_cta|form|form2|quiz|leadmag|exit|_wa|thanks|^cal\w*|coverage|callback|booking)$/],
-  ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|pricing|calc|countdown|ptab|comparison|_vs|offer|finder|bundle)$/],
+  ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|pricing|calc|countdown|ptab|comparison|_vs|offer|finder|bundle|plantabs|devices|addons)$/],
   ["trust","Confianza y prueba","Cifras, sellos, opiniones, garantías y quién te atiende.",/(trust|seals|reviews|rating|logos|logowall|guarantee|_pro|letter|stats|testimonials|security|counters|marquee|area|vtestis)$/],
-  ["explain","Explicar y resolver dudas","Ventajas, pasos, imagen + texto, bento y preguntas.",/(benefits|steps|story|media|_text|tiles|article|compare|features|imagetext|gallery|video|richtext|faq)$/],
+  ["explain","Explicar y resolver dudas","Ventajas, pasos, imagen + texto, bento y preguntas.",/(benefits|steps|story|media|_text|tiles|colortiles|article|compare|features|imagetext|gallery|video|richtext|faq)$/],
   ["web","Elementos de diseño web","Separadores, tablas, vídeo, mapa, pestañas, carrusel, galería, equipo, pie con columnas…",/^dx_(spacer|iconlist|badges|callout|table|video|map|tabs|slider|beforeafter|modalinfo|counters|logos|team|gallery|ctaimg|footcols)$/],
-  ["close","Cierre y elementos fijos","Footer y barra fija de móvil.",/(footer|sticky)$/]
+  ["close","Cierre y elementos fijos","Footer y barra fija de móvil.",/(footer|sticky|infobar)$/]
 ];
 const PAL_SECTORS=["Telco","Energía","Alarmas","Seguros","Salud","Legal"];
 const PAL_CANAL=[["","Todos"],["form","Formulario"],["call","Llamada"],["wa","WhatsApp"]];
@@ -25,6 +25,12 @@ function palThumb(t){const P="var(--acc,#7c6cff)",L="currentColor";const r=(x,y,
   else if(/topbar/.test(t))s=r(0,12,56,10,L,.25)+r(14,15,28,4);
   else if(/dx_product|hero_center/.test(t))s=r(16,4,24,3,P,.8)+r(10,9,36,5)+r(18,16,20,4,P,.9)+r(12,22,32,10,L,.2);
   else if(/hero/.test(t))s=r(3,6,24,5)+r(3,13,18,3)+r(3,19,12,5,P,.9)+r(33,5,20,24,L,.2)+r(36,18,14,4,P,.9);
+  else if(/dx_promohero/.test(t))s=r(2,4,34,26,P,.85)+r(5,9,18,4,L,.6)+r(5,15,16,5,L,.35)+r(38,4,16,14,L,.6)+r(38,20,16,10,P,.6);
+  else if(/dx_plantabs/.test(t))s=r(14,2,28,5,L,.25)+r(17,3,8,3,L,.7)+r(16,10,24,22,L,.2)+r(19,26,18,4,P,.9);
+  else if(/dx_devices/.test(t))s=[3,21,39].map(x=>r(x,5,14,5,P,.9)+r(x,10,14,18,L,.2)+r(x+1,13,6,6,L,.5)+r(x+1,24,12,3,L,.6)).join("");
+  else if(/dx_addons/.test(t))s=r(0,2,56,30,L,.55)+r(4,6,23,12,L,.8)+r(29,6,23,12,L,.8)+r(4,20,48,9,L,.8)+r(40,23,9,3,P,.95);
+  else if(/dx_colortiles/.test(t))s=r(3,6,11,24,L,.25)+r(30,6,11,11,P,.6)+r(43,6,11,11,L,.3)+r(17,19,11,11,L,.7)+r(30,19,11,11,"#02DAC0",.8)+r(43,19,11,11,P,.9);
+  else if(/dx_infobar/.test(t))s=r(0,24,56,10,L,.75)+r(4,27,20,4,P,.6)+r(38,26,14,6,P,.95)+`<circle cx="48" cy="16" r="4" fill="#25D366" opacity=".9"/>`;
   else if(/dx_spacer/.test(t))s=r(3,16,50,2,L,.5)+`<circle cx="28" cy="17" r="3" fill="${P}" opacity=".9"/>`;
   else if(/dx_iconlist/.test(t))s=[5,14,23].map(y=>`<circle cx="7" cy="${y+3}" r="3" fill="${P}" opacity=".85"/>`+r(13,y+1,30,4,L,.3)).join("");
   else if(/dx_badges/.test(t))s=[[3,8,16],[21,8,14],[37,8,16],[10,19,16],[28,19,18]].map(([x,y,w])=>r(x,y,w,7,P,.35)).join("");

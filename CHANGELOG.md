@@ -1,5 +1,19 @@
 # Changelog
 
+## v4.8 — 2026-10-06 · Estilo «Escaparate», marca Jazztel 2026 y plantilla de distribuidor
+- **Marca «Jazztel 2026»** (Clientes NC), sacada de desarrollo.mijazztel.com: amarillo #FFCD00 (botones con texto negro), magenta #DA1884 de acento, negro y gris #F3F3F3; Gotham → **Montserrat**; botones de 8 px. La marca «Jazztel» anterior (verde) se mantiene para las landings que ya la usan.
+- **Estilo «Escaparate»** (categoría nueva «Retail y telco», 33 estilos): bloques planos de color sobre gris claro, titulares en negro muy grueso, pestañas píldora, tarjetas con borde negro, barra superior de acento que se desplaza en escritorio, menú en negrita con el teléfono en bloque gris, FAQ en filas blancas con flecha de acento y pie gris con barra legal negra. Toma los colores de cualquier marca y funciona con todas las plantillas.
+- **6 bloques nuevos**:
+  - **Hero promo + formulario lateral**: tarjeta de color con etiqueta, titular con parte destacada, caja de producto, precio grande con decimales volados y etiqueta negra, banda blanca con botón y hueco para foto recortada; a la derecha, formulario negro con opciones y tarjeta promo.
+  - **Tarifas con pestañas**: pestañas píldora agrupadas por el campo «Pestaña», tarjetas con borde, etiqueta, círculo de descuento, banda gris y precio grande.
+  - **Dispositivos con cuota**: cabecera de color, cuota en bloque de acento, plazo y foto; carrusel deslizable en móvil.
+  - **Extras con precio** (TV y servicios): sección oscura, tarjetas negras con precio y botón; las que ocupan todo el ancho van en horizontal.
+  - **Ventajas en mosaico de colores**: color por ventaja (marca, acento, negro, gris, blanco o #hex) y foto opcional a la izquierda.
+  - **Barra fija de contacto** abajo (cobertura + «¿Tienes dudas?» + botón) con botón flotante WhatsApp / Te llamamos; en móvil queda compacta.
+  - Anclas para el menú (#tarifas, #moviles, #tv) y el bloque de cobertura gana `#cobertura`.
+- **Plantilla «Cliente · Jazztel 2026 (distribuidor)»**: la estructura de la web nueva con la marca y el estilo cargados. **Todo el copy, precios, logos y fotos son `{{PLACEHOLDER}}` o huecos para subir**; los logos de plataformas de TV no se incluyen (súbelos solo si tenéis permiso).
+- Comprobado: plantilla × 33 estilos × móvil/escritorio sin desbordes ni errores, las 150 plantillas con el estilo Escaparate sin desbordes, pestañas y anclas funcionando, HTML válido y `npm test` OK.
+
 ## v4.7 — 2026-10-05 · Elementos de diseño web y efectos por sección
 - **Nuevo grupo «Elementos de diseño web»** en el panel izquierdo (17 bloques, con miniatura y vista previa al pasar el ratón):
   - **Básicos**: separador o espacio (línea, puntos, ola, zigzag, desvanecido o solo aire, con texto opcional), lista con iconos (1-3 columnas, 4 formas de icono), insignias, aviso destacado (marca, info, ok, atención u oscuro), **tabla** (columna destacada, ✓/✗ automáticos; en móvil desliza o se convierte en tarjetas), **vídeo** (YouTube sin cookies, Vimeo o MP4; solo carga al pulsar) y **mapa** (dirección, horario, teléfono y «Cómo llegar»; Google Maps solo se carga al pulsar, así no frena la página ni pone cookies antes de tiempo).
