@@ -19,7 +19,7 @@ BRANDS.c_jazztel26={name:"Jazztel 2026",locked:true,client:true,
 const ESC_CAT="Escaparate";
 function escPrice(v,unit){const s=String(v||"");const m=s.match(/^\s*(\d{1,4})[,.](\d{1,2})\s*$/);
   return `<span class="esc-pr"><b>${esc(m?m[1]:s)}</b>${m||unit?`<span class="d">${m?`<sup>’${m[2]}</sup>`:""}${unit?`<small>${esc(unit)}</small>`:""}</span>`:""}</span>`;}
-function escHl(s){return esc(s||"").replace(/\*([^*]+)\*/g,"<em>$1</em>");}
+function escHl(s){return esc(s||"").replace(/\*([^*]+)\*/g,"<em>$1</em>").replace(/(^|\s)_([^_]+)_(?=\s|$)/g,"$1<span class=\"lt\">$2</span>");}
 function escAnc(p){const a=String(p.anchor||"").replace(/[^\w-]/g,"");return a?` id="${a}"`:"";}
 const ESC_ANCF={k:"anchor",l:"Ancla para el menú (p. ej. tarifas → enlace #tarifas)"};
 const ESC_TONES=[["brand","Color de marca"],["accent","Color de acento"],["ink","Negro"],["soft","Gris"],["white","Blanco"]];
@@ -28,24 +28,24 @@ function escTone(t){const v=String(t||"").trim();if(/^#[0-9a-f]{3,8}$/i.test(v))
 Object.assign(LIB,{
 dx_promohero:{label:"✚ Hero promo + formulario lateral",ico:"▣",cat:ESC_CAT,raw:true,
   def:()=>({tag:"{{ETIQUETA}}",headline:"{{TITULAR}}",highlight:"{{DESTACADO}}",box1:"{{PRODUCTO_1}}",box2:"{{PRODUCTO_2}}",sub1:"{{DETALLE_1}}",sub2:"{{DETALLE_2}}",
-    price:"{{PRECIO}}",unit:"€/mes",priceTag:"{{NOTA_PRECIO}}",cta:"{{CTA_OFERTA}}",act:"popup",extra:"{{EXTRA}}",extraBtn:"{{CTA_EXTRA}}",img:"",imgAlt:"",
+    price:"{{PRECIO}}",unit:"€/mes",priceTag:"{{NOTA_PRECIO}}",cta:"{{CTA_OFERTA}}",act:"popup",extra:"{{EXTRA}}",extraImg:"",extraBtn:"{{CTA_EXTRA}}",img:"",imgAlt:"",
     formTitle:"{{TITULO_FORMULARIO}}",formSub:"{{SUBTITULO_FORMULARIO}}",opts:"{{OPCION_1}}|{{OPCION_2}}|{{OPCION_3}}",formBtn:"{{CTA_FORMULARIO}}",
     promoTag:"{{ETIQUETA_PROMO}}",promoText:"{{PROMO}}",promoImg:""}),
   fields:[{k:"tag",l:"Etiqueta (arriba a la izquierda)"},{k:"headline",l:"Titular"},{k:"highlight",l:"Parte destacada del titular (color de acento)"},
     {k:"box1",l:"Caja de producto · línea 1 (izquierda)"},{k:"box2",l:"Caja de producto · línea 1 (derecha, vacío = una sola)"},{k:"sub1",l:"Caja · detalle izquierda"},{k:"sub2",l:"Caja · detalle derecha"},
     {k:"price",l:"Precio (p. ej. 39,95)"},{k:"unit",l:"Unidad"},{k:"priceTag",l:"Etiqueta negra junto al precio"},{k:"cta",l:"Botón principal (vacío = sin botón)"},V4_ACTF,
-    {k:"extra",l:"Banda blanca inferior · texto (opcional)"},{k:"extraBtn",l:"Banda blanca · botón"},{k:"img",l:"Foto recortada (PNG con fondo transparente)",t:"photo"},{k:"imgAlt",l:"Texto alternativo de la foto"},
+    {k:"extra",l:"Banda blanca inferior · texto (opcional)"},{k:"extraImg",l:"Banda blanca · imagen en lugar del texto (opcional)",t:"image"},{k:"extraBtn",l:"Banda blanca · botón"},{k:"img",l:"Foto recortada (PNG con fondo transparente)",t:"photo"},{k:"imgAlt",l:"Texto alternativo de la foto"},
     {k:"formTitle",l:"Formulario · título"},{k:"formSub",l:"Formulario · subtítulo"},{k:"opts",l:"Formulario · opciones (separadas por |, * = marcada)"},{k:"formBtn",l:"Formulario · botón"},
-    {k:"promoTag",l:"Tarjeta promo · cabecera (vacío = sin tarjeta)"},{k:"promoText",l:"Tarjeta promo · texto grande"},{k:"promoImg",l:"Tarjeta promo · imagen",t:"photo"}],
+    {k:"promoTag",l:"Tarjeta promo · cabecera (vacío = sin tarjeta)"},{k:"promoText",l:"Tarjeta promo · texto grande (vacío + imagen = banner completo)"},{k:"promoImg",l:"Tarjeta promo · imagen",t:"photo"}],
   render:p=>{const main=`<div class="dx-ph-main"><div class="tx">${p.tag?`<span class="dx-ph-tag">${esc(p.tag)}</span>`:""}
       <h1 class="dx-ph-h">${esc(p.headline)}${p.highlight?` <mark>${esc(p.highlight)}</mark>`:""}</h1>
       ${p.box1?`<div class="dx-ph-box"><div class="t"><span>${esc(p.box1)}</span>${p.box2?`<i>+</i><span>${esc(p.box2)}</span>`:""}</div>${p.sub1||p.sub2?`<div class="s"><span>${esc(p.sub1||"")}</span>${p.box2?`<span>${esc(p.sub2||"")}</span>`:""}</div>`:""}</div>`:""}
       <div class="dx-ph-pr">${escPrice(p.price,p.unit)}${p.priceTag?`<span class="tg">${esc(p.priceTag)}</span>`:""}</div>
       ${p.cta?`<div class="da-btns"><a href="#form" data-cta="form"${v4ActA(p)} class="da-btn dx-btn-ink">${esc(p.cta)} ${I_GO()}</a></div>`:""}
-      ${p.extra?`<div class="dx-ph-ex"><span>${esc(p.extra)}</span>${p.extraBtn?`<a href="#form" data-cta="form"${v4ActA(p)} class="b">${esc(p.extraBtn)}</a>`:""}</div>`:""}</div>
+      ${p.extra||p.extraImg?`<div class="dx-ph-ex">${p.extraImg?`<img src="${esc(p.extraImg)}" alt="${esc(p.extra||"")}" loading="lazy">`:`<span>${esc(p.extra)}</span>`}${p.extraBtn?`<a href="#form" data-cta="form"${v4ActA(p)} class="b">${esc(p.extraBtn)}</a>`:""}</div>`:""}</div>
       ${p.img?`<img class="dx-ph-img" src="${esc(p.img)}" alt="${esc(p.imgAlt||"")}" fetchpriority="high">`:`<div class="dx-ph-img ph" aria-hidden="true">{{FOTO}}</div>`}</div>`;
     const side=`<aside class="dx-ph-side"><div class="dx-ph-form" id="form"><h2>${esc(p.formTitle)}</h2>${p.formSub?`<p>${esc(p.formSub)}</p>`:""}${v4PhoneForm({btn:p.formBtn||"",btnCls:"da-btn pri w-100",opts:p.opts})}</div>
-      ${p.promoTag||p.promoText?`<div class="dx-ph-promo"><div class="hd">${esc(p.promoTag||"")}</div><div class="bd"><b>${esc(p.promoText||"")}</b>${p.promoImg?`<img src="${esc(p.promoImg)}" alt="" loading="lazy">`:`<span class="ph">{{IMAGEN_PROMO}}</span>`}</div></div>`:""}</aside>`;
+      ${p.promoTag||p.promoText||p.promoImg?`<div class="dx-ph-promo"><div class="hd">${esc(p.promoTag||"")}</div>${!p.promoText&&p.promoImg?`<div class="bd full"><img src="${esc(p.promoImg)}" alt="${esc(p.promoTag||"")}" loading="lazy"></div>`:`<div class="bd"><b>${esc(p.promoText||"")}</b>${p.promoImg?`<img src="${esc(p.promoImg)}" alt="" loading="lazy">`:`<span class="ph">{{IMAGEN_PROMO}}</span>`}</div>`}</div>`:""}</aside>`;
     return `<section class="da dx-ph"><div class="container"><div class="dx-ph-g">${main}${side}</div></div></section>`;}},
 dx_plantabs:{label:"✚ Tarifas con pestañas",ico:"▤",cat:ESC_CAT,raw:true,
   def:()=>({anchor:"tarifas",title:"{{TITULO_TARIFAS}}",sub:"",act:"popup",plans:[
@@ -83,10 +83,10 @@ dx_addons:{label:"✚ Extras con precio (TV, servicios)",ico:"▥",cat:ESC_CAT,r
     {title:"{{EXTRA_2}}",img:"",pre:"{{TEXTO_PRECIO}}",price:"{{PRECIO_EXTRA_2}}",unit:"€/mes",cta:"{{CTA_EXTRA}}",wide:""},
     {title:"{{EXTRA_3}}",img:"",pre:"{{TEXTO_PRECIO}}",price:"{{PRECIO_EXTRA_3}}",unit:"€/mes",cta:"{{CTA_EXTRA}}",wide:"si"}]}),
   fields:[ESC_ANCF,{k:"title",l:"Título"},{k:"sub",l:"Subtítulo (opcional)"},V4_ACTF,{k:"items",l:"Extras",t:"repeater",addLabel:"Añadir extra",item:[
-    {k:"title",l:"Nombre",def:""},{k:"img",l:"Logo o imagen (opcional; usa solo logos con permiso)",t:"image",def:""},{k:"pre",l:"Texto antes del precio",def:""},{k:"price",l:"Precio",def:""},{k:"unit",l:"Unidad",def:"€/mes"},
-    {k:"cta",l:"Botón",def:"Ver detalles"},{k:"wide",l:"Ancho completo (escribe «si»)",def:""}]}],
+    {k:"title",l:"Nombre (*parte* = color destacado, _parte_ = texto fino)",def:""},{k:"img",l:"Logo o imagen (opcional; usa solo logos con permiso)",t:"image",def:""},{k:"pre",l:"Texto antes del precio",def:""},{k:"price",l:"Precio",def:""},{k:"unit",l:"Unidad",def:"€/mes"},
+    {k:"cta",l:"Botón",def:"Ver detalles"},{k:"wide",l:"Ancho completo (escribe «si»)",def:""},{k:"hl",l:"Color de la *parte destacada* del nombre (#hex, opcional)",def:""}]}],
   render:p=>`<section class="da da-sec dx-ad"${escAnc(p)}><div class="container">${wHead(p)}<div class="dx-ad-l">${arr(p.items).map(x=>`<article class="dx-ad-c${/^s[ií]$/i.test(String(x.wide||"").trim())?" w":""}">
-      <div class="nm">${x.img?`<img src="${esc(x.img)}" alt="${esc(x.title||"")}" loading="lazy">`:""}${x.title&&!x.img?`<h3>${esc(x.title)}</h3>`:""}</div>
+      <div class="nm">${(()=>{const w=/^s[ií]$/i.test(String(x.wide||"").trim()),hc=/^#[0-9a-f]{3,8}$/i.test(String(x.hl||"").trim())?` style="--hl:${x.hl.trim()}"`:"",t=x.title?`<h3${hc}>${escHl(x.title)}</h3>`:"",im=x.img?`<img src="${esc(x.img)}" alt="${esc(String(x.title||"").replace(/\*/g,""))}" loading="lazy">`:"";return w?t+im:(im||t);})()}</div>
       <div class="ft"><span class="pr">${x.pre?`<small>${esc(x.pre)}</small>`:""}<b>${esc(x.price||"")}</b>${esc(x.unit||"")}</span><a href="#form" data-cta="form"${v4ActA(p,{name:x.title,price:x.price,unit:x.unit})} class="da-btn acc">${esc(x.cta||"")}</a></div></article>`).join("")}</div></div></section>`},
 dx_colortiles:{label:"✚ Ventajas en mosaico de colores",ico:"▦",cat:ESC_CAT,raw:true,
   def:()=>({title:"{{TITULO_VENTAJAS}}",img:"",imgAlt:"",items:"badge-check|{{VENTAJA_1}}|accent\nrocket|{{VENTAJA_2}}|soft\nheart|{{VENTAJA_3}}|ink\nmessage-circle|{{VENTAJA_4}}|#02DAC0\nwifi|{{VENTAJA_5}}|brand"}),
@@ -95,18 +95,36 @@ dx_colortiles:{label:"✚ Ventajas en mosaico de colores",ico:"▦",cat:ESC_CAT,
   render:p=>{const L=v4L(p.items);const im=!!p.img;
     return `<section class="da da-sec dx-ct"><div class="container">${p.title?`<h2 class="da-h2 text-center mb-4 mb-lg-5">${esc(p.title)}</h2>`:""}<div class="dx-ct-g${im?" im":""}${im&&L.length===5?" t5":""}">
       ${im?`<img class="ph-img" src="${esc(p.img)}" alt="${esc(p.imgAlt||"")}" loading="lazy">`:""}
-      ${L.map(l=>{const c=v4C(l);const t=escTone(c[2]);return `<div class="it ${t.cls}"${t.st?` style="${t.st}"`:""}>${c[0]?`<span class="ic">${ncIconOrText(c[0])}</span>`:""}<p>${esc(c[1]||"").replace(/\\n/g,"<br>")}</p></div>`;}).join("")}</div></div></section>`;}},
+      ${L.map(l=>{const c=v4C(l);const t=escTone(c[2]);return `<div class="it ${t.cls}"${t.st?` style="${t.st}"`:""}>${c[0]?`<span class="ic">${/^(https?:|\/|data:)/.test(c[0])?`<img src="${esc(c[0])}" alt="">`:ncIconOrText(c[0])}</span>`:""}<p>${esc(c[1]||"").replace(/\\n/g,"<br>")}</p></div>`;}).join("")}</div></div></section>`;}},
+dx_covtabs:{label:"✚ Cobertura con pestañas (teléfono · dirección · llamada)",ico:"◫",cat:ESC_CAT,raw:true,
+  def:()=>({anchor:"cobertura",title:"{{TITULO_COBERTURA}}",icon:"",t1:"{{PESTAÑA_TELEFONO}}",t2:"{{PESTAÑA_DIRECCION}}",t3:"{{PESTAÑA_LLAMADA}}",btn:"{{CTA_COBERTURA}}",callBtn:"{{CTA_LLAMAR}}",callText:"{{TEXTO_LLAMADA}}"}),
+  fields:[ESC_ANCF,{k:"title",l:"Título"},{k:"icon",l:"Icono (imagen, opcional)",t:"image"},{k:"t1",l:"Pestaña 1 · por teléfono (| = salto de línea; vacío = ocultar)"},{k:"t2",l:"Pestaña 2 · por dirección (vacío = ocultar)"},{k:"t3",l:"Pestaña 3 · llamando (vacío = ocultar)"},
+    {k:"btn",l:"Botón de los formularios"},{k:"callBtn",l:"Botón de llamada (el teléfono se añade solo)"},{k:"callText",l:"Texto bajo el botón de llamada"}],
+  render:p=>{const T=[["tel",p.t1],["dir",p.t2],["call",p.t3]].filter(x=>String(x[1]||"").trim());const lb=v=>esc(String(v||"")).replace(/\s*\|\s*/g,"\n");
+    const pane=k=>k==="tel"?`<form data-callback action="${v4Act()}" method="post" class="dx-cv-f" data-form-id="dx_covtabs_tel"><input type="hidden" name="origen" value="cobertura_telefono"><input required name="telefono" type="tel" class="form-control" placeholder="${esc(vt("phone"))}" aria-label="${esc(vt("phone"))}"><button type="submit" class="da-btn acc">${esc(p.btn||"")}</button></form>`
+      :k==="dir"?`<form data-callback action="${v4Act()}" method="post" class="dx-cv-f" data-form-id="dx_covtabs_dir"><input type="hidden" name="origen" value="cobertura_direccion"><input required name="telefono" type="tel" class="form-control" placeholder="Teléfono de contacto" aria-label="Teléfono de contacto"><input required name="direccion" class="form-control" placeholder="Calle, vía..." aria-label="Calle" autocomplete="address-line1"><div class="row2"><input required name="numero" class="form-control" placeholder="Número" aria-label="Número"><input required name="codigo_postal" class="form-control" placeholder="Código postal" aria-label="Código postal" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" autocomplete="postal-code"></div><button type="submit" class="da-btn acc">${esc(p.btn||"")}</button></form>`
+      :`<div class="dx-cv-call"><a href="${telHref()}" data-cta="call" class="da-btn acc">${ncIco("phone")} ${esc(p.callBtn||"")} ${esc(telText())}</a>${p.callText?`<p>${esc(p.callText)}</p>`:""}</div>`;
+    return `<section class="da da-sec dx-cv"${T.length>1?" data-tabs":""}${escAnc(p)}><div class="container"><div class="dx-cv-h">${p.icon?`<img src="${esc(p.icon)}" alt="">`:ncIco("wifi")}<h2 class="da-h2">${esc(p.title)}</h2></div><div class="dx-cv-w">
+      ${T.length>1?`<div class="dx-cv-n" role="tablist">${T.map((x,i)=>`<button type="button" role="tab" id="cv__SID__t${i}" aria-controls="cv__SID__p${i}" aria-selected="${i===0}" tabindex="${i?-1:0}">${lb(x[1])}</button>`).join("")}</div>`:""}
+      ${T.map((x,i)=>`<div class="dx-cv-p"${T.length>1?` role="tabpanel" id="cv__SID__p${i}" aria-labelledby="cv__SID__t${i}"${i?" hidden":""}`:""}>${pane(x[0])}</div>`).join("")}</div></div></section>`;}},
 dx_infobar:{label:"✚ Barra fija de contacto (abajo)",ico:"▁",cat:ESC_CAT,raw:true,
-  def:()=>({left:"{{TEXTO_COBERTURA}} *{{ENLACE_COBERTURA}}*",leftHref:"#cobertura",right:"{{TEXTO_DUDAS}} *{{DESTACADO_DUDAS}}*",btn:"{{CTA_CONTACTO}}",act:"popup",pill:"si",pillWa:"{{TEXTO_WHATSAPP}}",pillCall:"{{TEXTO_TE_LLAMAMOS}}"}),
+  def:()=>({left:"{{TEXTO_COBERTURA}} *{{ENLACE_COBERTURA}}*",leftHref:"#cobertura",right:"{{TEXTO_DUDAS}} *{{DESTACADO_DUDAS}}*",btn:"{{CTA_CONTACTO}}",act:"popup",pill:"si",pillWa:"{{TEXTO_WHATSAPP}}",pillCall:"{{TEXTO_TE_LLAMAMOS}}",side:"",sideHref:"#tarifas"}),
   fields:[{k:"left",l:"Texto izquierda (*parte* = enlace subrayado)"},{k:"leftHref",l:"Enlace de la izquierda (p. ej. #cobertura o #tarifas)"},{k:"right",l:"Texto derecha (*parte* en negrita)"},{k:"btn",l:"Botón"},V4_ACTF,
-    {k:"pill",l:"Botón flotante WhatsApp + Te llamamos",t:"select",opts:[["si","Mostrar"],["no","Ocultar"]]},{k:"pillWa",l:"Flotante · texto WhatsApp"},{k:"pillCall",l:"Flotante · texto Te llamamos"}],
+    {k:"pill",l:"Botón flotante WhatsApp + Te llamamos",t:"select",opts:[["si","Mostrar"],["no","Ocultar"]]},{k:"pillWa",l:"Flotante · texto WhatsApp"},{k:"pillCall",l:"Flotante · texto Te llamamos"},{k:"side",l:"Pestaña lateral (p. ej. «Volver a ofertas»; vacío = sin pestaña)"},{k:"sideHref",l:"Pestaña lateral · enlace"}],
   render:p=>{const L=esc(p.left||"").replace(/\*([^*]+)\*/g,"<u>$1</u>"),R=esc(p.right||"").replace(/\*([^*]+)\*/g,"<b>$1</b>");
     return `<div class="dx-ib" role="region" aria-label="Contacto rápido"><div class="container"><a class="l" href="${esc(p.leftHref||"#form")}" data-cta="coverage">${ncIco("wifi")}<span>${L}</span></a><span class="sep" aria-hidden="true"></span>
       <div class="r"><span class="t">${R}</span><a href="#form" data-cta="form"${v4ActA(p)} class="da-btn acc">${esc(p.btn||"")}</a></div></div></div>
-      ${p.pill!=="no"?`<div class="dx-ib-pill"><a href="${waHref()}" target="_blank" rel="noopener" data-cta="wa" class="wa">${ncIco("message-circle")}<span>${esc(p.pillWa||"")}</span></a><a href="#form" data-cta="form" data-act="popup" class="cl">${ncIco("phone")}<span>${esc(p.pillCall||"")}</span></a></div>`:""}`;}}
+      ${p.pill!=="no"?`<div class="dx-ib-pill"><a href="${waHref()}" target="_blank" rel="noopener" data-cta="wa" class="wa">${ncIco("message-circle")}<span>${esc(p.pillWa||"")}</span></a><a href="#form" data-cta="form" data-act="popup" class="cl">${ncIco("phone")}<span>${esc(p.pillCall||"")}</span></a></div>`:""}${p.side?`<a class="dx-ib-side" href="${esc(p.sideHref||"#tarifas")}" data-cta="nav">${ncIco("arrow-up")}<span>${esc(p.side)}</span></a>`:""}`;}}
 });
-(function(){const X=["dx_promohero","dx_plantabs","dx_devices","dx_addons","dx_colortiles","dx_infobar"];let i=ORDER.indexOf("dx_spacer");if(i<0)i=ORDER.length;ORDER.splice(i,0,...X);})();
-const NC_ESC_TYPES=/^dx_(promohero|plantabs|devices|addons|colortiles|infobar)$/;
+(function(){const X=["dx_promohero","dx_plantabs","dx_devices","dx_addons","dx_covtabs","dx_colortiles","dx_infobar"];let i=ORDER.indexOf("dx_spacer");if(i<0)i=ORDER.length;ORDER.splice(i,0,...X);})();
+const NC_ESC_TYPES=/^dx_(promohero|plantabs|devices|addons|colortiles|infobar|covtabs)$/;
+/* FAQ: « ¶ » en una respuesta = salto de línea (listas en respuestas largas) */
+["da_faq","db_faq","dc_faq"].forEach(t=>{const L=LIB[t];if(!L)return;const r=L.render;L.render=function(){return String(r.apply(this,arguments)).replace(/\s*¶\s*/g,"<br>");};});
+/* Ajustes que trae una plantilla (teléfono, WhatsApp…): solo se rellenan si están vacíos */
+const TEMPLATE_SETTINGS={},TEMPLATE_LOOK={};
+(function(){const _lt=loadTemplate;loadTemplate=function(name){const before=state.sections;_lt.apply(this,arguments);const S=TEMPLATE_SETTINGS[name]||{};if(state.sections===before)return;let ch=false;
+  const L=TEMPLATE_LOOK[name];if(L&&LOOKS[L]&&!(typeof tplGal!=="undefined"&&tplGal.look)){state.settings.look=L;ch=true;}
+  Object.keys(S).forEach(k=>{if(!state.settings[k]){state.settings[k]=S[k];ch=true;}});if(ch){renderPreview();if(typeof renderGlobal==="function")renderGlobal();}};})();
 /* Ancla #cobertura en el bloque de cobertura (para la barra fija) */
 (function(){const C=LIB.dx_coverage;if(!C)return;const r=C.render;C.render=function(p){return r.apply(this,arguments).replace('<section class="da da-sec dx-cov"','<section id="cobertura" class="da da-sec dx-cov"');};})();
 
@@ -133,9 +151,9 @@ function ncEscCSS(){return `
 .dx-ph-form .form-control{border-radius:6px;border:0;min-height:44px}.dx-ph-form .da-btn{min-height:50px;justify-content:center;font-size:17px}.dx-ph-form .nc-legal,.dx-ph-form .nc-legal a,.dx-ph-form .form-check-label{color:rgba(255,255,255,.75)}
 .dx-ph-promo{flex:1;border-radius:var(--cardr,12px);overflow:hidden;background:var(--bp);display:flex;flex-direction:column;min-height:200px}.dx-ph-promo .hd{background:var(--ba);color:#fff;font-size:12px;font-weight:800;text-align:center;padding:6px 10px}
 .dx-ph-promo .bd{flex:1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px}.dx-ph-promo b{background:#fff;color:var(--ba);font:800 clamp(20px,2vw,28px)/1.05 var(--fhead);padding:12px 14px;border-radius:12px;max-width:60%}
-.dx-ph-promo img{max-width:46%;max-height:190px;object-fit:contain}.dx-ph-promo .ph{width:40%;height:140px;display:grid;place-items:center;border:2px dashed rgba(0,0,0,.25);border-radius:10px;font-size:11px;font-weight:700;color:rgba(0,0,0,.45);text-align:center}
+.dx-ph-promo img{max-width:46%;max-height:190px;object-fit:contain}.dx-ph-promo .bd.full{padding:0;justify-content:center}.dx-ph-promo .bd.full img{max-width:100%;max-height:none;width:100%;height:100%;object-fit:contain}.dx-ph-ex img{height:38px;width:auto;max-width:100%;min-width:0;flex:0 1 auto;object-fit:contain;object-position:left center}.dx-ph-promo .ph{width:40%;height:140px;display:grid;place-items:center;border:2px dashed rgba(0,0,0,.25);border-radius:10px;font-size:11px;font-weight:700;color:rgba(0,0,0,.45);text-align:center}
 @media (max-width:991px){.dx-ph-g{grid-template-columns:minmax(0,1fr)}.dx-ph-form{border-radius:var(--cardr,12px)}}
-@media (max-width:767px){.dx-ph{padding:14px 0 28px}.dx-ph-main{grid-template-columns:minmax(0,1fr);min-height:0}.dx-ph-main .tx{padding:26px 18px 22px}.dx-ph-img{position:relative;max-width:70%;max-height:280px;justify-self:end;margin:-120px -6px 0 auto;z-index:0}.dx-ph-img.ph{display:none}
+@media (max-width:767px){.dx-ph{padding:14px 0 28px}.dx-ph-main{grid-template-columns:minmax(0,1fr);min-height:0}.dx-ph-main .tx{padding:26px 18px 22px}.dx-ph-img,.dx-ph-img.ph{display:none}.dx-ph-ex:has(img){flex-wrap:nowrap}.dx-ph-ex img{flex:1 1 0;height:auto;width:100%;max-height:40px}
  .dx-ph-box,.dx-ph-pr{min-width:0;width:100%}.dx-ph-ex{flex-wrap:wrap;width:100%}.dx-ph-main .tx{gap:12px}.dx-ph-h{margin-top:8px}}
 /* tarifas con pestañas */
 .dx-pt-n{display:flex;justify-content:center;gap:4px;margin:0 auto 26px;background:#fff;border-radius:999px;padding:4px;width:max-content;max-width:100%;overflow-x:auto;scrollbar-width:none}
@@ -162,7 +180,7 @@ function ncEscCSS(){return `
 /* extras */
 html body .dx-ad.dx-ad.dx-ad{background:#252525!important;background-image:none!important;color:#fff;--bink:#fff;--bmuted:rgba(255,255,255,.75);--dline:rgba(255,255,255,.18)}html body .dx-ad .da-h2,html body .dx-ad .da-muted{color:#fff!important;-webkit-text-fill-color:#fff}
 .dx-ad-l{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.dx-ad-c{background:#000;border-radius:var(--cardr,12px);padding:34px 28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;text-align:center}
-.dx-ad-c .nm img{max-height:90px;max-width:100%;object-fit:contain}.dx-ad-c h3{font:800 clamp(22px,2.2vw,30px)/1.15 var(--fhead);margin:0;color:#fff}
+.dx-ad-c .nm{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}.dx-ad-c .nm img{max-height:110px;max-width:100%;object-fit:contain}.dx-ad-c h3{font:800 clamp(22px,2.2vw,30px)/1.15 var(--fhead);margin:0;color:#fff}.dx-ad-c h3 em{font-style:normal;color:var(--hl,var(--ba))}.dx-ad-c h3 .lt,.dx-pt-c h3 .lt{font-weight:500}.dx-ad-c.w .nm{justify-content:flex-start}.dx-ad-c.w .nm img{max-height:34px}.dx-ad-c.w h3{font-size:clamp(18px,1.7vw,24px)}.dx-ad-c.w h3 small{font-weight:500}
 .dx-ad-c .ft{display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap}.dx-ad-c .pr{text-align:left;font-size:18px;line-height:1.25}.dx-ad-c .pr small{display:block;font-size:18px}.dx-ad-c .pr b{font-weight:800}
 .dx-ad-c.w{grid-column:1/-1;flex-direction:row;justify-content:space-between;padding:22px 28px;text-align:left}
 @media (max-width:767px){.dx-ad-l{grid-template-columns:1fr}.dx-ad-c.w{flex-direction:column;text-align:center}}
@@ -170,8 +188,8 @@ html body .dx-ad.dx-ad.dx-ad{background:#252525!important;background-image:none!
 .dx-ct-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.dx-ct-g.im{grid-template-columns:repeat(4,minmax(0,1fr))}
 .dx-ct-g .ph-img{grid-row:span 2;width:100%;height:100%;max-height:520px;object-fit:contain;object-position:bottom center;align-self:end}.dx-ct-g.t5 .it:nth-of-type(1){grid-column-start:3}
 .dx-ct-g .it{border-radius:var(--cardr,8px);padding:20px 18px;font-weight:700;font-size:15.5px;line-height:1.35;display:flex;flex-direction:column;gap:14px;min-height:150px}.dx-ct-g .it p{margin:0}
-.dx-ct-g .ic{font-size:24px;line-height:1}.dx-ct-g .tn-brand{background:var(--bp);color:var(--btntext,#000)}.dx-ct-g .tn-accent{background:var(--ba);color:#fff}.dx-ct-g .tn-ink{background:#000;color:#fff}.dx-ct-g .tn-soft{background:#d9d9d9;color:#000}.dx-ct-g .tn-white{background:#fff;color:#000}.dx-ct-g .tn-c{background:var(--tc);color:#000}
-@media (max-width:991px){.dx-ct-g,.dx-ct-g.im{grid-template-columns:repeat(2,minmax(0,1fr))}.dx-ct-g .ph-img{grid-column:1/-1;grid-row:auto;max-height:260px}.dx-ct-g.t5 .it:nth-of-type(1){grid-column-start:auto}}
+.dx-ct-g .ic{font-size:24px;line-height:1}.dx-ct-g .ic img{height:26px;width:auto}.dx-ct-g .tn-ink .ic img,.dx-ct-g .tn-accent .ic img{filter:none}.dx-ct-g .tn-brand{background:var(--bp);color:var(--btntext,#000)}.dx-ct-g .tn-accent{background:var(--ba);color:#fff}.dx-ct-g .tn-ink{background:#000;color:#fff}.dx-ct-g .tn-soft{background:#d9d9d9;color:#000}.dx-ct-g .tn-white{background:#fff;color:#000}.dx-ct-g .tn-c{background:var(--tc);color:#000}
+@media (max-width:991px){.dx-ct-g,.dx-ct-g.im{grid-template-columns:repeat(2,minmax(0,1fr))}.dx-ct-g .ph-img{display:none}.dx-ct-g.t5 .it:nth-of-type(1){grid-column-start:auto}}
 @media (max-width:575px){.dx-ct-g,.dx-ct-g.im{grid-template-columns:1fr}.dx-ct-g .it{min-height:0}}
 /* barra fija */
 body:has(.dx-ib){padding-bottom:64px}
@@ -182,10 +200,19 @@ body:has(.dx-ib){padding-bottom:64px}
 .dx-ib-pill a{display:flex;align-items:center;gap:7px;color:#fff;text-decoration:none;font-size:11.5px;font-weight:600;text-transform:uppercase;line-height:1.1;padding:4px 8px;max-width:150px;overflow-wrap:anywhere;min-width:0}.dx-ib-pill .nci{font-size:20px;flex:0 0 auto}.dx-ib-pill .wa .nci{color:#25D366}.dx-ib-pill .cl .nci{color:var(--ba)}
 @media (max-width:767px){.dx-ib{padding:8px 0}.dx-ib .container{gap:8px}.dx-ib .l span,.dx-ib .r .t,.dx-ib .sep{display:none}.dx-ib .l{border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:8px 12px}.dx-ib .r{flex:1}.dx-ib .r .da-btn{width:100%;justify-content:center}
  .dx-ib-pill{bottom:70px;right:10px}.dx-ib-pill a span{display:none}body:has(.dx-ib){padding-bottom:60px}}
-@media print{.dx-ib,.dx-ib-pill{display:none}}`;}
+.dx-ib-side{position:fixed;right:0;top:62%;z-index:1029;display:flex;align-items:center;gap:6px;background:var(--bp);color:var(--btntext,#000);font-weight:800;font-size:13px;padding:10px 12px;border-radius:8px 0 0 8px;text-decoration:none;box-shadow:0 6px 18px -8px rgba(0,0,0,.35)}.dx-ib-side:hover{color:var(--btntext,#000);padding-right:16px}
+@media (max-width:767px){.dx-ib-side{display:none}}
+@media print{.dx-ib,.dx-ib-pill,.dx-ib-side{display:none}}
+/* cobertura con pestañas */
+.dx-cv{background:#fff}.dx-cv-h{display:flex;align-items:center;justify-content:center;gap:22px;margin-bottom:34px;text-align:left}.dx-cv-h .nci,.dx-cv-h img{font-size:46px;color:var(--ba);height:46px;width:auto;flex:0 0 auto}.dx-cv-h h2{margin:0}
+.dx-cv-w{max-width:420px;margin:0 auto}.dx-cv-n{display:flex;justify-content:center;border-bottom:1px solid #ddd;margin-bottom:26px}
+.dx-cv-n button{flex:1;border:0;background:none;padding:10px 8px;font-weight:700;font-size:14px;line-height:1.2;color:#000;border-bottom:3px solid transparent;margin-bottom:-1px;cursor:pointer;white-space:pre-line}.dx-cv-n button[aria-selected="true"]{border-color:var(--bp)}
+.dx-cv-p .form-control{border:1.5px solid #000;border-radius:6px;min-height:44px;margin-bottom:10px}.dx-cv-p .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dx-cv-p .da-btn{width:100%;justify-content:center;min-height:48px}
+.dx-cv-call{text-align:center}.dx-cv-call .da-btn{font-size:18px}.dx-cv-call p{margin:12px 0 0;font-size:14.5px;color:var(--bmuted)}
+@media (max-width:575px){.dx-cv-h{flex-direction:column;gap:10px;text-align:center}}`;}
 (function(){const _bd=buildDoc;buildDoc=function(forExport){let h=_bd.apply(this,arguments);const used=state.sections.some(s=>!s.hidden&&NC_ESC_TYPES.test(s.type));if(forExport&&!used)return h;
   h=h.replace("</head>",`<style>${ncEscCSS()}</style></head>`);
-  if(used&&state.sections.some(s=>!s.hidden&&s.type==="dx_plantabs")&&h.indexOf("document.querySelectorAll('[data-tabs]')")<0)h=h.replace(/<\/body>(?![\s\S]*<\/body>)/,`<script>${NC_WEB_JS}<\/script></body>`);
+  if(used&&state.sections.some(s=>!s.hidden&&/^dx_(plantabs|covtabs)$/.test(s.type))&&h.indexOf("document.querySelectorAll('[data-tabs]')")<0)h=h.replace(/<\/body>(?![\s\S]*<\/body>)/,`<script>${NC_WEB_JS}<\/script></body>`);
   return h;};})();
 
 /* ===== Estilo «Escaparate» ===== */
@@ -199,7 +226,7 @@ document.addEventListener("DOMContentLoaded",()=>{if(typeof FX_BY_LOOK!=="undefi
 const ESC_CHEV=`url("data:image/svg+xml,${encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='m5 9 7 7 7-7'/></svg>")}")`;
 LOOK_CSS.escaparate=o=>`
 &{--lkp:#f3f3f3;--lkc:#fff;--visr:12px;--mkr:12px;background:var(--lkp)}
-${lkS('sec')},& .dx-cov,& .dx-dv,& .dx-pt,& .dx-ct{background:var(--lkp)}& .da-sec.soft,& .db-sec.soft,& .dx-cov{background:#fff!important}
+${lkS('sec')},& .dx-cov,& .dx-dv,& .dx-pt,& .dx-ct{background:var(--lkp)}& .da-sec.soft,& .db-sec.soft,& .dx-cov,& .dx-cv{background:#fff!important}
 ${lkS('h1')},${lkS('h2')}{font-weight:800!important;letter-spacing:-.015em}${lkS('h2')}{font-size:clamp(27px,2.9vw,40px)}
 ${lkS('mark')}{background:none!important;color:var(--ba)!important;-webkit-text-fill-color:currentColor;padding:0}
 ${lkS('kick')}{background:#000;color:#fff;border-radius:6px;padding:5px 9px;font-size:12px;font-weight:800;letter-spacing:0;text-transform:none;border:0}
@@ -220,10 +247,11 @@ ${lkS('card')},& .dx-tile,& .accordion-item{border-radius:var(--cardr,12px)!impo
 & .dx-fc .ct a[href^="tel:"]{color:var(--ba);font:800 clamp(22px,2.4vw,32px)/1.1 var(--fhead)}& .dx-fc{padding-bottom:0}& .dx-fc .bt{background:#000;box-shadow:0 0 0 100vmax #000;clip-path:inset(0 -100vmax);border-top:0;padding:18px 0;margin-top:42px;justify-content:center;flex-direction:column;align-items:center;text-align:center}
 & .dx-cov .da-card{border:0;background:#fff}& .dx-covf .form-control{border:1.5px solid #000;border-radius:6px}& .dx-covf .da-btn,& .dx-cov .da-go{background:var(--ba)!important;color:#fff!important;border-color:var(--ba)!important}
 & .dx-tabs-n:not(.st-line){background:#fff;border-radius:999px;padding:4px;width:max-content;max-width:100%;margin-left:auto;margin-right:auto}& .dx-tabs-n:not(.st-line) button{border:0}& .dx-tabs-n button[aria-selected="true"]{background:#000;color:#fff}
-& .da-sticky,& .db-sticky,& .dc-sticky{background:#000}`;
+& .da-sticky,& .db-sticky,& .dc-sticky{background:#000}
+& .da-nav img.logo,& .db-nav img.logo{height:46px!important}& .dx-fc .lg{height:52px}`;
 
 /* ===== Plantilla ===== */
-(function(){const N="Cliente · Jazztel 2026 (distribuidor)";TEMPLATE_BRAND[N]="c_jazztel26";
+(function(){const N="Cliente · Jazztel 2026 (distribuidor)";TEMPLATE_BRAND[N]="c_jazztel26";TEMPLATE_LOOK[N]="escaparate";
   v4Tpl(N,{group:"Cliente",client:"Jazztel",look:"escaparate",sector:"Telco",dir:"A",canal:"form",desc:"Estructura de desarrollo.mijazztel.com con la marca Jazztel 2026 y el estilo Escaparate: hero promo con formulario lateral, tarifas por pestañas, dispositivos, extras de TV, cobertura, ventajas en mosaico, FAQ, pie y barra fija. Todo el copy, precios, logos y fotos son placeholders."},[
   {type:"da_nav",props:{logo:"{{LOGO}}",telLabel:"{{TEXTO_TELEFONO}}",links:"{{MENU_1}}>#tarifas|{{MENU_2}}>#tarifas|{{MENU_3}}>#tarifas|{{MENU_4}}>#tv|{{MENU_5}}>#moviles"}},
   {type:"da_topbar",props:{text:"{{PROMO_BARRA}}",bold:"{{PROMO_DESTACADO}}",ico:""}},
@@ -233,3 +261,46 @@ ${lkS('card')},& .dx-tile,& .accordion-item{border-radius:var(--cardr,12px)!impo
   {type:"da_faq",props:{title:"{{TITULO_FAQ}}",items:[1,2,3,4,5,6].map(i=>`{{PREGUNTA_${i}}}|{{RESPUESTA_${i}}}`).join("\n")}},
   {type:"dx_footcols",props:{logo:"{{LOGO}}",about:"{{TEXTO_BAJO_LOGO}}",cols:"{{TITULO_MENU}}|{{MENU_1}}>#tarifas,{{MENU_2}}>#tarifas,{{MENU_3}}>#tarifas,{{MENU_4}}>#tv,{{MENU_5}}>#moviles",contact:"si",company:"{{RAZON_SOCIAL}}",note:""}},
   {type:"dx_infobar"}]);})();
+/* ===== Plantilla literal de desarrollo.mijazztel.com (octubre 2026) =====
+   Textos, precios, teléfono y WhatsApp tal cual aparecen en la web; las imágenes se enlazan desde la propia web
+   (si cambian de ruta, se sustituyen desde el campo de imagen). Todo es editable. */
+(function(){const N="Cliente · Jazztel 2026 · web literal",J="https://desarrollo.mijazztel.com/assets/images/";TEMPLATE_BRAND[N]="c_jazztel26";
+  TEMPLATE_SETTINGS[N]={tel:"91 924 80 83",wa:"34645601420"};TEMPLATE_LOOK[N]="escaparate";
+  const PLAN={tag:"Fibra + Móvil",name:"Fibra *600Mb* + Fijo + 1 línea 5G 50GB",feats:"Solo pagas por lo que hablas",band:"Añade Fibra segunda vivienda por solo 14,95€",badge:"-6€ mes",price:"39,95",unit:"€/mes",note:"Precio definitivo",cta:"Ver tarifa"};
+  const FAQ=[
+    ["¿Qué es Jazztel?","Jazztel es un operador de telecomunicaciones español que ofrece servicios de fibra óptica, telefonía móvil, teléfono fijo y televisión. La compañía apuesta por ofrecer Internet de alta velocidad con precios competitivos y atención cercana al cliente."],
+    ["¿Qué servicios ofrece Jazztel?","Jazztel ofrece diferentes servicios de telecomunicaciones, entre ellos: ¶ · Internet por fibra óptica ¶ · Telefonía móvil ¶ · Teléfono fijo ¶ · Televisión con canales y contenido bajo demanda ¶ Estos servicios pueden contratarse por separado o combinados en paquetes adaptados a cada usuario."],
+    ["¿Qué velocidad de fibra ofrece Jazztel?","Jazztel ofrece conexiones de fibra óptica de alta velocidad, con opciones que pueden llegar hasta 800 Mb o 1 Gb, dependiendo de la tarifa contratada y la cobertura disponible."],
+    ["¿Dónde está disponible Jazztel?","Jazztel opera principalmente en varias regiones de España, como: ¶ · Castilla-La Mancha ¶ · Castilla y León ¶ · Extremadura ¶ · Comunidad de Madrid ¶ · Galicia ¶ La compañía se centra especialmente en llevar conectividad a municipios pequeños y zonas rurales."],
+    ["¿Tiene permanencia contratar Jazztel?","Algunas tarifas pueden incluir compromiso de permanencia (por ejemplo, 12 meses), especialmente cuando se aplican promociones o descuentos en el servicio."],
+    ["¿Qué incluye la televisión de Jazztel?","El servicio de TV de Jazztel puede incluir: ¶ · Más de 120 canales ¶ · Contenido bajo demanda con películas ¶ · Paquetes de fútbol en diferentes niveles ¶ Los paquetes de TV se pueden añadir a la fibra como servicio adicional."],
+    ["¿Cómo puedo contactar con Jazztel?","Puedes contactar con el servicio de atención al cliente de Jazztel a través de: ¶ · Teléfono: 900 899 110 ¶ · Tiendas físicas ¶ · Redes sociales ¶ El equipo de soporte puede ayudarte con contrataciones, incidencias o dudas sobre tus servicios."],
+    ["¿Qué hacer si tengo problemas con la conexión a Internet?","Si experimentas problemas con tu conexión, se recomienda: ¶ 1. Apagar el router. ¶ 2. Esperar unos minutos. ¶ 3. Volver a encenderlo y comprobar la conexión. ¶ Si el problema continúa, puedes contactar con el servicio técnico de Jazztel."],
+    ["¿Existe una app de Jazztel?","Sí. Jazztel dispone de una aplicación móvil desde la que puedes: ¶ · Consultar facturas ¶ · Ver tu consumo ¶ · Gestionar tus servicios ¶ · Acceder a contenidos de televisión"],
+    ["¿Qué diferencia a Jazztel de otros operadores?","Jazztel destaca por: ¶ · Precios competitivos ¶ · Cobertura en zonas rurales ¶ · Atención al cliente cercana ¶ · Opciones flexibles para personalizar los servicios contratados."]];
+  const MENU="Fibra y Móvil>#tarifas|Fibra>#tarifas|Tarifas Móvil>#tarifas|TV>#tv|Dispositivos>#moviles";
+  v4Tpl(N,{group:"Cliente",client:"Jazztel",look:"escaparate",sector:"Telco",dir:"A",canal:"form",desc:"Réplica de desarrollo.mijazztel.com con sus textos, precios, teléfono (91 924 80 83) y WhatsApp; imágenes enlazadas desde la web. Todo editable: textos en cada bloque, colores en la marca y en Estilo de cada sección."},[
+  {type:"da_nav",props:{logo:"Jazztel · Distribuidor Autorizado",logoImg:J+"logos/logo-positive.svg",telLabel:"Llama GRATIS",links:MENU}},
+  {type:"da_topbar",props:{text:"Añade Fibra segunda vivienda por solo 14,95€.",bold:"¡Últimos Días!",ico:""}},
+  {type:"dx_promohero",props:{tag:"Fibra + Móvil",headline:"Cuando buscas",highlight:"calidad",box1:"Fibra",box2:"Móvil",sub1:"600Mb",sub2:"50GB",price:"39,95",unit:"€/mes",priceTag:"Precio definitivo",cta:"",act:"popup",
+    extra:"Añade Jazztel TV con Prime y HBO Max",extraImg:J+"img-badge-hero-jazzteltv.webp",extraBtn:"Ver oferta",img:J+"img-hero-1.webp",imgAlt:"",
+    formTitle:"Descubre tu mejor tarifa",formSub:"¿Qué estás buscando?",opts:"Fibra|Móvil*|TV",formBtn:"Ver tarifa",promoTag:"OFERTA con packs Fibra + Móvil",promoText:"",promoImg:J+"banners/banner-promo-terminal.webp"}},
+  {type:"dx_plantabs",props:{anchor:"tarifas",title:"Elige tu tarifa favorita",sub:"",act:"popup",plans:[Object.assign({cat:"Fibra y Móvil"},PLAN),Object.assign({cat:"Fibra"},PLAN),Object.assign({cat:"Tarifas Móvil"},PLAN)]}},
+  {type:"dx_devices",props:{anchor:"moviles",title:"Añade un móvil a un precio genial",sub:"",act:"popup",btn:"Ver todos los dispositivos",btnUrl:"",items:[
+    {name:"Oppo A5 128 GB 5G",img:J+"terminales/terminal-oppo-a5-5g.webp",price:"3",unit:"€/mes",term:"48 meses",cta:"Más info",url:""},
+    {name:"Xiaomi Redmi 15 5G 256 GB",img:J+"terminales/terminal-xiaomi-redmi-15c.webp",price:"2",unit:"€/mes",term:"48 meses",cta:"Más info",url:""},
+    {name:"Motorola moto g86 5G 256 GB",img:J+"terminales/terminal-motorola-moto-g86.webp",price:"3",unit:"€/mes",term:"48 meses",cta:"Más info",url:""}]}},
+  {type:"dx_addons",props:{anchor:"tv",title:"Añade a tu tarifa televisión",sub:"",act:"popup",items:[
+    {title:"JazztelTV + Netflix",img:J+"img-tvcards-01.webp",pre:"Por solo",price:"6,99€",unit:"/mes",cta:"Ver detalles",wide:"",hl:""},
+    {title:"JazztelTV + Prime + HBO",img:J+"img-tvcards-02.webp",pre:"Por solo",price:"9,99€",unit:"/mes",cta:"Ver detalles",wide:"",hl:""},
+    {title:"Orange TV *Libre* _con Fútbol, cine, series, y_",img:J+"img-tvcards-skyshowtime.webp",pre:"Por solo",price:"7,99€",unit:"/mes",cta:"Ver detalles",wide:"si",hl:"#FF6600"}]}},
+  {type:"dx_covtabs",props:{anchor:"cobertura",title:"Elige cómo comprobar tu cobertura de fibra",icon:J+"icons/icon-cobertura.svg",t1:"Por Número|de Teléfono",t2:"Por mi|Dirección",t3:"Llamando|GRATIS",btn:"Comprobar cobertura",callBtn:"Llamar al",callText:"Teléfono gratuito de información, comprobamos tu cobertura de fibra Jazztel al instante"}},
+  {type:"dx_colortiles",props:{title:"Tarifas pensadas para ti",img:J+"img-ventajas.webp",imgAlt:"",items:[
+    J+"icons/icon-ventajas-02.svg|Los precios de nuestras tarifas de Fibra y Fibra + Móvil son definitivos, no son precios promocionales.|accent",
+    J+"icons/icon-ventajas-04.svg|Navega a la máxima velocidad sin interrupciones. Elige la tarifa que más se adapte a ti.|#CCCCCC",
+    J+"icons/icon-ventajas-01.svg|Tenemos mejoras constantes, y las disfrutan primero nuestros clientes, no solo los nuevos.|ink",
+    J+"icons/icon-ventajas-03.svg|Porque siempre, los 7 días de la semana las 24 horas, estamos para atenderte ante cualquier problema que te pueda surgir en tu servicio.|#02DAC0",
+    J+"icons/icon-ventajas-05.svg|Fibra de máxima calidad de hasta 1Gb para una navegación sin interrupciones.\\n\\nFibra simétrica con la misma velocidad de bajada que de subida, perfecta para teletrabajar, ver series y descargar contenido.|brand"].join("\n")}},
+  {type:"da_faq",props:{title:"Resolvemos todas tus dudas",variant:"accordion",items:FAQ.map(f=>f[0]+"|"+f[1]).join("\n")}},
+  {type:"dx_footcols",props:{logo:"Jazztel · Distribuidor Autorizado",logoImg:J+"logos/logo-positive.svg",about:"",cols:"|"+MENU.split("|").join(","),contact:"si",contactTitle:"Llámanos gratis",email:"",address:"",social:"",company:"ADSL House S.L. - Distribuidor Oficial Jazztel.",note:""}},
+  {type:"dx_infobar",props:{left:"Consulta tu cobertura de fibra *aquí*",leftHref:"#cobertura",right:"¿Tienes dudas? *Te asesoramos GRATIS*",btn:"Contáctanos",act:"popup",pill:"si",pillWa:"Escríbenos por WhatsApp",pillCall:"Te llamamos sin compromiso",side:"Volver a ofertas",sideHref:"#tarifas"}}]);})();

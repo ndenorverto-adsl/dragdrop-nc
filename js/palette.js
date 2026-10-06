@@ -5,7 +5,7 @@
    · Filtros de sector y canal: el bloque entra ya con el copy de ese sector y con ese canal como principal. */
 const PAL_GOALS=[
   ["top","Cabecera y hero","Lo primero que se ve: navegación, barra de oferta y hero.",/^(d[abc]_(nav|topbar|hero)|dx_(subnav|product|promohero)|topbar|navbar|hero_\w+)$/],
-  ["lead","Captar el lead","Formularios, CTAs, quiz y canales directos.",/(_cta|form|form2|quiz|leadmag|exit|_wa|thanks|^cal\w*|coverage|callback|booking)$/],
+  ["lead","Captar el lead","Formularios, CTAs, quiz y canales directos.",/(_cta|form|form2|quiz|leadmag|exit|_wa|thanks|^cal\w*|coverage|covtabs|callback|booking)$/],
   ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|pricing|calc|countdown|ptab|comparison|_vs|offer|finder|bundle|plantabs|devices|addons)$/],
   ["trust","Confianza y prueba","Cifras, sellos, opiniones, garantías y quién te atiende.",/(trust|seals|reviews|rating|logos|logowall|guarantee|_pro|letter|stats|testimonials|security|counters|marquee|area|vtestis)$/],
   ["explain","Explicar y resolver dudas","Ventajas, pasos, imagen + texto, bento y preguntas.",/(benefits|steps|story|media|_text|tiles|colortiles|article|compare|features|imagetext|gallery|video|richtext|faq)$/],
@@ -30,6 +30,7 @@ function palThumb(t){const P="var(--acc,#7c6cff)",L="currentColor";const r=(x,y,
   else if(/dx_devices/.test(t))s=[3,21,39].map(x=>r(x,5,14,5,P,.9)+r(x,10,14,18,L,.2)+r(x+1,13,6,6,L,.5)+r(x+1,24,12,3,L,.6)).join("");
   else if(/dx_addons/.test(t))s=r(0,2,56,30,L,.55)+r(4,6,23,12,L,.8)+r(29,6,23,12,L,.8)+r(4,20,48,9,L,.8)+r(40,23,9,3,P,.95);
   else if(/dx_colortiles/.test(t))s=r(3,6,11,24,L,.25)+r(30,6,11,11,P,.6)+r(43,6,11,11,L,.3)+r(17,19,11,11,L,.7)+r(30,19,11,11,"#02DAC0",.8)+r(43,19,11,11,P,.9);
+  else if(/dx_covtabs/.test(t))s=`<circle cx="12" cy="8" r="4" fill="${P}" opacity=".9"/>`+r(19,6,30,4)+[14,24,34].map((x,i)=>r(x,14,9,3,i?L:P,i?.3:.9)).join("")+r(14,20,29,5,L,.25)+r(14,27,29,5,P,.9);
   else if(/dx_infobar/.test(t))s=r(0,24,56,10,L,.75)+r(4,27,20,4,P,.6)+r(38,26,14,6,P,.95)+`<circle cx="48" cy="16" r="4" fill="#25D366" opacity=".9"/>`;
   else if(/dx_spacer/.test(t))s=r(3,16,50,2,L,.5)+`<circle cx="28" cy="17" r="3" fill="${P}" opacity=".9"/>`;
   else if(/dx_iconlist/.test(t))s=[5,14,23].map(y=>`<circle cx="7" cy="${y+3}" r="3" fill="${P}" opacity=".85"/>`+r(13,y+1,30,4,L,.3)).join("");

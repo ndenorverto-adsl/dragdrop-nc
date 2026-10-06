@@ -1,9 +1,9 @@
 # Changelog
 
-## v4.8 — 2026-10-06 · Estilo «Escaparate», marca Jazztel 2026 y plantilla de distribuidor
+## v4.8 — 2026-10-06 · Estilo «Escaparate», marca Jazztel 2026 y plantillas Jazztel (literal y con placeholders)
 - **Marca «Jazztel 2026»** (Clientes NC), sacada de desarrollo.mijazztel.com: amarillo #FFCD00 (botones con texto negro), magenta #DA1884 de acento, negro y gris #F3F3F3; Gotham → **Montserrat**; botones de 8 px. La marca «Jazztel» anterior (verde) se mantiene para las landings que ya la usan.
 - **Estilo «Escaparate»** (categoría nueva «Retail y telco», 33 estilos): bloques planos de color sobre gris claro, titulares en negro muy grueso, pestañas píldora, tarjetas con borde negro, barra superior de acento que se desplaza en escritorio, menú en negrita con el teléfono en bloque gris, FAQ en filas blancas con flecha de acento y pie gris con barra legal negra. Toma los colores de cualquier marca y funciona con todas las plantillas.
-- **6 bloques nuevos**:
+- **7 bloques nuevos**:
   - **Hero promo + formulario lateral**: tarjeta de color con etiqueta, titular con parte destacada, caja de producto, precio grande con decimales volados y etiqueta negra, banda blanca con botón y hueco para foto recortada; a la derecha, formulario negro con opciones y tarjeta promo.
   - **Tarifas con pestañas**: pestañas píldora agrupadas por el campo «Pestaña», tarjetas con borde, etiqueta, círculo de descuento, banda gris y precio grande.
   - **Dispositivos con cuota**: cabecera de color, cuota en bloque de acento, plazo y foto; carrusel deslizable en móvil.
@@ -12,7 +12,10 @@
   - **Barra fija de contacto** abajo (cobertura + «¿Tienes dudas?» + botón) con botón flotante WhatsApp / Te llamamos; en móvil queda compacta.
   - Anclas para el menú (#tarifas, #moviles, #tv) y el bloque de cobertura gana `#cobertura`.
 - **Plantilla «Cliente · Jazztel 2026 (distribuidor)»**: la estructura de la web nueva con la marca y el estilo cargados. **Todo el copy, precios, logos y fotos son `{{PLACEHOLDER}}` o huecos para subir**; los logos de plataformas de TV no se incluyen (súbelos solo si tenéis permiso).
-- Comprobado: plantilla × 33 estilos × móvil/escritorio sin desbordes ni errores, las 150 plantillas con el estilo Escaparate sin desbordes, pestañas y anclas funcionando, HTML válido y `npm test` OK.
+- **Plantilla «Cliente · Jazztel 2026 · web literal»** (151): réplica de desarrollo.mijazztel.com con sus **textos, precios, teléfono (91 924 80 83) y WhatsApp (34 645 601 420)**, las 10 FAQ con sus respuestas y las **imágenes enlazadas desde la propia web** (logo, presentador, banner de terminales, móviles, tarjetas de TV, iconos). Al cargarla aplica la marca Jazztel 2026 y el estilo Escaparate, y rellena teléfono y WhatsApp solo si estaban vacíos. Todo editable: textos en cada bloque, colores en la marca (o «Marca propia») y en Estilo de cada sección.
+- **Cobertura con pestañas** (bloque nuevo): «Por número de teléfono», «Por mi dirección» (teléfono, calle, número y código postal) y «Llamando gratis» (botón con el teléfono global); cada formulario llega con su `origen`.
+- **Barra fija**: pestaña lateral opcional («Volver a ofertas»). **Hero promo**: imagen en la banda blanca y banner completo en la tarjeta promo. **Extras**: nombre + logo en las tarjetas anchas, `*parte*` en color propio y `_parte_` en fino. **Mosaico**: iconos como imagen (URL). **Pie con columnas**: título de la columna de contacto editable. **FAQ**: « ¶ » dentro de una respuesta = salto de línea.
+- Comprobado: las 2 plantillas Jazztel × 33 estilos × móvil/escritorio sin desbordes ni errores, las 150 plantillas con el estilo Escaparate sin desbordes, pestañas (tarifas y cobertura), anclas, teléfono y WhatsApp funcionando, HTML válido y `npm test` OK.
 
 ## v4.7 — 2026-10-05 · Elementos de diseño web y efectos por sección
 - **Nuevo grupo «Elementos de diseño web»** en el panel izquierdo (17 bloques, con miniatura y vista previa al pasar el ratón):

@@ -29,6 +29,7 @@ const PROPS = process.env.SHOTS_PROPS ? JSON.parse(fs.readFileSync(process.env.S
           const all = ws.filter(x => fs.existsSync(path.join(FS, d, x + '.css'))).map(x => `@import url(https://fontfiles.test/${d}/${x}.css);`);
           ws.forEach(x => { if (fs.existsSync(path.join(FS, d, x + '-italic.css'))) all.push(`@import url(https://fontfiles.test/${d}/${x}-italic.css);`); }); return all; }).join('\n');
         return r.fulfill({ body: css, contentType: 'text/css' }); }
+      if (process.env.SHOTS_STANDIN) { const bn = decodeURIComponent(u.split('?')[0].split('/').pop()); const f = path.join(process.env.SHOTS_STANDIN, bn.replace(/\.webp$/, '.png')); if (fs.existsSync(f)) return r.fulfill({ body: fs.readFileSync(f), contentType: f.endsWith('.svg') ? 'image/svg+xml' : 'image/png' }); } // solo pruebas: imágenes sustitutas
       if (/images\.unsplash\.com/.test(u) && PHOTO) return r.fulfill({ body: PHOTO, contentType: 'image/jpeg' });
       if (/bootstrap.*\.css/.test(u)) return r.fulfill({ body: fs.readFileSync(BS + '/css/bootstrap.min.css'), contentType: 'text/css' });
       if (/bootstrap.*\.js/.test(u)) return r.fulfill({ body: fs.readFileSync(BS + '/js/bootstrap.bundle.min.js'), contentType: 'application/javascript' });
