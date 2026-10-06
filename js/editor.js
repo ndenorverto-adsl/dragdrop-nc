@@ -144,6 +144,10 @@ function renderGlobal(){
     <div class="fld inline"><label>Color de acento</label><input type="color" data-ct="ba" value="${CUSTOM.ba}"></div>
     <div class="fld inline"><label>Color de texto</label><input type="color" data-ct="ink" value="${CUSTOM.ink}"></div>
     <div class="fld inline"><label>Fondo suave</label><input type="color" data-ct="soft" value="${CUSTOM.soft}"></div>
+    <div class="fld inline"><label>Texto secundario</label><input type="color" data-ct="muted" value="${CUSTOM.muted||"#5b6573"}"></div>
+    <div class="fld inline"><label>Texto de los botones</label><input type="color" data-ct="btntext" value="${CUSTOM.btntext||"#ffffff"}"></div>
+    <div class="fld inline"><label>Líneas y bordes</label><input type="color" data-ct="line" value="${CUSTOM.line||"#e2e8f0"}"></div>
+    <div class="fld inline"><label>Color oscuro de base</label><input type="color" data-ct="ink0" value="${/^#[0-9a-f]{6}$/i.test(CUSTOM.ink0||"")?CUSTOM.ink0:(CUSTOM.ink||"#0f172a")}"></div>
     <div class="row2"><div class="fld"><label>Fuente títulos</label><select data-ct="fhead">${FONTS.map(f=>`<option ${f===CUSTOM.fhead?'selected':''}>${f}</option>`).join("")}</select></div>
     <div class="fld"><label>Fuente texto</label><select data-ct="fbody">${FONTS.map(f=>`<option ${f===CUSTOM.fbody?'selected':''}>${f}</option>`).join("")}</select></div></div>
     <div class="fld inline"><label>Radio botón (${CUSTOM.btnr}px)</label><input type="range" min="0" max="40" data-ct="btnr" value="${CUSTOM.btnr}"></div>
@@ -212,6 +216,9 @@ function renderGlobal(){
   const dup=document.getElementById("dupBrand");if(dup)dup.addEventListener('click',()=>{const cur=BRANDS[state.settings.brand];
     const g=(k,d)=>{const m=cur.vars.match(new RegExp("--"+k+":([^;]+)"));return m?m[1].trim():d;};
     CUSTOM.bp=g("bp","#2563EB");CUSTOM.ba=g("ba","#10B981");CUSTOM.ink=g("bink","#0f172a");CUSTOM.soft=g("bsoft","#f1f5f9");
+    const hx=(v,d)=>/^#[0-9a-f]{6}$/i.test(v||"")?v:d,px=(v,d)=>{const n=parseFloat(v);return isNaN(n)?d:(/rem$/.test(String(v).trim())?40:Math.min(40,Math.round(n)));};
+    CUSTOM.muted=hx(g("bmuted"),"#5b6573");CUSTOM.line=hx(g("line"),"#e2e8f0");CUSTOM.btntext=hx(g("btntext"),"#ffffff");CUSTOM.ink0=hx(g("ink0"),"");
+    CUSTOM.btnr=px(g("btnr"),CUSTOM.btnr);CUSTOM.cardr=Math.min(30,px(String(g("cardr","14px")).split(/\s+/).filter(x=>parseFloat(x)>0)[0]||"0",CUSTOM.cardr));
     CUSTOM.fhead=(cur.fhead.match(/'([^']+)'/)||[])[1]||"Inter";CUSTOM.fbody=(cur.fbody.match(/'([^']+)'/)||[])[1]||"Inter";
     syncCustom();commit();state.settings.brand="custom";document.getElementById("brandTop").value="custom";renderPreview();renderRight();toast("Copiado a marca editable");});
   gf.querySelectorAll('[data-ct]').forEach(inp=>{const ev=(inp.type==="range"||inp.type==="color")?'input':'change';

@@ -198,10 +198,10 @@ h1,.display-4,.display-5{font-weight:800;letter-spacing:-.02em}`},
     fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
     note:"alarmafacil.es · rojo #FF0033 + teal #00A89D · botón pill."}
 };
-const CUSTOM={bp:"#2563EB",ba:"#10B981",ink:"#0f172a",soft:"#f1f5f9",btnr:10,cardr:14,fhead:"Inter",fbody:"Inter"};
+const CUSTOM={bp:"#2563EB",ba:"#10B981",ink:"#0f172a",soft:"#f1f5f9",muted:"#5b6573",line:"#e2e8f0",btntext:"#ffffff",ink0:"",btnr:10,cardr:14,fhead:"Inter",fbody:"Inter"};
 function syncCustom(){
   const shade=(h,f)=>{h=h.replace('#','');const n=parseInt(h,16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;r=Math.round(r*f);g=Math.round(g*f);b=Math.round(b*f);return"#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);};
-  BRANDS.custom.vars=`--bp:${CUSTOM.bp};--bp2:${shade(CUSTOM.bp,.82)};--ba:${CUSTOM.ba};--bink:${CUSTOM.ink};--bmuted:#5b6573;--bsoft:${CUSTOM.soft};--line:#e2e8f0;--btnr:${CUSTOM.btnr}px;--cardr:${CUSTOM.cardr}px;`;
+  BRANDS.custom.vars=`--bp:${CUSTOM.bp};--bp2:${shade(CUSTOM.bp,.82)};--ba:${CUSTOM.ba};--bink:${CUSTOM.ink};--bmuted:${CUSTOM.muted||"#5b6573"};--bsoft:${CUSTOM.soft};--line:${CUSTOM.line||"#e2e8f0"};--btnr:${CUSTOM.btnr}px;--cardr:${CUSTOM.cardr}px;${/^#[0-9a-f]{6}$/i.test(CUSTOM.ink0||"")?`--ink0:${CUSTOM.ink0};`:""}`;
   BRANDS.custom.fhead=`'${CUSTOM.fhead}',sans-serif`;BRANDS.custom.fbody=`'${CUSTOM.fbody}',sans-serif`;
   BRANDS.custom.fonts=fontsHref(CUSTOM.fhead,CUSTOM.fbody);
 }
