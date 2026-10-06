@@ -38,6 +38,7 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   blocks-plus.js · looks-w.js · templates-plus.js  # comparador, pack, cita, vídeo · Ácido/Tipográfico/Crudo · sectores nuevos
   blocks-web.js                                   # v4.7: elementos de diseño web (17 bloques) + Estilo → Efectos
   look-escaparate.js                              # v4.8: estilo Escaparate + marca Jazztel 2026 + 7 bloques + plantillas Jazztel (literal y placeholders)
+  theme.js                                        # v4.9: tema claro / oscuro / automático de la interfaz
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 api/publish.js        # publicar por FTP/FTPS o en Vercel (credenciales solo en variables de entorno)
 package.json          # dependencias de las funciones de /api (basic-ftp); el sitio sigue sin build

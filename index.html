@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NC Landing Builder — v4.8.1</title>
+<title>NC Landing Builder — v4.9</title>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("nc_theme")||"dark");}catch(e){document.documentElement.setAttribute("data-theme","dark");}</script>
 <link rel="stylesheet" href="css/app.css">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -20,7 +21,7 @@
 <body>
 <div class="app">
   <div class="topbar">
-    <div class="brandmark"><span class="dot"></span> NC Landing Builder <small>· v4.8.1</small></div>
+    <div class="brandmark"><span class="dot"></span> NC Landing Builder <small>· v4.9</small></div>
     <input id="landingName" class="txt" style="max-width:180px" placeholder="Nombre de la landing" title="Nombre" autocomplete="off" name="nc_landing_name" data-lpignore="true" data-1p-ignore data-form-type="other">
     <span class="savechip" id="saveChip"></span>
     <button class="btn" id="btnSave" title="Guardar en la nube (Ctrl+S)">💾 Guardar</button>
@@ -34,6 +35,7 @@
     <button class="btn icob" id="btnUndo" title="Deshacer (Ctrl+Z)">↺</button>
     <button class="btn icob" id="btnRedo" title="Rehacer (Ctrl+Y)">↻</button>
     <button class="btn icob" id="btnKeys" title="Atajos de teclado (?)">⌨</button>
+    <button class="btn icob theme" id="btnTheme" title="Tema de la herramienta">☾</button>
     <button class="btn" id="btnTpl" title="Galería de plantillas">▦ Plantillas</button>
     <span class="lbl">Marca</span>
     <select class="sel" id="brandTop"></select>
@@ -168,6 +170,7 @@
 <script src="js/team.js"></script>
 <script src="js/motion.js"></script>
 <script src="js/typo.js"></script>
+<script src="js/theme.js"></script>
 <script src="js/boot.js"></script>
 </body>
 </html>

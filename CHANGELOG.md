@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.9 — 2026-10-06 · Tema claro y oscuro de la herramienta
+- Botón **☾ / ☀ / ◐** en la barra superior (junto a ⌨): **Oscuro** (el de siempre), **Claro** y **Automático** (sigue el modo del sistema). Se recuerda en el navegador y se aplica antes de pintar la página, sin parpadeo.
+- Solo cambia la interfaz del builder (barra, paneles, modales, galería, CRO, publicar, velocidad, lote…); la landing se ve siempre con su marca y su estilo.
+- Todos los colores de la interfaz pasan a variables (avisos, guardado, CRO, toasts, barras de scroll, miniaturas); los controles nativos (selects, scroll) siguen el tema con `color-scheme`. Arreglado de paso el texto de ayuda de «Del equipo», que salía sin estilo.
+
 ## v4.8.1 — 2026-10-06 · Personalizar todo: marca, colores del estilo y colores por bloque
 - **Marca editable completa**: «Duplicar en marca editable» copia ahora todo (principal, acento, texto, texto secundario, **texto de los botones**, líneas, fondo suave, color oscuro de base, fuentes y radios de botón y tarjeta). Antes, al duplicar Jazztel 2026 los botones amarillos salían con texto blanco. El tema editable gana 4 colores: texto secundario, texto de los botones, líneas y bordes, y color oscuro de base.
 - **Global → «Colores del estilo Escaparate»** (aparece con ese estilo o si la landing usa sus bloques): fondo de página, tarjetas y filas, menú, bloque del teléfono, negro principal y su texto, borde de tarjetas y campos, banda gris de tarifas, sección oscura y sus tarjetas, pie, barra legal, barra fija y grosor de los titulares. Vacío = valor del estilo; botón para restablecer.
