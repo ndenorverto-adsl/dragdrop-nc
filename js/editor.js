@@ -173,9 +173,6 @@ function renderGlobal(){
     <div class="fld"><label>WhatsApp (con prefijo)</label><input id="gWa" value="${esc(state.settings.wa)}" placeholder="{{WHATSAPP}}"></div>
     <div class="fld"><label>Endpoint del formulario</label><input id="gEp" value="${esc(state.settings.endpoint)}" placeholder="{{ENDPOINT_FORMULARIO}}"></div>
     <div class="paneltitle" style="padding:10px 0 4px">Botones y acciones</div>
-    <div class="fld"><label>Capa UI extra (bloques clásicos)</label><select id="gStyleKit">${STYLEKIT_LIST.map(o=>`<option value="${o[0]}" ${state.settings.styleKit===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Capa de diseño (glass, neumorphism, brutalism…) sobre la marca.</div></div>
-    <div class="fld inline"><label>Animaciones (reveal + micro-interacciones)</label><input type="checkbox" id="gMotion" ${state.settings.motion?'checked':''}></div>
-    <div class="fld"><label>Estilo de botón (CTA)</label><select id="gCtaStyle">${[["brand","Marca"],["apple","Apple (pill azul)"],["instagram","Instagram (degradado)"],["ncgreen","Verde NC (botonazo)"],["neon","Neón"],["outline","Contorno"],["dark","Oscuro"],["pill","Pastilla marca"]].map(o=>`<option value="${o[0]}" ${state.settings.ctaStyle===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select></div>
     <div class="fld"><label>Acción de los botones (por defecto)</label><select id="gCtaAction">${[["scroll","Ir al formulario"],["popup","Abrir el popup"],["popupimg","Popup antiguo con imagen"],["call","Llamar (tel:)"],["whatsapp","WhatsApp"]].map(o=>`<option value="${o[0]}" ${state.settings.ctaAction===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select><div class="help">Aplica a todos los botones “Ir al formulario”.</div></div>
     <div class="paneltitle" style="padding:10px 0 4px">Popup de los botones</div>
     <div class="help" style="margin:0 0 8px">Se abre en los botones con “Al pulsar el botón → Abrir el popup” (por defecto, los “La quiero” de las tarifas) o en todos si eliges Popup arriba.</div>
@@ -232,15 +229,12 @@ function renderGlobal(){
   const cn=document.getElementById("gConsent");if(cn)cn.addEventListener('change',()=>{commit();state.settings.consent=cn.value;state.settings.cookies=(cn.value==='banner');renderPreview();renderGlobal();});
   const cnt=(id,out,lo,hi)=>{const el=document.getElementById(id),o=document.getElementById(out);if(!el||!o)return;const u=()=>{const n=el.value.length;o.textContent=n+' caracteres · ideal '+lo+'–'+hi;o.style.color=(n&&(n<lo||n>hi))?'var(--danger)':'';};el.addEventListener('input',u);u();};
   cnt("gTitle","gTitleCnt",30,60);cnt("gDesc","gDescCnt",70,155);
-  const cs=document.getElementById("gCtaStyle");if(cs)cs.addEventListener('change',()=>{commit();state.settings.ctaStyle=cs.value;renderPreview();});
   gf.querySelectorAll('[data-lkcat]').forEach(b=>b.addEventListener('click',()=>{window.ncLkCat=b.dataset.lkcat;renderGlobal();}));
   gf.querySelectorAll('[data-look]').forEach(b=>b.addEventListener('click',()=>{commit();state.settings.look=b.dataset.look;renderPreview();renderGlobal();if(state.selected)renderRight();}));
   [["gMTitle","mTitle"],["gMSpace","mSpace"],["gStkShow","stickyShow"],["gStkStyle","stickyStyle"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{commit();state.settings[k]=el.value;renderPreview();});});
   [["gAnnot","annot"],["gHand","hand"],["gEd","editorial"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{commit();state.settings[k]=el.checked;renderPreview();});});
   [["gTex","texture"],["gVoice","voice"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{commit();state.settings[k]=el.value;renderPreview();});});
   const lf=document.getElementById("gLookFont");if(lf)lf.addEventListener('change',()=>{commit();state.settings.lookBrandFont=lf.checked;renderPreview();});
-  const sk=document.getElementById("gStyleKit");if(sk)sk.addEventListener('change',()=>{commit();state.settings.styleKit=sk.value;renderPreview();});
-  const mo=document.getElementById("gMotion");if(mo)mo.addEventListener('change',()=>{commit();state.settings.motion=mo.checked;renderPreview();});
   const ca=document.getElementById("gCtaAction");if(ca)ca.addEventListener('change',()=>{commit();state.settings.ctaAction=ca.value;renderPreview();renderGlobal();});
   const pt=document.getElementById("gPopTitle");if(pt)pt.addEventListener('input',()=>{commitDebounced();state.settings.popupTitle=pt.value;renderPreview();});
   [["gPopSub","popSub"],["gPopBtn","popBtn"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.addEventListener('input',()=>{commitDebounced();state.settings[k]=el.value;renderPreview();});});
@@ -326,7 +320,7 @@ function exportZip(){
 function exportHTML(){const html=buildDoc(true);const kb=Math.round(html.length/1024);
   const blob=new Blob([html],{type:"text/html;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(state.settings.slug||"landing")+".html";document.body.appendChild(a);a.click();a.remove();
   toast("HTML exportado ✓ ("+kb+" KB)");}
-const TEMPLATE_BRAND={"Apple (literal)":"apple","Movistar (literal)":"movistar","T-Mobile (literal)":"tmobile","O2 (literal)":"o2","MyTraffic (literal)":"mytraffic","AB Tasty (literal)":"abtasty","Cliente · Jazztel":"c_jazztel","Cliente · MásMóvil":"c_masmovil","Cliente · Simyo":"c_simyo","Cliente · Yoigo":"c_yoigo","Cliente · Vodafone":"c_vodafone","Cliente · Lowi":"c_lowi","Cliente · MásAhorro":"c_masahorro","Cliente · Prosegur":"c_prosegur"};
+const TEMPLATE_BRAND={};
 
 function ncEnsureLookFonts(){if(document.getElementById("lkFonts"))return;const l=document.createElement("link");l.id="lkFonts";l.rel="stylesheet";
   l.href=fontsHrefMany(LOOK_ORDER.map(k=>LOOKS[k].head).filter(Boolean));document.head.appendChild(l);}

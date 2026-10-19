@@ -117,7 +117,6 @@ function fxCfg(){const st=state.settings;return {lvl:st.fxLevel,reveal:st.fxReve
 
 /* Panel Global */
 (function(){const _rg=renderGlobal;renderGlobal=function(){_rg.apply(this,arguments);const gf=document.getElementById("globalFields");if(!gf||gf.querySelector("#gFx"))return;const st=state.settings,on=fxOn();
-  const old=document.getElementById("gMotion");if(old){const f=old.closest(".fld");if(f)f.querySelector("label").textContent="Micro-interacciones (bloques clásicos)";}
   const html=`<div id="gFx"><div class="paneltitle" style="padding:10px 0 4px">Animaciones y efectos</div>
   <div class="fld"><label>Intensidad</label><div class="seg nc-fxseg">${FX_LEVELS.map(([k,l])=>`<button type="button" data-fxl="${k}" class="${(st.fxLevel||'off')===k?'on':''}">${l}</button>`).join("")}</div></div>
   ${on?`<div class="fld"><label>Entrada de las secciones</label><select id="gFxType">${FX_TYPES.slice(0,-1).map(([k,l])=>`<option value="${k}" ${(st.fxRevealType||'auto')===k?'selected':''}>${l}${k==='auto'?' · ahora: '+(FX_TYPES.find(t=>t[0]===(FX_BY_LOOK[ncLook()]||'up'))||[])[1]:''}</option>`).join("")}</select><div class="help">Cada bloque puede cambiarla en Estilo → Animación.</div></div>

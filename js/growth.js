@@ -169,7 +169,4 @@ const NC_GROWTH_PREVIEW_CSS=`.dx-exit[hidden]{display:block!important;position:r
   return out;};})();
 
 /* ---- Plantillas que usan los bloques nuevos ---- */
-ucTpl("Conversión máxima · Telco","Conversión rápida","Telco","form","Telco: garantías bajo el hero, tarifas, nosotros vs. otros, formulario en 2 pasos y popup de salida. Activa el horario de llamada en Global.",
-  [NAV("da"),ucHero("Telco"),{type:"dx_seals"},{type:"da_plans"},{type:"dx_vs"},{type:"dx_form2"},{type:"da_faq",props:{items:V4_SECTORS.Telco.faq}},{type:"dx_exit"},FOOT("da"),STK("da")]);
-ucTpl("Conversión máxima · Alarmas","Conversión rápida","Alarmas","form","Alarmas: multipaso en el hero, garantías, comparativa, nosotros vs. otros y popup de salida.",
-  [NAV("db"),ucHero("Alarmas"),{type:"dx_seals"},{type:"db_compare",props:V4_SECTORS.Alarmas.compare},{type:"dx_vs"},{type:"db_steps"},{type:"db_faq",props:{items:V4_SECTORS.Alarmas.faq}},{type:"dx_exit"},{type:"db_cta"},FOOT("db"),STK("db")]);
+

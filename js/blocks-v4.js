@@ -202,7 +202,6 @@ dc_sticky:{label:"C · Barra fija móvil",ico:"⤓",cat:"C · Premium producto",
 ORDER.unshift(...Object.keys(LIB).filter(k=>/^d[abc]_/.test(k)));
 
 /* Bloques "literales" de marcas ajenas: siguen funcionando en landings guardadas, pero salen de la paleta */
-["apple","movistar","tmobile","o2","mytraffic","abtasty","verizon"].forEach(b=>Object.keys(LIB).forEach(k=>{if(LIB[k].brand===b)LIB[k].hidden=true;}));
 
 /* ---------- CSS de las 3 direcciones (solo se incluye la familia que se usa) ---------- */
 function ncDirCSS(){

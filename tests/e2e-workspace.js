@@ -17,13 +17,13 @@ const FAKE = fs.readFileSync(path.join(__dirname, 'fake-supabase.js'), 'utf8');
   ok(await ev(() => __db.landings.length === 1 && __db.landing_versions.length === 1), 'Ctrl+S (aun con foco en un campo) guarda y crea versión');
   ok(await ev(() => ws.status === 'saved'), 'estado "Guardado" (' + await p.locator('#saveChip').textContent() + ')');
   // Cambio → sin guardar → autosave no crea versión
-  await ev(() => addSection('faq')); await p.waitForTimeout(1000);
+  await ev(() => addSection('da_faq')); await p.waitForTimeout(1000);
   ok(await ev(() => ws.status === 'dirty'), 'tras un cambio: "Sin guardar"');
   await ev(() => saveLanding({ auto: true })); await p.waitForTimeout(200);
   ok(await ev(() => __db.landing_versions.length === 1 && __db.landings[0].data.sections.length === state.sections.length && ws.status === 'saved'), 'autoguardado actualiza la landing sin crear versión');
   // Versiones + restaurar
   const n1 = await count();
-  await ev(() => addSection('stats')); await ev(() => saveLanding()); await p.waitForTimeout(200);
+  await ev(() => addSection('dx_stats')); await ev(() => saveLanding()); await p.waitForTimeout(200);
   ok(await ev(() => __db.landing_versions.length === 2), 'segundo guardado manual → 2 versiones');
   await p.locator('#btnMine').click(); await p.waitForTimeout(300);
   await p.locator('[data-ver]').first().click(); await p.waitForTimeout(300);
@@ -31,7 +31,7 @@ const FAKE = fs.readFileSync(path.join(__dirname, 'fake-supabase.js'), 'utf8');
   await p.locator('#verList [data-m=restore]').last().click(); await p.waitForTimeout(300);
   ok(await count() === n1 - 1, 'restaurar versión antigua (' + await count() + ' secciones)');
   // Poda a 30
-  await ev(async () => { for (let i = 0; i < 33; i++) { addSection('faq'); await saveLanding(); } }); await p.waitForTimeout(300);
+  await ev(async () => { for (let i = 0; i < 33; i++) { addSection('da_faq'); await saveLanding(); } }); await p.waitForTimeout(300);
   ok(await ev(() => __db.landing_versions.length <= 30), 'se conservan máx. 30 versiones (' + await ev(() => __db.landing_versions.length) + ')');
   // XSS + buscador
   await ev(() => __db.landings.push({ id: 'evil', nombre: '<img src=x onerror="window.__xss=1">Cliente Z', marca: 'nc', data: { sections: [] }, updated_at: new Date().toISOString() }));
@@ -61,7 +61,7 @@ const FAKE = fs.readFileSync(path.join(__dirname, 'fake-supabase.js'), 'utf8');
   await ev(() => { state.settings.tel = '600111222'; state.settings.gtm = 'GTM-AAAA111'; newLanding(); });
   ok(await ev(() => !state.settings.tel && !state.settings.gtm && !state.sections.length && cloud.id === null), 'Nueva landing reinicia teléfono/GTM');
   // Borrador local + recuperación tras recargar
-  await ev(() => { loadTemplate('Premium producto'); }); await p.waitForTimeout(1200);
+  await ev(() => { loadTemplate('Fibra · Premium oscuro'); }); await p.waitForTimeout(1200);
   const nDraft = await count();
   await p.reload(); await p.waitForTimeout(1500);
   ok(await p.locator('#wsOverlay [data-m=restore]').isVisible(), 'al recargar ofrece recuperar el borrador');

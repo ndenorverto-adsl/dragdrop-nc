@@ -4,12 +4,12 @@
    · Favoritos (★) y recientes, guardados en este navegador.
    · Filtros de sector y canal: el bloque entra ya con el copy de ese sector y con ese canal como principal. */
 const PAL_GOALS=[
-  ["top","Cabecera y hero","Lo primero que se ve: navegación, barra de oferta y hero.",/^(d[abc]_(nav|topbar|hero)|dx_(subnav|product|promohero)|topbar|navbar|hero_\w+)$/],
-  ["lead","Captar el lead","Formularios, CTAs, quiz y canales directos.",/(_cta|form|form2|quiz|leadmag|exit|_wa|thanks|^cal\w*|coverage|covtabs|callback|booking)$/],
-  ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|pricing|calc|countdown|ptab|comparison|_vs|offer|finder|bundle|plantabs|devices|addons)$/],
-  ["trust","Confianza y prueba","Cifras, sellos, opiniones, garantías y quién te atiende.",/(trust|seals|reviews|rating|logos|logowall|guarantee|_pro|letter|stats|testimonials|security|counters|marquee|area|vtestis)$/],
-  ["explain","Explicar y resolver dudas","Ventajas, pasos, imagen + texto, bento y preguntas.",/(benefits|steps|story|media|_text|tiles|colortiles|article|compare|features|imagetext|gallery|video|richtext|faq)$/],
-  ["web","Elementos de diseño web","Separadores, tablas, vídeo, mapa, pestañas, carrusel, galería, equipo, pie con columnas…",/^dx_(spacer|iconlist|badges|callout|table|video|map|tabs|slider|beforeafter|modalinfo|counters|logos|team|gallery|ctaimg|footcols)$/],
+  ["top","Cabecera y hero","Lo primero que se ve: navegación, barra de oferta y hero.",/^(d[abc]_(nav|topbar|hero)|dx_(subnav|product|promohero|hsplit|hfull|hmin|hpicker|heditorial|hvideo|hsaver|hcoupon|hchat|hbento|hposter))$/],
+  ["lead","Captar el lead","Formularios, CTAs, quiz y canales directos.",/(_cta|form|form2|quiz|leadmag|exit|_wa|thanks|coverage|covtabs|booking|phoneband)$/],
+  ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|calc|countdown|_vs|finder|bundle|plantabs|devices|addons|offerstrip|profiles)$/],
+  ["trust","Confianza y prueba","Cifras, sellos, opiniones, garantías y quién te atiende.",/(trust|seals|reviews|rating|logos|guarantee|_pro|letter|stats|counters|area|vtestis|spotlight)$/],
+  ["explain","Explicar y resolver dudas","Ventajas, pasos, imagen + texto, bento y preguntas.",/(benefits|steps|story|media|_text|tiles|colortiles|article|compare|gallery|video|faq|faqsplit|timeline|checklist)$/],
+  ["web","Elementos de diseño web","Separadores, tablas, vídeo, mapa, pestañas, carrusel, galería, equipo, pie con columnas…",/^dx_(spacer|iconlist|badges|callout|table|video|map|tabs|slider|beforeafter|modalinfo|counters|logos|team|gallery|ctaimg|footcols|ticker)$/],
   ["close","Cierre y elementos fijos","Footer y barra fija de móvil.",/(footer|sticky|infobar)$/]
 ];
 const PAL_SECTORS=["Telco","Energía","Alarmas","Seguros","Salud","Legal"];
@@ -21,6 +21,26 @@ function palGoal(t){const W=PAL_GOALS.find(g=>g[0]==="web");if(W&&W[3].test(t))r
 function palFam(t){const m=t.match(/^(d[abcx])_/);return m?{da:"A",db:"B",dc:"C",dx:"✚"}[m[1]]:"·";}
 /* miniatura esquemática (SVG 56×34) según la forma del bloque */
 function palThumb(t){const P="var(--acc,#7c6cff)",L="currentColor";const r=(x,y,w,h,f,o)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="${f||L}" opacity="${o==null?.35:o}"/>`;let s="";
+  const V5={dx_hsplit:r(0,0,28,34,L,.2)+r(3,8,20,5)+r(3,15,14,3)+r(3,21,11,5,P,.9)+r(30,0,26,34,L,.45)+r(36,22,14,8,P,.95),
+    dx_hfull:r(0,0,56,34,L,.55)+r(4,9,22,5,"#fff",.9)+r(4,17,16,3,"#fff",.6)+r(34,6,18,22,"#fff",.9)+r(37,21,12,4,P,.95),
+    dx_hmin:r(14,6,28,5)+r(18,13,20,3,L,.25)+r(12,20,32,7,L,.2)+r(33,21,10,5,P,.95),
+    dx_hpicker:r(3,8,20,5)+r(3,15,14,3)+[5,13,21].map((y,i)=>r(30,y,23,6,i===1?P:L,i===1?.8:.25)).join("")+r(30,28,23,4,P,.95),
+    dx_heditorial:r(3,4,50,1.5,L,.5)+r(3,9,28,5)+r(3,16,24,3,L,.25)+r(3,21,22,3,L,.25)+r(36,8,17,23,L,.3),
+    dx_hvideo:r(3,9,16,5)+r(3,16,12,3)+r(3,22,10,5,P,.9)+r(23,5,31,24,L,.3)+'<path d="M35 12v10l8-5z" fill="'+P+'" opacity=".95"/>',
+    dx_hsaver:r(3,9,20,5)+r(3,16,14,3)+r(29,5,24,26,L,.2)+r(32,11,18,2,L,.5)+'<circle cx="41" cy="12" r="3" fill="'+P+'"/>'+r(32,17,18,6,P,.3)+r(32,25,18,4,P,.95),
+    dx_hcoupon:r(4,5,48,24,L,.15)+r(4,5,16,24,P,.9)+r(24,10,20,5)+r(24,18,14,3,L,.3)+r(24,23,10,4,P,.9)+'<circle cx="20" cy="5" r="2.5" fill="#fff"/><circle cx="20" cy="29" r="2.5" fill="#fff"/>',
+    dx_hchat:r(3,10,18,5)+r(3,18,10,5,"#25D366",.9)+r(29,2,22,30,L,.3)+r(29,2,22,5,"#075E54",.9)+r(31,10,13,4,"#fff",.9)+r(37,17,12,3,"#25D366",.7)+r(37,22,12,3,"#25D366",.7),
+    dx_hbento:r(2,3,25,28,L,.3)+r(5,9,16,4)+r(5,20,10,4,P,.9)+r(29,3,25,13,L,.2)+r(29,18,12,13,P,.85)+r(43,18,11,13,L,.6),
+    dx_hposter:r(0,0,56,34,P,.85)+r(3,5,46,8,"#fff",.9)+r(3,15,30,8,"#fff",.9)+r(0,28,56,4,"#fff",.4),
+    dx_spotlight:'<text x="6" y="17" font-size="16" font-family="Georgia" fill="'+P+'" opacity=".8">“</text>'+r(16,9,34,4)+r(16,15,30,4)+r(16,24,14,3,L,.25),
+    dx_timeline:r(27,3,2,28,P,.5)+[6,14,22].map((y,i)=>'<circle cx="28" cy="'+(y+2)+'" r="2.6" fill="'+P+'"/>'+(i%2?r(32,y,18,4):r(6,y,18,4))).join(""),
+    dx_phoneband:r(3,9,30,9,P,.85)+r(3,21,18,3,L,.3)+r(37,7,17,20,L,.2)+r(39,20,13,4,P,.9),
+    dx_faqsplit:[5,13,21].map(y=>r(3,y,30,6,L,.22)).join("")+r(38,5,16,24,L,.3)+r(40,20,12,4,P,.95),
+    dx_offerstrip:r(0,11,56,12,P,.85)+r(4,15,8,4,"#fff",.8)+r(15,15,20,4,"#fff",.6)+r(40,14,12,6,"#fff",.95),
+    dx_ticker:r(0,12,56,10,L,.75)+[2,16,30,44].map(x=>r(x,15,10,4,"#fff",.75)).join(""),
+    dx_profiles:[3,21,39].map(x=>r(x,4,14,26,L,.2)+'<circle cx="'+(x+4)+'" cy="9" r="2.4" fill="'+P+'"/>'+r(x+2,14,10,3)+r(x+2,24,10,4,P,.6)).join(""),
+    dx_checklist:r(3,4,24,26,L,.2)+r(29,4,24,26,L,.2)+[9,15,21].map(y=>r(6,y,3,3,"#15803d",.9)+r(11,y,13,3)+r(32,y,3,3,"#b91c1c",.9)+r(37,y,13,3,L,.25)).join("")};
+  if(V5[t])s=V5[t];else
   if(/_nav|navbar|subnav/.test(t))s=r(3,13,12,8)+r(30,15,8,4)+r(42,13,11,8,P,.9);
   else if(/topbar/.test(t))s=r(0,12,56,10,L,.25)+r(14,15,28,4);
   else if(/dx_product|hero_center/.test(t))s=r(16,4,24,3,P,.8)+r(10,9,36,5)+r(18,16,20,4,P,.9)+r(12,22,32,10,L,.2);

@@ -8,19 +8,18 @@ Herramienta drag & drop para crear landings de conversión (Bootstrap 5.3.3) y e
 index.html            # estructura del editor (sin lógica)
 css/app.css           # estilos del editor
 js/                   # lógica, cargada en este orden (scripts clásicos, sin bundler)
-  brands.js           #   marcas, fuentes y style kits
+  brands.js           #   marcas (Next Conversion, Assista y clientes) y fuentes
   core.js             #   estado, ajustes por defecto y helpers
-  blocks.js           #   librería de bloques (LIB)
+  blocks.js           #   registro de bloques (LIB/ORDER) + conversión de landings antiguas a los bloques actuales
   looks.js            #   iconos SVG, fotos libres, ilustración y estilos de diseño
   blocks-v4.js        #   familias A/B/C (da_ / db_ / dc_) + su CSS
   blocks-x.js · blocks-uc.js  # variantes, extras CRO (dx_), popup y bloques por caso de uso
   looks-x.js · looks-y.js  # estilos de diseño extra (v4.0 y v4.2) + categorías
-  templates.js        #   plantillas
+  templates.js        #   objeto TEMPLATES (el catálogo está en templates-v5.js)
   render.js           #   genera el documento HTML (preview y export)
   export-pro.js       #   formularios, consentimiento, tracking, SEO y checklist
   editor.js           #   preview, paneles, historial, export ZIP/HTML
-  templates-v4.js     #   catálogo de plantillas + galería
-  templates-uc.js · templates-looks.js  # plantillas por caso de uso y colección de estilos
+  templates-v4.js     #   copy por sector (panel de bloques) + galería de plantillas
   cloud.js            #   Supabase: guardar, Mis landings, login
   workspace.js        #   autoguardado, atajos, copiar/pegar, versiones, .json
   cro.js              #   puntuación CRO, ideas A/B del hero y exportación A/B
@@ -30,14 +29,16 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   typo.js             #   tipografía global (titulares / texto / display), fuentes subidas y marca propia
   lorem.js · import.js · listeners.js · boot.js
   import-smart.js     #   conversión fiel a bloques nativos (lee el DOM pintado: textos, imágenes, colores y fuentes) + dx_media / dx_text
-  blocks-pro.js · looks-z.js · templates-pro.js  # bloques, estilos (Vitrina, Neobanco, Nocturno) y plantillas "Producto y tech"
+  blocks-pro.js · looks-z.js  # bloques y estilos (Vitrina, Neobanco, Nocturno) "Producto y tech"
   palette.js          #   panel izquierdo por objetivo: miniaturas, vista previa, favoritos, recientes y filtros
   canvas.js           #   edición en el lienzo: doble clic en textos e imágenes, barra de la sección
   publish.js · batch.js  # publicar (FTP/Vercel, vista previa) y landings en lote desde CSV
   perf.js             #   ⚡ Velocidad: optimización de imágenes (WebP), medición y schema
-  blocks-plus.js · looks-w.js · templates-plus.js  # comparador, pack, cita, vídeo · Ácido/Tipográfico/Crudo · sectores nuevos
+  blocks-plus.js · looks-w.js  # comparador, pack, cita, vídeo · Ácido/Tipográfico/Crudo
   blocks-web.js                                   # v4.7: elementos de diseño web (17 bloques) + Estilo → Efectos
   look-escaparate.js                              # v4.8: estilo Escaparate + marca Jazztel 2026 + 7 bloques + plantillas Jazztel (literal y placeholders)
+  blocks-v5.js                                    # v5.0: 11 heros y 8 secciones nuevas
+  templates-v5.js                                 # v5.0: catálogo de ~100 plantillas por objetivo (copy por vertical en V5_DECK)
   theme.js                                        # v4.9: tema claro / oscuro / automático de la interfaz
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 api/publish.js        # publicar por FTP/FTPS o en Vercel (credenciales solo en variables de entorno)
