@@ -33,15 +33,20 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   palette.js          #   panel izquierdo por objetivo: miniaturas, vista previa, favoritos, recientes y filtros
   canvas.js           #   edición en el lienzo: doble clic en textos e imágenes, barra de la sección
   publish.js · batch.js  # publicar (FTP/Vercel, vista previa) y landings en lote desde CSV
+  media.js            #   v5.4: biblioteca de medios (Supabase Storage por carpetas / IndexedDB sin nube)
   perf.js             #   ⚡ Velocidad: optimización de imágenes (WebP), medición y schema
   blocks-plus.js · looks-w.js  # comparador, pack, cita, vídeo · Ácido/Tipográfico/Crudo
   blocks-web.js                                   # v4.7: elementos de diseño web (17 bloques) + Estilo → Efectos
   look-escaparate.js                              # v4.8: estilo Escaparate + marca Jazztel 2026 + 7 bloques + plantillas Jazztel (literal y placeholders)
   blocks-v5.js                                    # v5.0: 11 heros y 8 secciones nuevas
-  templates-v5.js                                 # v5.0: catálogo de ~100 plantillas por objetivo (copy por vertical en V5_DECK)
+  heros-v53.js                                    # v5.3: heros carrusel, vídeo de fondo, multipaso y tarifas
+  templates-v5.js                                 # v5.0-5.3: catálogo de 107 plantillas por objetivo (copy por vertical en V5_DECK)
   theme.js                                        # v4.9: tema claro / oscuro / automático de la interfaz
   ds-import.js                                    # v5.1: importar un sistema de diseño de Claude (tokens.json/.zip → marca editable)
+  modules.js                                      # v5.2: módulos propios (HTML/CSS/JS con {{campos}}, desde una web, biblioteca del equipo)
+  edit-pro.js                                     # v5.5: estilo por elemento, elementos añadidos, diseño y espaciado por sección
 api/figma.js          # proxy a la API de Figma (función de Vercel)
+api/fetch.js          # trae una página pública para convertir una sección en módulo (con sesión; bloquea IPs privadas)
 api/publish.js        # publicar por FTP/FTPS o en Vercel (credenciales solo en variables de entorno)
 package.json          # dependencias de las funciones de /api (basic-ftp); el sitio sigue sin build
 config.js             # claves públicas de Supabase (a partir de config.example.js)

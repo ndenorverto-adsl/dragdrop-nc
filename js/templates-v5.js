@@ -280,7 +280,7 @@ const V5_MAP={
 
 /* ===== 3 · REGISTRO ===== */
 const V5_GROUPS=["Captación rápida","Llamada","WhatsApp","Oferta y urgencia","Tarifas y comparadores","Cualificación","Contenido que vende","Confianza y autoridad","Producto premium","Empresas (B2B)","Citas y servicio local","Páginas cortas"];
-function v5(name,meta,secs){const D=V5_DECK[meta.v];const M={canal:meta.canal||"form",pi:meta.pi||0};
+function v5(name,meta,secs){const D=V5_DECK[meta.v];const M={canal:meta.canal||"form",pi:meta.pi||0,v:meta.v};
   const S=secs.map(e=>{const o=typeof e==="string"?{t:e}:e;const base=V5_MAP[o.t]?V5_MAP[o.t](D,M):{};
     const props=Object.assign({},base,o.p||{});if(LIB[o.t]){const d=LIB[o.t].def();if("canal" in d&&!(o.p&&o.p.canal))props.canal=M.canal;Object.keys(props).forEach(k=>{if(!(k in d))delete props[k];});}
     return o.s?{type:o.t,props,style:o.s}:{type:o.t,props};});
@@ -515,6 +515,22 @@ v5("Micro · Captura en dos pasos",{g:G_MICRO,v:"coche",look:"riso",desc:"Formul
   ["dc_nav","dx_form2","dx_seals","dc_footer"]);
 v5("Micro · Vídeo y llamada",{g:G_MICRO,v:"alarmaneg",canal:"call",look:"memphis",desc:"Vídeo corto y banda de teléfono."},
   ["dx_hvideo","dx_phoneband","da_footer"]);
+
+/* v5.3 · heros nuevos */
+Object.assign(V5_MAP,{
+  dx_hslider:(D,M)=>({act:"popup",auto:"6",slides:v5Lines(D.pl).map((l,i)=>{const c=l.split("|");return Object.assign({tag:i===1?"{{ETIQUETA_DESTACADA}}":"",title:c[0],sub:(c[1]||"").split(";").join(" · "),price:D.u?`{{PRECIO_${i+1}}}`:"",unit:D.u,note:"{{NOTA_PRECIO}}",cta:"La quiero"},(()=>{const x=v5Img(D,(M.pi||0)+i);return {img:x.img||"",imgAlt:x.imgAlt||""};})());})}),
+  dx_hvideobg:(D,M)=>{const x=v5Img(D,M.pi);return {canal:M.canal,eyebrow:D.eb,headline:D.h,highlight:D.hl,sub:D.sub,video:"",poster:x.img||"",posterAlt:x.imgAlt||"",cardTitle:D.ct,cardSub:D.cs,btn:D.btn,opts:D.opts,cta:D.cta};},
+  dx_hsteps:(D,M)=>({eyebrow:D.eb,headline:D.h,highlight:D.hl,sub:"Responde dos preguntas rápidas y te llamamos con una propuesta para ti.",checks:v5Lines(D.ck).slice(0,2).join("\n"),q1:D.q,o1:D.qo.split("|").map(o=>o.replace(/^[^\wÁÉÍÓÚÑáéíóúñ{]+\s*/,"")).join("|"),cp:/telco|luz|solar|alarma|agua|reformas|alarmaneg/.test(M.v)?"si":"no",btn:D.btn}),
+  dx_hplans:(D,M)=>({eyebrow:D.eb,headline:"Elige tu opción",sub:D.sub,act:"popup",note:"{{NOTA_PRECIOS}}",plans:v5Plans(D).map((p,i)=>Object.assign(p,{hl:i===1?"si":""}))})
+});
+v5("Móvil · Carrusel de ofertas",{g:G_OFF,v:"movil",look:"vitrina",pi:1,desc:"Varias tarifas rotando en el hero, cada una con su precio y su botón (abre el popup con esa oferta)."},
+  ["da_nav","dx_hslider","dx_iconlist","dx_profiles","da_faq","da_footer","da_sticky"]);
+v5("Alarma · Vídeo de fondo",{g:G_RAP,v:"alarma",look:"nocturno",pi:3,desc:"Vídeo mudo en bucle con la tarjeta de callback encima; en móvil, la imagen de portada. Sube tu .mp4 en el hero."},
+  ["da_nav","dx_hvideobg","da_trust","dx_iconlist","db_reviews","dx_faqsplit","db_footer","db_sticky"]);
+v5("Energía · Formulario en 3 pasos",{g:G_QUAL,v:"luz",look:"editorial",pi:3,desc:"El hero es un formulario por pasos (necesidad, código postal y teléfono) con barra de progreso."},
+  ["db_nav","dx_hsteps","db_seals","dx_timeline","db_reviews","db_faq","db_footer","db_sticky"]);
+v5("Fibra · Tarifas en el hero",{g:G_TAR,v:"telco",look:"swiss",desc:"Las tarifas se ven sin hacer scroll, la destacada marcada y un botón por tarifa."},
+  ["da_topbar","da_nav","dx_hplans","dx_badges","dx_vs","da_faq","da_cta","da_footer","da_sticky"]);
 
 /* ===== 5 · CLIENTES (marca propia) ===== */
 TEMPLATE_BRAND["Cliente · SICOR Teleasistencia"]="c_teleasistencia";

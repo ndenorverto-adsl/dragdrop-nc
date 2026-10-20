@@ -1,5 +1,40 @@
 # Changelog
 
+## v5.5 — 2026-10-20 · Edición avanzada (guiada y responsive)
+- **Estilo por elemento**: con la sección seleccionada, un clic en cualquier texto, botón, imagen o caja del lienzo lo selecciona. Barra flotante: tamaño (A− / A+), negrita, color, alineación, ocultar (en móvil, en escritorio o siempre), quitar estilos, «⤒» para subir al elemento que lo contiene y «⚙» para todos los ajustes.
+- **Estilo → «Elemento seleccionado»**: tamaño de letra en escritorio y en móvil, grosor, color de texto y de fondo, alineación (también distinta en móvil), márgenes arriba/abajo (escritorio y móvil), relleno, esquinas, ancho, cursiva y mayúsculas. Los elementos ocultos se ven tenues en la vista previa y no salen en el export.
+- **Estilo → «Diseño y espaciado de la sección»** (en todos los bloques): márgenes arriba/abajo en escritorio y en móvil, ancho del contenido, columnas en escritorio (1-4) y en móvil (1-2), separación entre columnas, invertir el orden en móvil, alineación de los textos y mostrar la sección solo en escritorio o solo en móvil.
+- **Contenido → «Elementos añadidos»**: añade a cualquier bloque un título, texto, botón (formulario, llamada, WhatsApp o enlace, medidos), imagen (subida o de la biblioteca), lista con checks, icono con texto, separador o HTML, al principio o al final del bloque, con alineación y orden.
+- Todo se guarda con la sección (se copia, duplica y guarda en plantillas) y sale como CSS por sección; nada usa posiciones absolutas, así que se adapta a móvil. El doble clic sigue editando el texto ahí mismo.
+
+## v5.4 — 2026-10-20 · Biblioteca de medios
+- **«🗂 Medios»** en la barra superior y **«🗂 Biblioteca»** junto a cada campo de imagen (heros, ofertas del carrusel, galerías, fondos de sección y campos de imagen de los módulos). En los campos de vídeo, «Elegir vídeo de la biblioteca».
+- Imágenes y vídeos (.mp4/.webm, máx. 15 MB) en **carpetas por cliente**, compartidas con todo el equipo (Supabase Storage, `media/<carpeta>/…` del bucket del proyecto). Buscar por nombre, filtrar por tipo, subir varios a la vez o arrastrando, copiar URL y borrar (con sesión).
+- Todo lo que se sube desde un campo entra en la **carpeta activa**: por defecto, la de la marca del cliente (o «general»); al usar una imagen de otra carpeta, esa pasa a ser la activa para la landing.
+- «Sin carpeta» muestra las imágenes subidas antes de la biblioteca.
+- Sin nube, la biblioteca vive en el navegador (IndexedDB) y las imágenes se embeben como hasta ahora.
+- Se mantiene la optimización al subir (WebP, máx. 2000 px) de ⚡ Velocidad.
+- Arreglo: la foto de cada oferta del carrusel se sube como imagen (antes se veía como texto).
+
+## v5.3 — 2026-10-20 · 4 heros nuevos
+- **Hero carrusel de ofertas**: varias ofertas en el hero (etiqueta, título, detalle, precio, foto y botón por oferta; el botón abre el popup con esa oferta). Flechas, puntos, deslizar en móvil, teclado (← →) y paso automático opcional que se para al tocarlo; respeta «movimiento reducido». Evento `hero_slide`.
+- **Hero vídeo de fondo en bucle**: .mp4/.webm mudo con oscurecido y tarjeta de captación encima. En móvil (por defecto) y con «movimiento reducido» se ve la imagen de portada y el vídeo no se descarga; botón de pausa accesible.
+- **Hero con formulario multipaso**: necesidad → código postal (opcional) → teléfono, con barra de progreso, «Cambiar respuesta», validación por paso y casilla de privacidad en el último paso. Sin JS se ven los tres pasos y el formulario sigue funcionando. Evento `form_step`.
+- **Hero con tarifas**: 2-4 tarifas visibles sin scroll, la destacada marcada, botón por tarifa (popup con la tarifa elegida); en móvil, tarjetas deslizables.
+- **4 plantillas nuevas** con estos heros (107 en total): «Móvil · Carrusel de ofertas», «Alarma · Vídeo de fondo», «Energía · Formulario en 3 pasos» y «Fibra · Tarifas en el hero».
+- Arreglo: las opciones del formulario dentro de la tarjeta de cristal se leían mal en estilos oscuros (Nocturno…).
+
+## v5.2 — 2026-10-20 · Módulos propios
+- **Panel de bloques → «Mis módulos» (＋)**: sube vuestros desarrollos (HTML, CSS y JS) y úsalos como cualquier bloque: clic o arrastrar, duplicar, ocultar, guardar en plantillas.
+- **Campos automáticos**: marca lo editable en el HTML y el panel crea los campos: `{{titulo=Texto}}`, `{{ta:texto}}` (texto largo), `{{img:foto=URL}}` (imagen con subida), `{{url:enlace}}`, `{{color:fondo}}`, `{{html:bloque}}`. Datos de Global sin campo: `{{tel}}`, `{{tel_href}}`, `{{wa_href}}`, `{{endpoint}}`. Los enlaces `tel:`, wa.me y los formularios al endpoint se marcan solos para la medición (`data-cta`, `data-callback`).
+- **✨ Detectar editables**: convierte los textos, imágenes, teléfonos, enlaces de WhatsApp y formularios de un HTML en campos de una vez.
+- **🌐 Desde una web**: carga una URL (con sesión, a través de `/api/fetch`) o pega el HTML de la página, haz clic en la sección y «Usar esta sección»: se extrae su HTML con el CSS que la afecta (incluidas media queries, variables, fuentes y animaciones), con rutas absolutas y los textos ya convertidos en campos.
+- **Subir archivos** .html (página completa o fragmento: separa estilos y scripts), .css y .js.
+- **CSS aislado** dentro del módulo (CSS anidado bajo `.ncm-…`; `body`, `html` y `:root` apuntan al módulo) para que no afecte al resto de la landing; se puede desactivar. Los tokens de marca (`var(--bp)`, `var(--fhead)`…) funcionan dentro.
+- **JS seguro**: el JS del módulo se ejecuta en la landing exportada y en «Abrir», que con módulos se abre en una pestaña aislada (sin acceso a la sesión del editor); en el editor no se ejecuta y los `<script>`/`on…` se retiran de la vista previa. El JS recibe `roots` (todas las instancias).
+- **Biblioteca del equipo**: los módulos se guardan en `team_blocks` (sin migración nueva) o en el navegador sin sesión; se editan (✎) y se borran (×) desde el panel. Cada sección guarda su copia del módulo: la landing se abre igual aunque el módulo cambie o se borre, y avisa con «↻ Actualizar a la última versión» cuando hay una más nueva.
+- **`api/fetch.js`** (función nueva de Vercel): solo con sesión; solo http/https y puertos 80/443; bloquea IPs privadas, locales y de metadatos también tras redirecciones; máx. 3 redirecciones, 10 s y 3 MB; solo HTML o CSS.
+
 ## v5.1.1 — 2026-10-20 · Fuera la marca Tuawa
 - Retiradas la marca «Tuawa (Global Omnium)» y la plantilla «Cliente · Tuawa». Las landings guardadas con esa marca pasan a Next Conversion al abrirlas.
 

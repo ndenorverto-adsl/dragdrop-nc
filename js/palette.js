@@ -4,7 +4,7 @@
    · Favoritos (★) y recientes, guardados en este navegador.
    · Filtros de sector y canal: el bloque entra ya con el copy de ese sector y con ese canal como principal. */
 const PAL_GOALS=[
-  ["top","Cabecera y hero","Lo primero que se ve: navegación, barra de oferta y hero.",/^(d[abc]_(nav|topbar|hero)|dx_(subnav|product|promohero|hsplit|hfull|hmin|hpicker|heditorial|hvideo|hsaver|hcoupon|hchat|hbento|hposter))$/],
+  ["top","Cabecera y hero","Lo primero que se ve: navegación, barra de oferta y hero.",/^(d[abc]_(nav|topbar|hero)|dx_(subnav|product|promohero|hsplit|hfull|hmin|hpicker|heditorial|hvideo|hsaver|hcoupon|hchat|hbento|hposter|hslider|hvideobg|hsteps|hplans))$/],
   ["lead","Captar el lead","Formularios, CTAs, quiz y canales directos.",/(_cta|form|form2|quiz|leadmag|exit|_wa|thanks|coverage|covtabs|booking|phoneband)$/],
   ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|calc|countdown|_vs|finder|bundle|plantabs|devices|addons|offerstrip|profiles)$/],
   ["trust","Confianza y prueba","Cifras, sellos, opiniones, garantías y quién te atiende.",/(trust|seals|reviews|rating|logos|guarantee|_pro|letter|stats|counters|area|vtestis|spotlight)$/],
@@ -32,6 +32,10 @@ function palThumb(t){const P="var(--acc,#7c6cff)",L="currentColor";const r=(x,y,
     dx_hchat:r(3,10,18,5)+r(3,18,10,5,"#25D366",.9)+r(29,2,22,30,L,.3)+r(29,2,22,5,"#075E54",.9)+r(31,10,13,4,"#fff",.9)+r(37,17,12,3,"#25D366",.7)+r(37,22,12,3,"#25D366",.7),
     dx_hbento:r(2,3,25,28,L,.3)+r(5,9,16,4)+r(5,20,10,4,P,.9)+r(29,3,25,13,L,.2)+r(29,18,12,13,P,.85)+r(43,18,11,13,L,.6),
     dx_hposter:r(0,0,56,34,P,.85)+r(3,5,46,8,"#fff",.9)+r(3,15,30,8,"#fff",.9)+r(0,28,56,4,"#fff",.4),
+    dx_hslider:r(2,4,26,26,L,.2)+r(5,9,16,4)+r(5,16,12,5,P,.9)+r(30,4,24,26,L,.4)+r(18,31,4,2,P,.95)+r(24,31,2,2,L,.4)+r(28,31,2,2,L,.4),
+    dx_hvideobg:r(0,0,56,34,L,.55)+'<path d="M12 12v8l7-4z" fill="#fff" opacity=".85"/>'+r(4,24,20,3,"#fff",.7)+r(34,6,18,22,"#fff",.9)+r(37,21,12,4,P,.95),
+    dx_hsteps:r(3,9,20,5)+r(3,16,14,3)+r(29,4,24,26,L,.2)+r(31,7,20,2,L,.3)+r(31,7,9,2,P,.95)+r(31,12,9,6,P,.5)+r(42,12,9,6,L,.3)+r(31,20,9,6,L,.3)+r(42,20,9,6,L,.3),
+    dx_hplans:r(18,3,20,4)+[4,21,38].map((x,i)=>r(x,10,14,22,i===1?P:L,i===1?.35:.2)+r(x+2,14,10,3)+r(x+2,26,10,3,P,.9)).join(""),
     dx_spotlight:'<text x="6" y="17" font-size="16" font-family="Georgia" fill="'+P+'" opacity=".8">“</text>'+r(16,9,34,4)+r(16,15,30,4)+r(16,24,14,3,L,.25),
     dx_timeline:r(27,3,2,28,P,.5)+[6,14,22].map((y,i)=>'<circle cx="28" cy="'+(y+2)+'" r="2.6" fill="'+P+'"/>'+(i%2?r(32,y,18,4):r(6,y,18,4))).join(""),
     dx_phoneband:r(3,9,30,9,P,.85)+r(3,21,18,3,L,.3)+r(37,7,17,20,L,.2)+r(39,20,13,4,P,.9),

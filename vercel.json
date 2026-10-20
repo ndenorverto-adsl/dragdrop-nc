@@ -37,6 +37,10 @@
     "api/publish.js": {
       "maxDuration": 30,
       "includeFiles": "config.js"
+    },
+    "api/fetch.js": {
+      "maxDuration": 20,
+      "includeFiles": "config.js"
     }
   }
 }
