@@ -1,5 +1,14 @@
 # Changelog
 
+## v5.1 — 2026-10-19 · Importar un sistema de diseño de Claude
+- **Global → «⇣ Importar sistema de diseño»** (botón o arrastrar y soltar): acepta el **.zip** de un sistema de diseño de Claude (`tokens.json` + `fonts/` + `assets/`, con o sin carpeta `project/`) o los archivos sueltos (`tokens.json`, fuentes y logos).
+- Lee el formato de Claude (tokens en lista, temas, alias `{token}`, colores `rgba()`/`oklch()`…) y, de respaldo, mapas tipo W3C/DTCG.
+- Asigna cada token a su papel en la marca editable: primario, acento, texto, texto secundario, texto de los botones, fondo suave, líneas y oscuro de base. Si un papel no tiene token, lo deriva de los que hay y lo indica como «derivado» (nunca inventa colores de marca).
+- Tipografías: si la familia está en Google Fonts se carga desde ahí; si no, se embeben las fuentes del sistema con su peso y estilo. Radios de botón y tarjeta desde los tokens de radio.
+- Logo en las cabeceras con logo (si el logo es claro, la cabecera pasa a fondo oscuro) y en los bloques que se añadan después; favicon del sistema.
+- Antes de aplicar enseña una tabla con qué token va a cada papel; cada color se puede retocar ahí.
+- Fuentes subidas: ahora guardan peso y estilo (varios pesos de la misma familia).
+
 ## v5.0 — 2026-10-19 · Catálogo de plantillas rehecho, heros y secciones nuevas y limpieza
 - **Catálogo nuevo: 100 plantillas distintas** (+ 4 de cliente) en lugar de las 151 anteriores, de las que 50 compartían casi la misma estructura. Ahora **ninguna repite secuencia de secciones ni combinación hero + estilo**; la similitud media entre plantillas es del 6 % (máximo 60 % entre dos genéricas). Usan 21 heros distintos y los 33 estilos.
 - **12 grupos por objetivo** en la galería: Captación rápida, Llamada, WhatsApp, Oferta y urgencia, Tarifas y comparadores, Cualificación, Contenido que vende, Confianza y autoridad, Producto premium, Empresas (B2B), Citas y servicio local y Páginas cortas (gracias, micro-landings). Filtros por **sector** (13: Telco, Móvil, Energía, Solar, Alarmas, Seguros, Coche, Salud, Legal, Agua, Reformas, Teleasistencia, Empresas) y por **canal**.

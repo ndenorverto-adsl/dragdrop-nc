@@ -40,6 +40,7 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   blocks-v5.js                                    # v5.0: 11 heros y 8 secciones nuevas
   templates-v5.js                                 # v5.0: catálogo de ~100 plantillas por objetivo (copy por vertical en V5_DECK)
   theme.js                                        # v4.9: tema claro / oscuro / automático de la interfaz
+  ds-import.js                                    # v5.1: importar un sistema de diseño de Claude (tokens.json/.zip → marca editable)
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 api/publish.js        # publicar por FTP/FTPS o en Vercel (credenciales solo en variables de entorno)
 package.json          # dependencias de las funciones de /api (basic-ftp); el sitio sigue sin build

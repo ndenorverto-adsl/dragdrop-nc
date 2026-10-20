@@ -12,7 +12,7 @@ function ncFontFiles(){return Array.isArray(state.settings.fontFiles)?state.sett
 function ncIsFileFont(n){return ncFontFiles().some(f=>f.name===n);}
 function ncFontQ(n){return `'${n}',${NC_SERIF_LOOK.includes(n)||FONT_SERIF.includes(n)?"Georgia,serif":"system-ui,sans-serif"}`;}
 function ncTypoCSS(){const st=state.settings,files=ncFontFiles();let css="";
-  files.forEach(f=>{css+=`@font-face{font-family:'${f.name}';src:url(${f.url});font-weight:100 900;font-display:swap}`;});
+  files.forEach(f=>{css+=`@font-face{font-family:'${f.name}';src:url(${f.url});font-weight:${f.weight||"100 900"};font-style:${f.style||"normal"};font-display:swap}`;});
   let v="";if(st.fontHead)v+=`--fhead:${ncFontQ(st.fontHead)};`;if(st.fontBody)v+=`--fbody:${ncFontQ(st.fontBody)};`;if(st.fontDisp)v+=`--fdisp:${ncFontQ(st.fontDisp)};`;
   if(v)css+=`:root{${v}}`;
   if(st.fontDisp){const one=FONT_ONE.includes(st.fontDisp);
