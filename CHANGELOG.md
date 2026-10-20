@@ -1,5 +1,20 @@
 # Changelog
 
+## v5.9.1 — 2026-10-20 · Landings exportadas del builder y «Datos de la página»
+- **Reimportar una landing exportada del builder** (por ejemplo, la de Lowi con toda la página dentro de un módulo) sale **idéntica píxel a píxel**, en escritorio y en móvil.
+  - Se separa en sus secciones reales: cabecera, hero, bloques, pie y barra móvil. Se conserva el sprite de iconos SVG.
+  - Se quitan los añadidos del builder anterior (banner de cookies, popups, WhatsApp flotante, salida), porque el builder los vuelve a generar.
+  - Ya no se borra tu script de configuración aunque contenga el cargador de GTM: solo se quitan las etiquetas de medición sueltas.
+  - Las texturas de fondo (grano o papel) ya no se multiplican por cada sección.
+- **⚙ Datos de la página**: si tu código trae `window.CONFIG` (o `CFG`, `SETTINGS`, `SITE`, `DATOS`), el panel muestra un formulario con cada dato.
+  - Tipos de campo: textos, Sí/No, listas (una línea por elemento) y grupos como FAQ.
+  - Los campos marcados como PENDIENTE o vacíos llevan la etiqueta «pendiente», y tus comentarios aparecen como ayuda.
+  - Al cambiar un dato (por ejemplo el precio), se actualiza en toda la página al momento.
+  - Solo se toca ese valor en tu JS: se conservan tus comentarios y el formato.
+  - Un campo vacío (`null`) acepta un objeto, como el horario; si el formato no es válido, se marca en rojo y no se guarda.
+- Con `CONFIG`, el JS se ejecuta también en el editor por defecto, para que veas los precios y teléfonos reales. Puedes desactivarlo y se recuerda.
+- Si haces clic en un texto que rellena el JS (clases `js-…`), el panel te avisa de que lo cambies en «Datos de la página».
+
 ## v5.9 — 2026-10-20 · Tu código, idéntico y 100 % editable
 - **Importar → «Mantener mi código (idéntico y editable)»**: sube tu **.html** (botón «📄 Subir .html») o pégalo.
   - Se conserva tu HTML, tu CSS (también el enlazado, que se descarga) y tu JS.

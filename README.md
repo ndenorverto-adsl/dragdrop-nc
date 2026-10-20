@@ -47,7 +47,7 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   modules.js                                      # v5.2: módulos propios (HTML/CSS/JS con {{campos}}, desde una web, biblioteca del equipo)
   edit-pro.js                                     # v5.5: estilo por elemento, elementos añadidos, diseño y espaciado por sección
   build.js                                        # v5.7-5.8: diseño desde 0 (dx_build), estilos por elemento, arrastrar en lienzo, bloques dentro de columnas, 🖌 fondo y ⤒ unir secciones
-  code-edit.js                                    # v5.9: código importado/módulos idéntico (CSS aislado .nc-imp) y 100 % editable
+  code-edit.js                                    # v5.9: código importado/módulos idéntico (CSS aislado .nc-imp) y 100 % editable · v5.9.1: «Datos de la página» (window.CONFIG)
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 api/fetch.js          # trae una página pública para convertir una sección en módulo (con sesión; bloquea IPs privadas)
 api/publish.js        # publicar por FTP/FTPS o en Vercel (credenciales solo en variables de entorno)
