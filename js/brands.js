@@ -30,10 +30,6 @@ const BRANDS = {
     vars:"--bp:#d02320;--bp2:#b1040e;--ba:#00112b;--bink:#00112b;--bmuted:#54606f;--bsoft:#f6f7f9;--line:#e4e7ec;--btnr:50rem;--cardr:0 18px 0 18px;",
     fhead:"'Outfit',sans-serif",fbody:"'Montserrat',sans-serif",fonts:fontsHref("Outfit","Montserrat"),
     note:"Botones pill y esquinas de card asimétricas (brandbook Grupo Assista)."},
-  tuawa:{name:"Tuawa (Global Omnium)", locked:true,
-    vars:"--bp:#134D8F;--bp2:#0e3c72;--ba:#3BB5B0;--bink:#0c2338;--bmuted:#5a6b7c;--bsoft:#eef4fb;--line:#dbe6f0;--btnr:10px;--cardr:14px;",
-    fhead:"'Manrope',sans-serif",fbody:"'Manrope',sans-serif",fonts:fontsHref("Manrope","Manrope"),
-    note:"Satoshi no está en Google Fonts: sustituida por Manrope."},
   custom:{name:"Editable", locked:false,
     vars:"--bp:#2563EB;--bp2:#1d4ed8;--ba:#10B981;--bink:#0f172a;--bmuted:#475569;--bsoft:#f1f5f9;--line:#e2e8f0;--btnr:10px;--cardr:14px;",
     fhead:"'Inter',sans-serif",fbody:"'Inter',sans-serif",fonts:fontsHref("Inter","Inter"),
@@ -114,7 +110,7 @@ function syncCustom(){
 }
 /* Grupos del selector de marca */
 const BRAND_GROUPS=[
-  ["Next Conversion & marcas",["nc","assista","tuawa","custom"]],
+  ["Next Conversion & marcas",["nc","assista","custom"]],
   ["Clientes NC",["c_orange","c_masmovil","c_yoigo","c_masahorro","c_jazztel","c_simyo","c_vodafone","c_lowi","c_finetwork","c_totalenergies","c_adt","c_sicor","c_prosegur","c_segurma","c_teleasistencia","c_alarmafacil"]]
 ];
 function brandOptions(sel){return BRAND_GROUPS.filter(g=>g[1].some(k=>BRANDS[k])).map(g=>`<optgroup label="${g[0]}">`+g[1].filter(k=>BRANDS[k]).map(k=>`<option value="${k}" ${k===sel?'selected':''}>${BRANDS[k].name}</option>`).join("")+`</optgroup>`).join("");}

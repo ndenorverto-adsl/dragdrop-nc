@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.1.1 — 2026-10-20 · Fuera la marca Tuawa
+- Retiradas la marca «Tuawa (Global Omnium)» y la plantilla «Cliente · Tuawa». Las landings guardadas con esa marca pasan a Next Conversion al abrirlas.
+
 ## v5.1 — 2026-10-19 · Importar un sistema de diseño de Claude
 - **Global → «⇣ Importar sistema de diseño»** (botón o arrastrar y soltar): acepta el **.zip** de un sistema de diseño de Claude (`tokens.json` + `fonts/` + `assets/`, con o sin carpeta `project/`) o los archivos sueltos (`tokens.json`, fuentes y logos).
 - Lee el formato de Claude (tokens en lista, temas, alias `{token}`, colores `rgba()`/`oklch()`…) y, de respaldo, mapas tipo W3C/DTCG.
