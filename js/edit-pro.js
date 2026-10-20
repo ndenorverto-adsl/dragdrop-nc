@@ -1,5 +1,6 @@
 /* NC Landing Builder · v5.5 · EDICIÓN AVANZADA (guiada, siempre responsive)
    · Estilo por elemento: con la sección seleccionada, un clic en cualquier texto, botón, imagen o caja la selecciona.
+     Los controles interactivos (flechas, opciones, campos, carrusel) no se secuestran: Alt + clic para seleccionarlos.
      Barra flotante (tamaño, negrita, color, alineación, ocultar) y, en Estilo → «Elemento seleccionado», todos los
      ajustes: tamaño de letra en escritorio y en móvil, peso, color, fondo, alineación, márgenes, ancho y visibilidad.
      Se guarda por sección (s.els) con la ruta del elemento y sale como CSS `[data-sec="…"] …` (vista previa y export).
@@ -58,9 +59,10 @@ const PICK_JS=`(function(){if(window.__free)return;var hv=null,cur=null;function
 function path(el,sec){var P=[];for(var n=el;n&&n!==sec;n=n.parentElement){var k=0,c=n.parentElement?n.parentElement.firstElementChild:null;for(;c;c=c.nextElementSibling){if(ex(c))continue;k++;if(c===n)break;}P.unshift(n.tagName.toLowerCase()+':'+k);}return P.join('>');}
 function lbl(el){var t=(el.textContent||'').replace(/\\s+/g,' ').trim();return el.tagName.toLowerCase()+(t?' «'+t.slice(0,40)+(t.length>40?'…':'')+'»':el.tagName==='IMG'?' (imagen)':'');}
 function ok(el){return el&&el.nodeType===1&&!el.closest('.nc-tb,.nc-tbx,[data-act]')&&!/^(SVG|PATH|USE|G|CIRCLE|RECT|LINE|POLYLINE|POLYGON)$/i.test(el.tagName);}
+var IA='input,select,textarea,label,summary,option,button[type=button],[role=tab],[data-copy],.dots,.ar,.vp,[data-dragged]';
 function up(el){while(el&&/^(svg|path|use|g|circle|rect|line|polyline|polygon|i)$/i.test(el.tagName))el=el.parentElement;return el;}
-document.addEventListener('mouseover',function(e){var sec=e.target.closest&&e.target.closest('[data-sec].sel');var el=up(e.target);if(hv&&hv!==el)hv.classList.remove('nc-elhv');hv=null;if(!sec||!ok(el)||el===sec)return;hv=el;el.classList.add('nc-elhv');},true);
-document.addEventListener('click',function(e){if(e.target.closest('[contenteditable="true"],[data-act]'))return;var sec=e.target.closest('[data-sec]');if(!sec||!sec.classList.contains('sel'))return;var el=up(e.target);if(!ok(el)||el===sec)return;
+document.addEventListener('mouseover',function(e){var sec=e.target.closest&&e.target.closest('[data-sec].sel');var el=up(e.target);if(hv&&hv!==el)hv.classList.remove('nc-elhv');hv=null;if(!sec||!ok(el)||el===sec||(!e.altKey&&e.target.closest(IA)))return;hv=el;el.classList.add('nc-elhv');},true);
+document.addEventListener('click',function(e){if(e.target.closest('[contenteditable="true"],[data-act]'))return;if(!e.altKey&&e.target.closest(IA))return;var sec=e.target.closest('[data-sec]');if(!sec||!sec.classList.contains('sel'))return;var el=up(e.target);if(!ok(el)||el===sec)return;
   e.preventDefault();e.stopPropagation();pick(el,sec);},true);
 function pick(el,sec){if(cur)cur.classList.remove('nc-elsel');cur=el;el.classList.add('nc-elsel');var r=el.getBoundingClientRect();
   parent.postMessage({nc:'elsel',id:sec.getAttribute('data-sec'),path:path(el,sec),label:lbl(el),tag:el.tagName,img:el.tagName==='IMG',r:{x:r.left,y:r.top,w:r.width,h:r.height},fs:parseFloat(getComputedStyle(el).fontSize)||16,col:getComputedStyle(el).color,up:!!(el.parentElement&&el.parentElement!==sec&&!el.parentElement.matches('[data-sec]'))},'*');}
@@ -122,7 +124,7 @@ const _rr=renderRight;renderRight=function(){_rr.apply(this,arguments);const s=s
        <div class="row2">${N("pad","Relleno interior (px)",o)}${N("r","Esquinas (px)",o)}</div><div class="row2">${S("w","Ancho",o,[["","Del estilo"],["full","Todo el ancho"],["320","Máx. 320 px"],["480","Máx. 480 px"],["640","Máx. 640 px"],["800","Máx. 800 px"]])}${S("taM","Alineación en móvil",o,[["","Como escritorio"],["left","Izquierda"],["center","Centro"],["right","Derecha"]])}</div>
        <div class="row2">${S("hide","Mostrar",o,[["","Siempre"],["mob","Ocultar en móvil"],["desk","Ocultar en escritorio"],["all","Ocultar siempre"]])}<div class="fld"><label>Texto</label><span class="ep-chk"><label><input type="checkbox" data-ep2="it" ${o.it?"checked":""}> Cursiva</label><label><input type="checkbox" data-ep2="up" ${o.up?"checked":""}> MAYÚSCULAS</label></span></div></div>
        <div class="ep-act"><button type="button" class="btn sm ghost" id="epClr">⟲ Quitar estilos</button><button type="button" class="btn sm ghost" id="epDes">Deseleccionar</button></div></div>`;}
-    else h+=`<div class="ep-g ep-hint"><b>Estilo por elemento:</b> con la sección seleccionada, haz clic en cualquier texto, botón o imagen del lienzo para ajustarlo solo a él.</div>`;
+    else h+=`<div class="ep-g ep-hint"><b>Estilo por elemento:</b> con la sección seleccionada, haz clic en cualquier texto, botón o imagen del lienzo para ajustarlo solo a él. Los controles (flechas, opciones, campos) siguen funcionando: para seleccionarlos usa <b>Alt + clic</b>.</div>`;
     const L=s.layout||{};const nEl=Object.keys(s.els||{}).length;
     h+=`<div id="epLayout" class="ep-g"><div class="paneltitle" style="padding:0 0 6px">Diseño y espaciado de la sección</div>
       <div class="row2">${N("pt","Margen arriba (px)",L)}${N("pb","Margen abajo (px)",L)}</div><div class="row2">${N("ptM","Arriba en móvil",L)}${N("pbM","Abajo en móvil",L)}</div>

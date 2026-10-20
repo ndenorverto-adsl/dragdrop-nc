@@ -518,7 +518,7 @@ v5("Micro · Vídeo y llamada",{g:G_MICRO,v:"alarmaneg",canal:"call",look:"memph
 
 /* v5.3 · heros nuevos */
 Object.assign(V5_MAP,{
-  dx_hslider:(D,M)=>({act:"popup",auto:"6",slides:v5Lines(D.pl).map((l,i)=>{const c=l.split("|");return Object.assign({tag:i===1?"{{ETIQUETA_DESTACADA}}":"",title:c[0],sub:(c[1]||"").split(";").join(" · "),price:D.u?`{{PRECIO_${i+1}}}`:"",unit:D.u,note:"{{NOTA_PRECIO}}",cta:"La quiero"},(()=>{const x=v5Img(D,(M.pi||0)+i);return {img:x.img||"",imgAlt:x.imgAlt||""};})());})}),
+  dx_hslider:(D,M)=>({act:"popup",auto:"",slides:v5Lines(D.pl).map((l,i)=>{const c=l.split("|");return Object.assign({tag:i===1?"{{ETIQUETA_DESTACADA}}":"",title:c[0],sub:(c[1]||"").split(";").join(" · "),price:D.u?`{{PRECIO_${i+1}}}`:"",unit:D.u,note:"{{NOTA_PRECIO}}",cta:"La quiero"},(()=>{const x=v5Img(D,(M.pi||0)+i);return {img:x.img||"",imgAlt:x.imgAlt||""};})());})}),
   dx_hvideobg:(D,M)=>{const x=v5Img(D,M.pi);return {canal:M.canal,eyebrow:D.eb,headline:D.h,highlight:D.hl,sub:D.sub,video:"",poster:x.img||"",posterAlt:x.imgAlt||"",cardTitle:D.ct,cardSub:D.cs,btn:D.btn,opts:D.opts,cta:D.cta};},
   dx_hsteps:(D,M)=>({eyebrow:D.eb,headline:D.h,highlight:D.hl,sub:"Responde dos preguntas rápidas y te llamamos con una propuesta para ti.",checks:v5Lines(D.ck).slice(0,2).join("\n"),q1:D.q,o1:D.qo.split("|").map(o=>o.replace(/^[^\wÁÉÍÓÚÑáéíóúñ{]+\s*/,"")).join("|"),cp:/telco|luz|solar|alarma|agua|reformas|alarmaneg/.test(M.v)?"si":"no",btn:D.btn}),
   dx_hplans:(D,M)=>({eyebrow:D.eb,headline:"Elige tu opción",sub:D.sub,act:"popup",note:"{{NOTA_PRECIOS}}",plans:v5Plans(D).map((p,i)=>Object.assign(p,{hl:i===1?"si":""}))})

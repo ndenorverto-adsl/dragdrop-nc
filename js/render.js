@@ -121,10 +121,13 @@ function buildDoc(forExport){
       document.addEventListener('dragstart',function(e){e.preventDefault();},true);
       window.addEventListener('scroll',_place,true);
     }
-    (function(){var dragId=null,ind=null;
+    (function(){var dragId=null,ind=null,org=null;
       function clearInd(){if(ind&&ind.parentNode)ind.parentNode.removeChild(ind);ind=null;}
+      /* No arrastrar la sección si el gesto empieza en un control o en algo que se desliza en horizontal (carruseles, tarifas en móvil, barras) */
+      function noDrag(n){if(!n||!n.closest)return false;if(n.closest('input,select,textarea,[contenteditable="true"],[data-nodrag],[data-hsld] .trk'))return true;for(var x=n;x&&!(x.hasAttribute&&x.hasAttribute('data-sec'));x=x.parentElement){if(x.scrollWidth>x.clientWidth+2){var o=getComputedStyle(x).overflowX;if(o==='auto'||o==='scroll')return true;}}return false;}
+      document.addEventListener('mousedown',function(e){org=e.target;},true);
       document.querySelectorAll('[data-sec]').forEach(function(s){
-        s.addEventListener('dragstart',function(e){dragId=s.getAttribute('data-sec');s.classList.add('nc-dragging');try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragId);}catch(_){}});
+        s.addEventListener('dragstart',function(e){if(noDrag(org)){e.preventDefault();return;}dragId=s.getAttribute('data-sec');s.classList.add('nc-dragging');try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragId);}catch(_){}});
         s.addEventListener('dragend',function(){dragId=null;s.classList.remove('nc-dragging');clearInd();});
         s.addEventListener('dragover',function(e){if(!dragId)return;e.preventDefault();if(s.getAttribute('data-sec')===dragId){clearInd();return;}var r=s.getBoundingClientRect();var before=e.clientY<r.top+r.height/2;clearInd();ind=document.createElement('div');ind.className='nc-drop-ind';if(before)s.parentNode.insertBefore(ind,s);else s.parentNode.insertBefore(ind,s.nextSibling);});
         s.addEventListener('drop',function(e){if(!dragId)return;e.preventDefault();var refId=s.getAttribute('data-sec');if(refId===dragId){clearInd();return;}var r=s.getBoundingClientRect();var before=e.clientY<r.top+r.height/2;parent.postMessage({nc:'reorder',dragId:dragId,refId:refId,before:before},'*');dragId=null;clearInd();});

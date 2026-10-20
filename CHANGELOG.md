@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.5.1 — 2026-10-20 · Revisión de heros (carrusel y controles en el editor)
+- **El carrusel se arrastraba como sección**: en el editor, arrastrar el carrusel con el ratón movía la sección entera (reordenar). Ahora un gesto que empieza en un carrusel, en algo que se desliza en horizontal (tarifas en móvil) o en un campo no arrastra la sección; se sigue reordenando desde cualquier otra zona o desde la barra de la sección.
+- **Carrusel**: se puede **arrastrar con el ratón** (en móvil ya deslizaba), el siguiente slide **asoma en móvil** para que se vea que hay más, el **avance automático viene desactivado** (convierte mejor; si se activa: solo escritorio, se para al tocarlo y lleva botón de pausa), un arrastre nunca dispara el botón de la oferta y el punto activo se calcula bien con el slide que asoma.
+- **Estilo por elemento ya no se come los controles**: con la sección seleccionada, las flechas, puntos, opciones del selector de tarifa, pasos del formulario, campos, «Copiar» y la pausa del vídeo funcionan al hacer clic. Para seleccionar uno de esos controles y darle estilo: **Alt + clic**.
+
 ## v5.5 — 2026-10-20 · Edición avanzada (guiada y responsive)
 - **Estilo por elemento**: con la sección seleccionada, un clic en cualquier texto, botón, imagen o caja del lienzo lo selecciona. Barra flotante: tamaño (A− / A+), negrita, color, alineación, ocultar (en móvil, en escritorio o siempre), quitar estilos, «⤒» para subir al elemento que lo contiene y «⚙» para todos los ajustes.
 - **Estilo → «Elemento seleccionado»**: tamaño de letra en escritorio y en móvil, grosor, color de texto y de fondo, alineación (también distinta en móvil), márgenes arriba/abajo (escritorio y móvil), relleno, esquinas, ancho, cursiva y mayúsculas. Los elementos ocultos se ven tenues en la vista previa y no salen en el export.

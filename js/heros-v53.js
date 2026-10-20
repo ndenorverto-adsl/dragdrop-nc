@@ -9,20 +9,20 @@
 const HX53_ACT={k:"act",l:"Al pulsar el botón",t:"select",opts:V4_ACT};
 Object.assign(LIB,{
 dx_hslider:{label:"✚ Hero carrusel de ofertas",ico:"⇆",cat:"Heros v5",raw:true,
-  def:()=>({canal:"form",act:"popup",auto:"6",slides:[
+  def:()=>({canal:"form",act:"popup",auto:"",slides:[
     {tag:"{{ETIQUETA_1}}",title:"{{OFERTA_1}}",sub:"{{DETALLE_OFERTA_1}}",price:"{{PRECIO_1}}",unit:"€/mes",note:"{{NOTA_PRECIO_1}}",img:"",imgAlt:"",cta:"La quiero"},
     {tag:"{{ETIQUETA_2}}",title:"{{OFERTA_2}}",sub:"{{DETALLE_OFERTA_2}}",price:"{{PRECIO_2}}",unit:"€/mes",note:"{{NOTA_PRECIO_2}}",img:"",imgAlt:"",cta:"La quiero"},
     {tag:"{{ETIQUETA_3}}",title:"{{OFERTA_3}}",sub:"{{DETALLE_OFERTA_3}}",price:"{{PRECIO_3}}",unit:"€/mes",note:"{{NOTA_PRECIO_3}}",img:"",imgAlt:"",cta:"La quiero"}]}),
-  fields:[{k:"canal",l:"Botón secundario",t:"select",opts:[["form","Teléfono (llamar)"],["call","Te llamamos (formulario)"],["wa","WhatsApp"]]},HX53_ACT,{k:"auto",l:"Pasar solo cada (segundos · vacío = no)"},
+  fields:[{k:"canal",l:"Botón secundario",t:"select",opts:[["form","Teléfono (llamar)"],["call","Te llamamos (formulario)"],["wa","WhatsApp"]]},HX53_ACT,{k:"auto",l:"Avance automático cada X segundos (vacío = no; recomendado: vacío · solo escritorio, con botón de pausa)"},
     {k:"slides",l:"Ofertas",t:"repeater",addLabel:"Añadir oferta",item:[{k:"tag",l:"Etiqueta",def:""},{k:"title",l:"Título",def:"{{OFERTA}}"},{k:"sub",l:"Detalle",t:"ta",def:""},{k:"price",l:"Precio",def:"{{PRECIO}}"},{k:"unit",l:"Unidad",def:"€/mes"},{k:"note",l:"Nota del precio",def:""},{k:"img",l:"Foto",t:"image",def:""},{k:"imgAlt",l:"Texto alternativo",def:""},{k:"cta",l:"Botón",def:"La quiero"}]}],
   render:p=>{const S=arr(p.slides);const c=p.canal||"form";const n=S.length;
     const sec=c==="wa"?`${v4Wa()} class="da-btn sec">${I_WA()} WhatsApp</a>`:c==="call"?`<a href="#form" data-cta="form" class="da-btn sec">${esc(vt("weCall"))}</a>`:`${v4Tel()} class="da-btn sec">${I_TEL()} ${esc(telText())}</a>`;
-    return `<header class="da da-hero hx hx-sld" data-hsld${/^\d+$/.test(String(p.auto||"").trim())&&+p.auto>0?` data-auto="${+p.auto}"`:""}><div class="container"><div class="trk" role="region" aria-roledescription="carrusel" aria-label="Ofertas" tabindex="0">
+    return `<header class="da da-hero hx hx-sld${n<2?" n1":""}" data-hsld${/^\d+$/.test(String(p.auto||"").trim())&&+p.auto>0?` data-auto="${+p.auto}"`:""}><div class="container"><div class="trk" role="region" aria-roledescription="carrusel" aria-label="Ofertas" tabindex="0">
     ${S.map((s,i)=>`<article class="sl" role="group" aria-roledescription="oferta" aria-label="${i+1} de ${n}"><div class="tx">${s.tag?`<span class="da-eyebrow">${esc(s.tag)}</span>`:""}${i===0?`<h1 class="da-h1">${esc(s.title)}</h1>`:`<h2 class="da-h1">${esc(s.title)}</h2>`}${s.sub?`<p class="da-sub hx-sub">${esc(s.sub).replace(/\n/g,"<br>")}</p>`:""}
       ${s.price?`<div class="pr"><b>${esc(s.price)}</b><span>${esc(s.unit||"")}${s.note?`<small>${esc(s.note)}</small>`:""}</span></div>`:""}
       <div class="da-btns"><a href="#form" data-cta="form"${v4ActA(p,{name:s.title,price:s.price,unit:s.unit})} class="da-btn pri">${esc(s.cta||"La quiero")} ${I_GO()}</a>${sec}</div></div>
       <div class="ph">${s.img?`<img src="${esc(s.img)}" alt="${esc(s.imgAlt||"")}"${i?' loading="lazy"':' fetchpriority="high"'}>`:`<div class="hx-mock">${ncVisual({vis:"mock",illus:"spark",headline:s.title,price:s.price,priceUnit:s.unit})}</div>`}</div></article>`).join("")}</div>
-    ${n>1?`<div class="ctl"><button type="button" class="ar prv" aria-label="Oferta anterior">‹</button><div class="dots">${S.map((s,i)=>`<button type="button" aria-label="Ver oferta ${i+1}"${i?"":' class="on"'}></button>`).join("")}</div><button type="button" class="ar nxt" aria-label="Oferta siguiente">›</button></div>`:""}</div></header>`;}},
+    ${n>1?`<div class="ctl"><button type="button" class="ar prv" aria-label="Oferta anterior">‹</button><div class="dots">${S.map((s,i)=>`<button type="button" aria-label="Ver oferta ${i+1}"${i?"":' class="on"'}></button>`).join("")}</div><button type="button" class="ar nxt" aria-label="Oferta siguiente">›</button>${/^\d+$/.test(String(p.auto||"").trim())&&+p.auto>0?`<button type="button" class="ar pa" aria-label="Pausar el carrusel" hidden>❚❚</button>`:""}</div>`:""}</div></header>`;}},
 dx_hvideobg:{label:"✚ Hero vídeo de fondo en bucle",ico:"▶",cat:"Heros v5",raw:true,
   def:()=>({canal:"form",eyebrow:"",headline:"Tu titular sobre el vídeo",highlight:"",sub:"Una frase que conecte con la situación del cliente.",checks:"",video:"",poster:"",posterAlt:"",mobile:"poster",scrim:"med",
     cardTitle:"Te llamamos gratis",cardSub:"Déjanos tu teléfono y te informamos sin compromiso.",btn:"Llamadme",opts:"",note:"",cta:"Quiero que me llaméis"}),
@@ -67,12 +67,15 @@ const NC_H53=/^dx_h(slider|videobg|steps|plans)$/;
 function ncH53CSS(){return `
 /* carrusel */
 .hx-sld{position:relative;overflow:hidden}.hx-sld .trk{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;gap:0;outline:0}.hx-sld .trk::-webkit-scrollbar{display:none}
-.hx-sld .sl{flex:0 0 100%;scroll-snap-align:start;display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:center;padding:4px 2px}
+.hx-sld .sl{flex:0 0 100%;scroll-snap-align:start;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:center;padding:4px 2px}
 .hx-sld .ph{order:-1;border-radius:var(--cardr,18px);overflow:hidden;aspect-ratio:16/10;background:color-mix(in srgb,var(--bink) 5%,transparent)}.hx-sld .ph img{width:100%;height:100%;object-fit:cover;display:block}.hx-sld .ph .hx-mock{height:100%}
 .hx-sld .pr{display:flex;align-items:flex-end;gap:10px;margin:14px 0 4px}.hx-sld .pr b{font:800 clamp(40px,5vw,64px)/1 var(--fdisp,var(--fhead));color:var(--bpt,var(--bp));letter-spacing:-.02em}.hx-sld .pr span{display:flex;flex-direction:column;font-weight:700;color:var(--bink);line-height:1.2}.hx-sld .pr small{font-weight:400;color:var(--bmuted);font-size:12.5px}
 .hx-sld .ctl{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:18px}.hx-sld .ar{width:40px;height:40px;border-radius:50%;border:1px solid var(--dline);background:transparent;color:var(--bink);font-size:22px;line-height:1}.hx-sld .ar:disabled{opacity:.35}
 .hx-sld .dots{display:flex;gap:8px}.hx-sld .dots button{width:10px;height:10px;border-radius:999px;border:0;padding:0;background:color-mix(in srgb,var(--bink) 22%,transparent);transition:width .2s}.hx-sld .dots button.on{width:28px;background:var(--bp)}
 @media (min-width:992px){.hx-sld .sl{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px}.hx-sld .ph{order:0;aspect-ratio:4/3.4}}
+@media (max-width:991px){.hx-sld:not(.n1) .trk{gap:12px}.hx-sld:not(.n1) .sl{flex-basis:88%}}
+@media (hover:hover) and (pointer:fine){.hx-sld:not(.n1) .trk{cursor:grab}}.hx-sld .trk.drg{cursor:grabbing;scroll-snap-type:none;user-select:none;-webkit-user-select:none}.hx-sld .trk.drg *{pointer-events:none}.hx-sld img{-webkit-user-drag:none;user-select:none}
+.hx-sld .ar:focus-visible,.hx-sld .dots button:focus-visible,.hx-sld .trk:focus-visible{outline:2px solid var(--bp);outline-offset:3px}.hx-sld .ar:hover{background:color-mix(in srgb,var(--bink) 6%,transparent)}.hx-sld .pa{font-size:13px}
 @media (prefers-reduced-motion:no-preference){.hx-sld .trk{scroll-behavior:smooth}}
 /* vídeo de fondo */
 .hx-vbg .bgv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.hx-vbg .vp{position:absolute;right:14px;bottom:14px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.35);color:#fff;font-size:11px;display:none}
@@ -98,12 +101,24 @@ function ncH53CSS(){return `
 .hx-pl .pc .da-checks{margin:4px 0 12px}.hx-pl .pc .da-btn{margin-top:auto;justify-content:center;width:100%}.hx-pl .ft{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin-top:16px;font-size:13px;color:var(--bmuted)}.hx-pl .ft .alt{margin:0}
 @media (max-width:767px){.hx-pl .cards{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px 4px 6px;margin:0 -12px;padding-left:12px;scrollbar-width:none}.hx-pl .cards::-webkit-scrollbar{display:none}.hx-pl .pc{flex:0 0 82%;scroll-snap-align:center}.hx-pl .cards.n1 .pc{flex-basis:100%}}`;}
 const NC_H53_JS=`(function(){var DL=function(o){try{(window.dataLayer=window.dataLayer||[]).push(o);}catch(e){}};var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-document.querySelectorAll('[data-hsld]').forEach(function(w){var t=w.querySelector('.trk'),S=[].slice.call(t.children),D=[].slice.call(w.querySelectorAll('.dots button')),pv=w.querySelector('.prv'),nx=w.querySelector('.nxt'),cur=0,tm=null;
-  function go(i,user){i=(i+S.length)%S.length;t.scrollTo({left:S[i].offsetLeft-t.offsetLeft,behavior:RM?'auto':'smooth'});if(user)stop();}
-  function upd(){var i=Math.round(t.scrollLeft/Math.max(1,t.clientWidth));if(i!==cur){cur=i;DL({event:'hero_slide',oferta:(S[i].querySelector('.da-h1')||{}).textContent});}D.forEach(function(d,k){d.classList.toggle('on',k===cur);d.setAttribute('aria-current',k===cur?'true':'false');});}
-  t.addEventListener('scroll',function(){clearTimeout(t._u);t._u=setTimeout(upd,80);});D.forEach(function(d,k){d.addEventListener('click',function(){go(k,true);});});if(pv)pv.addEventListener('click',function(){go(cur-1,true);});if(nx)nx.addEventListener('click',function(){go(cur+1,true);});
+document.querySelectorAll('[data-hsld]').forEach(function(w){var t=w.querySelector('.trk'),S=[].slice.call(t.children),D=[].slice.call(w.querySelectorAll('.dots button')),pv=w.querySelector('.prv'),nx=w.querySelector('.nxt'),pa=w.querySelector('.pa'),cur=0,tm=null;if(S.length<2)return;
+  function off(i){return S[i].offsetLeft-S[0].offsetLeft;}
+  function go(i,user){i=(i+S.length)%S.length;t.scrollTo({left:off(i),behavior:RM?'auto':'smooth'});if(user)stop();}
+  function upd(){var x=t.scrollLeft,b=0,bd=1e9;S.forEach(function(s,k){var d=Math.abs(off(k)-x);if(d<bd){bd=d;b=k;}});if(x>4&&x+t.clientWidth>=t.scrollWidth-4)b=S.length-1;if(b!==cur){cur=b;DL({event:'hero_slide',oferta:(S[b].querySelector('.da-h1')||{}).textContent});}D.forEach(function(d,k){d.classList.toggle('on',k===cur);d.setAttribute('aria-current',k===cur?'true':'false');});}
+  t.addEventListener('scroll',function(){clearTimeout(t._u);t._u=setTimeout(upd,80);},{passive:true});D.forEach(function(d,k){d.addEventListener('click',function(){go(k,true);});});if(pv)pv.addEventListener('click',function(){go(cur-1,true);});if(nx)nx.addEventListener('click',function(){go(cur+1,true);});
   t.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();go(cur+1,true);}if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1,true);}});
-  function stop(){clearInterval(tm);tm=null;}var a=parseInt(w.getAttribute('data-auto'),10);if(a&&!RM&&S.length>1){tm=setInterval(function(){go(cur+1);},a*1000);['pointerdown','focusin','mouseenter','touchstart'].forEach(function(ev){w.addEventListener(ev,stop,{passive:true});});}});
+  /* arrastrar con el ratón (en táctil ya desliza de forma nativa) */
+  var down=false,drg=false,x0=0,s0=0,c0=0;
+  t.addEventListener('pointerdown',function(e){if(e.pointerType!=='mouse'||e.button!==0||e.target.closest('.ar,.dots,input,select,textarea,label,[contenteditable="true"]'))return;down=true;drg=false;x0=e.clientX;s0=t.scrollLeft;c0=cur;});
+  window.addEventListener('pointermove',function(e){if(!down)return;var d=e.clientX-x0;if(!drg&&Math.abs(d)>6){drg=true;stop();t.classList.add('drg');t.setAttribute('data-dragged','1');try{getSelection().removeAllRanges();}catch(_){}}if(drg){t.scrollLeft=s0-d;e.preventDefault();}});
+  window.addEventListener('pointerup',function(e){if(!down)return;down=false;if(!drg)return;var d=e.clientX-x0,i=c0+(d<-40?1:d>40?-1:0);i=Math.max(0,Math.min(S.length-1,i));t.classList.remove('drg');go(i,true);setTimeout(function(){t.removeAttribute('data-dragged');},80);});
+  t.addEventListener('click',function(e){if(t.hasAttribute('data-dragged')){e.preventDefault();e.stopPropagation();}},true);t.addEventListener('dragstart',function(e){e.preventDefault();});
+  /* avance automático: solo si se configura, solo escritorio, se para al interactuar y tiene botón de pausa (WCAG 2.2.2) */
+  function lab(){if(!pa)return;pa.textContent=tm?'❚❚':'▶';pa.setAttribute('aria-label',tm?'Pausar el carrusel':'Reanudar el carrusel');}
+  function stop(){clearInterval(tm);tm=null;lab();}
+  var a=parseInt(w.getAttribute('data-auto'),10),desk=window.matchMedia&&matchMedia('(min-width:992px)').matches;
+  function start(){stop();tm=setInterval(function(){go(cur+1);},a*1000);lab();}
+  if(a>0&&!RM&&desk){if(pa){pa.hidden=false;pa.addEventListener('click',function(){if(tm)stop();else start();});}start();['focusin','touchstart'].forEach(function(ev){t.addEventListener(ev,stop,{passive:true});});}});
 document.querySelectorAll('.hx-vbg video[data-vsrc]').forEach(function(v){var h=v.closest('.hx-vbg'),mob=window.matchMedia&&matchMedia('(max-width:767px)').matches;if(RM||(mob&&v.getAttribute('data-mobile')!=='1')){v.remove();return;}
   v.src=v.getAttribute('data-vsrc');v.play&&v.play().then(function(){h.classList.add('playing');}).catch(function(){});var b=h.querySelector('.vp');if(b)b.addEventListener('click',function(){if(v.paused){v.play();b.textContent='❚❚';b.setAttribute('aria-label','Pausar el vídeo de fondo');}else{v.pause();b.textContent='▶';b.setAttribute('aria-label','Reproducir el vídeo de fondo');}});});
 document.querySelectorAll('form[data-steps]').forEach(function(f){var F=[].slice.call(f.querySelectorAll('.st'));f.classList.add('js');var cur=0;
