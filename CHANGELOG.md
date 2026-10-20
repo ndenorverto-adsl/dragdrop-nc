@@ -1,5 +1,20 @@
 # Changelog
 
+## v5.7 — 2026-10-20 · Diseño desde 0
+- **«✦ Desde 0»** (barra superior y galería de plantillas): crea una landing nueva eligiendo marca, estilo y con qué empezar. Las opciones son una sección vacía, «Hero · texto + formulario», «Hero · centrado» o «Hero · texto + imagen». Arranca con un esqueleto mínimo para captar: cabecera con teléfono, tu sección, pie legal y barra fija en móvil. Los datos de contacto y medición empiezan vacíos, como en una landing nueva.
+- **Bloque «✦ Sección desde 0 (constructor)»** (grupo «✦ Desde 0» del panel izquierdo): se monta con filas, columnas y elementos.
+  - **Filas** con 6 composiciones: 1 columna, 2 iguales, 2/1, 1/2, 3 y 4. Cada fila tiene separación, alineación vertical y comportamiento en móvil (apilar, apilar en orden inverso o 2 por fila).
+  - **Columnas** sin fondo, como tarjeta, con fondo suave, de color de marca u oscuras, y con su propia alineación.
+  - **13 elementos**: etiqueta, titular (H1/H2/H3, 4 tamaños y parte destacada), texto, botón (popup, ir al formulario, llamar, WhatsApp o enlace; principal, secundario o enlace de texto), imagen (subida o de la biblioteca, con proporción y esquinas), lista con checks, icono + título + texto, sellos de confianza, formulario de llamada (solo teléfono, + nombre, + código postal, en línea), precio (céntimos pequeños y tachado opcional), vídeo (YouTube, Vimeo o .mp4), espacio/línea y HTML propio.
+  - Todo se puede añadir, subir, bajar, duplicar y quitar. Los botones seguidos se agrupan en una fila.
+- **8 diseños de partida** para no empezar en blanco: hero con formulario, hero centrado, hero con imagen, 3 ventajas, imagen + texto, precio + formulario, cómo funciona en 3 pasos y banda de cierre. Vienen con textos de ejemplo y {{PLACEHOLDERS}}.
+- **En el lienzo**: doble clic para editar cualquier texto ahí mismo. Con la sección seleccionada, un clic en un elemento lo abre en el panel. El estilo por elemento (v5.5) también funciona.
+- **Fondo, márgenes y alineación** de la sección: pestaña Estilo, con los mismos controles que el resto de bloques (blanco, suave, tinte, oscuro, marca, color o imagen).
+- Responsive sin posiciones absolutas. Un solo H1 por página: los diseños de partida usan H2 si la sección no es la primera. La primera imagen de la primera sección sale con prioridad alta y sin carga diferida (LCP).
+- Arreglos de paso:
+  - Los ids de formulario ya no se repiten cuando hay varios bloques del mismo tipo (casilla de privacidad y `form_id`).
+  - El botón «Plantillas» vuelve a mostrar «☁ Guardar la actual como plantilla».
+
 ## v5.6 — 2026-10-20 · Mejoras basadas en el research de CRO del sector
 Investigación de landings de referencia (telco, energía, alarmas, seguros, legal) y de estudios de usabilidad (NN/g, Baymard, web.dev). Lo aplicado:
 - **4 heros nuevos** (Heros v5):

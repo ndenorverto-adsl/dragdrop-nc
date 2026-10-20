@@ -4,6 +4,7 @@
    · Favoritos (★) y recientes, guardados en este navegador.
    · Filtros de sector y canal: el bloque entra ya con el copy de ese sector y con ese canal como principal. */
 const PAL_GOALS=[
+  ["scratch","✦ Desde 0","Sección en blanco: filas, columnas y elementos a tu medida (o un diseño de partida).",/^dx_build$/],
   ["top","Cabecera y hero","Lo primero que se ve: navegación, barra de oferta y hero.",/^(d[abc]_(nav|topbar|hero)|dx_(subnav|product|promohero|hsplit|hfull|hmin|hpicker|heditorial|hvideo|hsaver|hcoupon|hchat|hbento|hposter|hslider|hvideobg|hsteps|hplans|hcallback|hprice|hintent|hcalc))$/],
   ["lead","Captar el lead","Formularios, CTAs, quiz y canales directos.",/(_cta|form|form2|quiz|leadmag|exit|_wa|thanks|coverage|covtabs|booking|phoneband|callhours)$/],
   ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|calc|countdown|_vs|finder|bundle|plantabs|devices|addons|offerstrip|profiles|cmp3)$/],
@@ -36,6 +37,7 @@ function palThumb(t){const P="var(--acc,#7c6cff)",L="currentColor";const r=(x,y,
     dx_hvideobg:r(0,0,56,34,L,.55)+'<path d="M12 12v8l7-4z" fill="#fff" opacity=".85"/>'+r(4,24,20,3,"#fff",.7)+r(34,6,18,22,"#fff",.9)+r(37,21,12,4,P,.95),
     dx_hsteps:r(3,9,20,5)+r(3,16,14,3)+r(29,4,24,26,L,.2)+r(31,7,20,2,L,.3)+r(31,7,9,2,P,.95)+r(31,12,9,6,P,.5)+r(42,12,9,6,L,.3)+r(31,20,9,6,L,.3)+r(42,20,9,6,L,.3),
     dx_hplans:r(18,3,20,4)+[4,21,38].map((x,i)=>r(x,10,14,22,i===1?P:L,i===1?.35:.2)+r(x+2,14,10,3)+r(x+2,26,10,3,P,.9)).join(""),
+    dx_build:r(2,3,52,28,"none")+'<rect x="2" y="3" width="52" height="28" rx="2" fill="none" stroke="'+P+'" stroke-dasharray="3 2" opacity=".9"/>'+r(6,7,20,20,L,.25)+r(30,7,20,9,L,.25)+r(30,18,20,9,P,.5)+'<path d="M16 13v8M12 17h8" stroke="'+P+'" stroke-width="2"/>',
     dx_hcallback:r(3,6,22,5)+r(3,13,16,3)+r(3,19,24,6,L,.2)+r(18,20,8,4,P,.95)+[3,10,17].map(x=>r(x,28,5,2,P,.7)).join("")+r(31,4,22,26,L,.3),
     dx_hprice:r(3,9,20,5)+r(3,16,14,3)+r(29,4,24,26,P,.18)+r(31,3,9,3,P,.95)+r(32,10,12,10,P,.9)+r(45,10,4,4,P,.9)+r(32,24,18,4,P,.95),
     dx_hintent:r(16,3,24,4)+[[4,10],[29,10],[4,21],[29,21]].map(([x,y],i)=>r(x,y,23,9,L,.22)+r(x+2,y+2,5,5,P,.8)+r(x+9,y+3,11,3)).join(""),

@@ -19,7 +19,9 @@ function ncTelDigits(){return String(state.settings.tel||"").replace(/\D/g,"");}
 function ncEnhanceHTML(html,s){
   if(!html||!/data-callback|<img/i.test(html))return html;
   let r;try{r=ncParse(html);}catch(e){return html;}
-  ncEnhanceForms(r,(s&&s.type)||"form");
+  /* v5.7: si el mismo tipo de bloque se repite (p. ej. varias «Secciones desde 0»), ids y form_id únicos */
+  let fid0=(s&&s.type)||"form";if(s&&s.type){const same=state.sections.filter(x=>x.type===s.type),k=same.indexOf(s);if(k>0)fid0+="_s"+(k+1);}
+  ncEnhanceForms(r,fid0);
   ncEnhanceImages(r,s||{});
   return r.innerHTML;
 }

@@ -87,7 +87,7 @@ function croChecks(m,d,html){
   const chans=[m.forms>0,m.tel||d.tel,m.wa||d.wa].filter(Boolean).length;
   C("fric",1,chans>=2?1:.5,chans>=2?`${chans} canales de contacto disponibles.`:"Solo hay un canal de contacto.",chans<2?"Añade la llamada o WhatsApp como plan B (Global → Contacto).":"");
   /* CONFIANZA Y TÉCNICA */
-  const proof=state.sections.some(s=>!s.hidden&&(CRO_PROOF.test(s.type)||(s.type==="dx_hcallback"&&String(s.props.seals||"").trim())||(s.extras||[]).some(x=>x.k==="trust")))||!!(hero&&(hero.props.proof||hero.props.kpis||hero.props.quote));
+  const proof=state.sections.some(s=>!s.hidden&&(CRO_PROOF.test(s.type)||(s.type==="dx_hcallback"&&String(s.props.seals||"").trim())||(s.extras||[]).some(x=>x.k==="trust")||(s.type==="dx_build"&&/"k":"trust"/.test(JSON.stringify(s.props.rows||[])))))||!!(hero&&(hero.props.proof||hero.props.kpis||hero.props.quote));
   C("trust",3,proof?1:0,proof?"Hay prueba social o de confianza (opiniones, sellos, cifras, garantía).":"No hay prueba social ni elementos de confianza.",proof?"":"Añade opiniones reales, sellos o una garantía.",proof?"":"add:"+(fam==="da"?"dx_rating":"db_reviews"));
   const pv=has("gUrlPriv"),lo=has("gLegalOwner");C("trust",2,pv?0:lo?.5:(m.forms?1:null),pv?pv.m:lo?lo.m:"RGPD: casilla y enlace a la política de privacidad.","",pv?"gUrlPriv":lo?"gLegalOwner":"");
   const cons=[...m.con.map(x=>Object.assign({vp:"móvil"},x)),...d.con.map(x=>Object.assign({vp:"escritorio"},x))],bad=cons.filter(x=>x.r<x.min);
