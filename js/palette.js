@@ -99,6 +99,13 @@ function palThumb(t){const P="var(--acc,#7c6cff)",L="currentColor";const r=(x,y,
   else if(/_wa/.test(t))s=`<circle cx="44" cy="22" r="8" fill="#25D366" opacity=".9"/>`+r(4,8,30,5,L,.2);
   else s=r(6,8,30,5)+r(6,16,44,3,L,.2)+r(6,22,36,3,L,.2);
   return `<svg class="pal-th" viewBox="0 0 56 34" aria-hidden="true">${s}</svg>`;}
+/* v5.8: el filtro de sector FILTRA de verdad: los bloques propios de un sector solo salen con ese sector (o con «todos»),
+   y los genéricos entran con el copy del sector (V5_DECK) */
+const PAL_SEC_ONLY=(()=>{const SAV=["Telco","Energía","Seguros","Coche","Agua","Empresas"],T=["Telco"],TE=["Telco","Empresas"];
+  return {dx_coverage:T,dx_covtabs:T,dx_devices:T,dx_addons:T,dx_promohero:T,dx_bundle:TE,dx_plantabs:["Telco","Energía","Empresas"],
+    dx_calc:SAV,dx_hsaver:SAV,dx_hcalc:SAV,dx_finder:["Telco","Energía","Seguros","Coche","Empresas"]};})();
+const PAL_DECK={"Telco":"telco","Energía":"luz","Alarmas":"alarma","Seguros":"hogar","Salud":"salud","Legal":"legal","Agua":"agua","Reformas":"reformas","Coche":"coche","Teleasistencia":"telea","Empresas":"empresas"};
+function palSecOk(t){const f=palGet("flt",{});if(!f.sec)return true;const L=PAL_SEC_ONLY[t];return !L||L.includes(f.sec);}
 /* contenido de sector y canal al insertar */
 function palPreset(s){const f=palGet("flt",{});const sec=f.sec,can=f.can;const def=LIB[s.type].def();
   if(sec&&V4_SECTORS[sec]){const S=V4_SECTORS[sec];const only=o=>{const r={};Object.keys(o||{}).forEach(k=>{if(k in def)r[k]=o[k];});return r;};
@@ -109,6 +116,8 @@ function palPreset(s){const f=palGet("flt",{});const sec=f.sec,can=f.can;const d
     if(s.type==="da_plans"&&S.plans)s.props.plans=JSON.parse(JSON.stringify(S.plans));
     if(s.type==="db_compare"&&S.compare)Object.assign(s.props,S.compare);
     if(s.type==="dx_product"&&"illus" in def&&typeof UC_ILL!=="undefined"&&UC_ILL[sec])s.props.illus=UC_ILL[sec];}
+  /* bloques v5 (heros, secciones, extras): copy del sector desde V5_DECK */
+  if(sec&&typeof V5_MAP!=="undefined"&&V5_MAP[s.type]&&typeof V5_DECK!=="undefined"&&V5_DECK[PAL_DECK[sec]]){try{const v=PAL_DECK[sec],o=V5_MAP[s.type](V5_DECK[v],{canal:can||"form",pi:0,v});Object.keys(o||{}).forEach(k=>{if(k in def&&k!=="canal")s.props[k]=o[k];});}catch(e){}}
   if(can&&"canal" in def)s.props.canal=can;}
 (function(){const _a=addSection;addSection=function(type){const r=_a.apply(this,arguments);const s=state.sections.find(x=>x.id===state.selected);
     if(s&&s.type===type){const before=JSON.stringify(s.props);palPreset(s);if(JSON.stringify(s.props)!==before){renderPreview();renderRight();}}
@@ -119,8 +128,8 @@ function palChip(t,fav){const b=LIB[t];const f=palGet("flt",{});const rec=f.can&
   return `<div class="chip pal-c" draggable="true" data-add="${t}" title="${esc(b.label)}">${palThumb(t)}<span class="pal-l">${esc(b.label.replace(/^[ABC] · |^✚ /,"").replace(/\s*\([^)]*\)\s*$/,""))}<small>${palFam(t)==="·"?"clásico":palFam(t)==="✚"?"extra":"familia "+palFam(t)}${rec?" · canal "+(PAL_CANAL.find(c=>c[0]===f.can)||[])[1]:""}</small></span><button type="button" class="pal-star${fav?" on":""}" data-fav="${t}" title="${fav?"Quitar de favoritos":"Añadir a favoritos"}" aria-label="Favorito">${fav?"★":"☆"}</button></div>`;}
 function palVisible(t,q){const b=LIB[t];if(!b||b.hidden)return false;if(b.brand&&b.brand!==state.settings.brand)return false;
   if(q&&!(b.label.toLowerCase().includes(q)||String(b.cat||"").toLowerCase().includes(q)||t.includes(q)))return false;
-  const f=palGet("flt",{});if(f.fam&&f.fam!==palFam(t)&&!(f.fam==="A"&&palFam(t)==="✚"))return false;if(f.can==="wa"&&/_wa$/.test(t))return true;return true;}
-function palTopHTML(){const fav=palGet("fav",[]).filter(t=>LIB[t]),rec=palGet("rec",[]).filter(t=>LIB[t]&&!fav.includes(t));let h="";
+  const f=palGet("flt",{});if(f.fam&&f.fam!==palFam(t)&&!(f.fam==="A"&&palFam(t)==="✚"))return false;if(!palSecOk(t))return false;if(f.can==="wa"&&/_wa$/.test(t))return true;return true;}
+function palTopHTML(){const fav=palGet("fav",[]).filter(t=>LIB[t]&&palSecOk(t)),rec=palGet("rec",[]).filter(t=>LIB[t]&&!fav.includes(t)&&palSecOk(t));let h="";
   if(fav.length)h+=`<div class="pal-top"><div class="pal-tt">★ Favoritos</div>${fav.map(t=>palChip(t,true)).join("")}</div>`;
   if(rec.length)h+=`<div class="pal-top"><div class="pal-tt">🕘 Recientes</div><div class="pal-recs">${rec.slice(0,6).map(t=>`<button type="button" class="pal-rec" data-add="${t}" draggable="true" title="${esc(LIB[t].label)}">${palThumb(t)}<span>${esc(LIB[t].label.replace(/^[ABC] · |^✚ /,"").slice(0,22))}</span></button>`).join("")}</div></div>`;
   return h;}
@@ -130,7 +139,7 @@ renderPalette=function(){
   const f=palGet("flt",{}),open=palGet("open",{top:true,lead:true}),fav=palGet("fav",[]);
   const groups={};ORDER.forEach(t=>{if(!palVisible(t,q))return;const g=palGoal(t);(groups[g]=groups[g]||[]).push(t);});
   const famOrder={"A":0,"B":1,"C":2,"✚":3,"·":4};Object.values(groups).forEach(a=>a.sort((x,y)=>famOrder[palFam(x)]-famOrder[palFam(y)]));
-  const fl=`<div class="pal-flt"><select id="palSec" title="Sector: el bloque entra con su copy"><option value="">Sector: todos</option>${Object.keys(V4_SECTORS).map(s=>`<option ${f.sec===s?"selected":""}>${s}</option>`).join("")}</select>
+  const fl=`<div class="pal-flt"><select id="palSec" title="Sector: muestra solo los bloques que encajan con ese sector y los inserta con su copy"><option value="">Sector: todos</option>${Object.keys(V4_SECTORS).map(s=>`<option ${f.sec===s?"selected":""}>${s}</option>`).join("")}</select>
     <select id="palCan" title="Canal principal de los bloques que lo admiten">${PAL_CANAL.map(c=>`<option value="${c[0]}" ${f.can===c[0]?"selected":""}>${c[0]?"Canal: "+c[1]:"Canal: todos"}</option>`).join("")}</select>
     <select id="palFam" title="Familia de diseño"><option value="">Familia: todas</option><option value="A" ${f.fam==="A"?"selected":""}>A · Oferta directa</option><option value="B" ${f.fam==="B"?"selected":""}>B · Confianza</option><option value="C" ${f.fam==="C"?"selected":""}>C · Premium</option><option value="·" ${f.fam==="·"?"selected":""}>Clásicos</option></select></div>`;
   let h=fl+(q?"":`<div id="palTop">${palTopHTML()}</div>`);

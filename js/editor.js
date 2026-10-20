@@ -1,12 +1,16 @@
 /* ---------- PREVIEW ---------- */
 let pendingScrollId=null;
 function renderPreview(){const f=document.getElementById("pv");
-  f.onload=function(){if(pendingScrollId){try{const el=f.contentDocument.querySelector('[data-sec="'+pendingScrollId+'"]');if(el)el.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}pendingScrollId=null;}};
+  /* v5.8: al repintar (deshacer, cambios de estructura…) se conserva la posición de scroll de la vista previa */
+  let keepY=0;try{keepY=f.contentWindow?f.contentWindow.scrollY||0:0;}catch(e){}
+  f.onload=function(){if(pendingScrollId){try{const el=f.contentDocument.querySelector('[data-sec="'+pendingScrollId+'"]');if(el)el.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}pendingScrollId=null;}
+    else if(keepY){try{const w=f.contentWindow,d=f.contentDocument.documentElement,sb=d.style.scrollBehavior;d.style.scrollBehavior="auto";w.scrollTo(0,keepY);setTimeout(()=>{try{if(Math.abs(w.scrollY-keepY)>4)w.scrollTo(0,keepY);d.style.scrollBehavior=sb;}catch(_){}},120);}catch(e){}}};
   f.srcdoc=buildDoc(false);renderOutline();}
 function patchSection(id){const s=state.sections.find(x=>x.id===id);if(!s)return;
   const doc=document.getElementById("pv").contentDocument;if(!doc){renderPreview();return;}
   const wrap=doc.querySelector('[data-sec="'+id+'"]');if(!wrap){renderPreview();return;}
   const tb=wrap.querySelector('.nc-tb');
+  if(s.type==="imported"&&!state.freeMode){wrap.innerHTML=(tb?tb.outerHTML:"")+(typeof ncImpWrap==="function"?ncImpWrap(s,importedPreviewHtml(s.props.html),false):importedPreviewHtml(s.props.html));return;}
   wrap.innerHTML=(tb?tb.outerHTML:"")+renderSection(s);}
 
 /* ---------- PALETA ---------- */
@@ -276,8 +280,9 @@ function commit(){past.push(snap());if(past.length>50)past.shift();future=[];upd
 let cdArmed=true,cdT=null;
 function commitDebounced(){ncDirty();if(cdArmed){commit();cdArmed=false;}clearTimeout(cdT);cdT=setTimeout(()=>cdArmed=true,700);}
 function restore(str){const o=JSON.parse(str);state.sections=o.s;state.settings=o.g;Object.assign(CUSTOM,o.c);uid=o.u;syncCustom();}
-function undo(){if(!past.length)return;future.push(snap());restore(past.pop());state.selected=null;document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();renderPalette();updHist();}
-function redo(){if(!future.length)return;past.push(snap());restore(future.pop());state.selected=null;document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();renderPalette();updHist();}
+function ncKeepSel(id){return id&&state.sections.some(s=>s.id===id)?id:null;}
+function undo(){if(!past.length)return;const sel=state.selected;future.push(snap());restore(past.pop());state.selected=ncKeepSel(sel);document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();renderPalette();updHist();}
+function redo(){if(!future.length)return;const sel=state.selected;past.push(snap());restore(future.pop());state.selected=ncKeepSel(sel);document.getElementById("brandTop").value=state.settings.brand;renderPreview();renderRight();renderPalette();updHist();}
 function updHist(){document.getElementById("btnUndo").disabled=!past.length;document.getElementById("btnRedo").disabled=!future.length;}
 
 /* ---------- TABS / DEVICE / EXPORT / PLANTILLAS ---------- */

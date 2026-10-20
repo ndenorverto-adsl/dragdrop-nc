@@ -34,8 +34,8 @@ function sectionsHTML(forExport){return state.sections.filter(s=>!(forExport&&s.
   let inner;
   if(s.freeHtml){inner=(!forExport&&state.freeMode)?freePreview(s.freeHtml):s.freeHtml;}
   else if(!forExport&&state.freeMode){s.freeHtml=bakeIds((s.type==="imported")?s.props.html:renderSection(s));inner=freePreview(s.freeHtml);}
-  else if(!forExport&&s.type==="imported"){inner=importedPreviewHtml(s.props.html);}
-  else{inner=(s.type==="imported")?s.props.html:renderSection(s);}
+  else if(!forExport&&s.type==="imported"){inner=importedPreviewHtml(s.props.html);if(typeof ncImpWrap==="function")inner=ncImpWrap(s,inner,false);}
+  else{inner=(s.type==="imported")?(typeof ncImpWrap==="function"?ncImpWrap(s,s.props.html,true):s.props.html):renderSection(s);}
   const drag=(forExport||(!forExport&&state.freeMode))?'':'draggable="true"';
   return `<div data-sec="${s.id}" ${drag} class="${sel?'sel':''}${(!forExport&&s.hidden)?' nc-hid':''}">${tb}${inner}</div>`;
 }).join("\n");}

@@ -309,4 +309,4 @@ doTranslate=async function(){const txt=(document.getElementById("importText").va
     ncApplyAnalysis(a,name);if(info)info.textContent="";toast("Convertido a "+state.sections.length+" bloques nativos");}
   catch(e){console.error(e);if(info)info.textContent="";toast("No pude convertir la página: "+(e.message||e));}};
 (function(){const _z=zipImport;zipImport=async function(file){try{const z=document.getElementById("zipInfo");if(z&&file&&file.name)z.dataset.src=file.name.replace(/\.zip$/i,"").replace(/^snapshot-/,"").replace(/-(?=[a-z]{2,3}$)/,".");}catch(e){}return _z.apply(this,arguments);};})();
-document.addEventListener("DOMContentLoaded",()=>{const b=document.getElementById("translateDo");if(b)b.textContent="Convertir a bloques editables (recomendado)";});
+document.addEventListener("DOMContentLoaded",()=>{const b=document.getElementById("translateDo");if(b)b.textContent="Convertir a bloques del builder";});

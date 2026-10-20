@@ -619,3 +619,10 @@ body.nc-ed .dc-sec .dc-lead{margin-left:0}body.nc-ed .da-faq,body.nc-ed .db-faq,
 @media (max-width:767px){body.nc-annot .nc-ann{position:static;display:flex;margin:14px 0 -6px;align-self:flex-start;order:5}body.nc-annot .nc-ann-in{margin:0 0 10px}.nc-ann .arr{width:40px;height:32px;transform:rotate(18deg)!important}body.nc-handf .nc-ann .t{font-size:22px}
  body.nc-ed .da-sec div.text-center.mb-5{display:block}body.nc-ed .da-sec div.text-center.mb-5 p{margin-top:8px}
  body.nc-ed .da-sec>.container[style*="max-width:780px"],body.nc-ed .db-sec>.container[style*="max-width:780px"],body.nc-ed .dc-sec>.container[style*="max-width:780px"]{display:block}}`;}
+
+/* v5.8: el fondo elegido en Estilo (color, marca, oscuro, suave…) gana también en los bloques que pintan su propio fondo
+   (hero a pantalla completa / vídeo de fondo sin imagen, extras con precio, franja de oferta) */
+(function(){const _sc=ncSecCSS;ncSecCSS=function(){const c=_sc.apply(this,arguments);const out=[];const B=[".hx-full.hx-full.hx-full",".dx-ad.dx-ad.dx-ad",".sx-os.sx-os.sx-os"];
+  (c.match(/[^{}]+\{[^{}]*\}/g)||[]).forEach(r=>{const i=r.indexOf("{");const sel=r.slice(0,i),body=r.slice(i);if(!/nc-bg-/.test(sel)||!/>\*/.test(sel)||/@media/.test(sel))return;
+    const S=sel.split(",").filter(x=>/>\*\s*$/.test(x.trim())).map(x=>x.trim());if(!S.length)return;out.push(S.map(x=>B.map(b=>x.replace(/>\*\s*$/,">"+b)).join(",")).join(",")+body);});
+  return c+"\n"+out.join("\n");};})();

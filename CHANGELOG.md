@@ -1,5 +1,45 @@
 # Changelog
 
+## v5.9 — 2026-10-20 · Tu código, idéntico y 100 % editable
+- **Importar → «Mantener mi código (idéntico y editable)»**: sube tu **.html** (botón «📄 Subir .html») o pégalo.
+  - Se conserva tu HTML, tu CSS (también el enlazado, que se descarga) y tu JS.
+  - Tu CSS queda aislado en cada sección importada y parte de una base limpia, así que los estilos del builder no cambian tu diseño. En las pruebas, la página exportada sale idéntica píxel a píxel a la original, en escritorio y en móvil, con una web propia y con una web en Bootstrap.
+  - «URL original» resuelve las rutas relativas: imágenes, CSS y fondos.
+  - Se quitan las etiquetas de medición de la página (GTM, Analytics, Meta…), porque la landing mide con el GTM del builder.
+- **Todo editable en el lienzo y en el panel**:
+  - **Textos**: doble clic para escribir encima (Intro guarda, Esc cancela), conservando el formato. También desde el panel.
+  - **Imágenes y fondos**: doble clic, soltar una imagen del ordenador o «Cambiar imagen» desde la biblioteca. Las imágenes de fondo puestas por CSS también se cambian, conservando degradados y capas. Puedes poner fondo a cualquier contenedor.
+  - **Enlaces y botones**: texto, URL, abrir en pestaña nueva y acción del builder (llamar, WhatsApp, popup, ir al formulario), medidos como el resto de CTAs.
+  - **Formularios**: enviar al endpoint de la landing (con casilla RGPD, antispam y atribución) o a su destino original.
+  - **Campos**: placeholder, nombre y obligatorio.
+  - **Estilo**: tamaño, color, espacios y alineación con la barra flotante o la pestaña Estilo.
+  - **Estructura**: subir, bajar, duplicar, borrar e ir al contenedor (migas de pan).
+  - Listas de Textos, Imágenes, Enlaces y botones, y Formularios, para ir directo a cada elemento.
+- **JS original**: sale en la landing exportada y en «Abrir». En el editor puedes activarlo para ver sliders o menús.
+- **Mis módulos**: «✎ Editar todo aquí» (o doble clic en un texto que no es campo) convierte la instancia en código editable con su CSS y su JS. Deja de actualizarse desde la biblioteca.
+- La exportación quita las marcas internas de edición. «Importar fiel (antiguo)» y «Convertir a bloques del builder» siguen disponibles.
+
+## v5.8 — 2026-10-20 · Feedback del constructor
+1. **Espacio y tamaño de cada elemento**:
+   - En el constructor, cada elemento tiene «📐 Tamaño, espacio y posición»: espacio encima y debajo (escritorio y móvil, con botones −/+), tamaño de letra en px (escritorio y móvil), ancho, posición (izquierda, centro o derecha) y color del texto.
+   - Cada fila tiene «Espacio encima de la fila».
+   - En cualquier otro bloque, la barra flotante del elemento seleccionado tiene ahora **↥ −/+** y **↧ −/+** para el espacio encima y debajo. Parten del espacio real que tiene el elemento.
+2. **Mover elementos donde quieras**: con la sección seleccionada, arrastra cualquier elemento en el lienzo a otra posición, a otra columna o a otra «Sección desde 0». También hay «◂ Columna anterior / Columna siguiente ▸» en el panel.
+3. **Rellenar huecos con imagen**: clic sobre el hueco de una imagen vacía (también el círculo) abre la biblioteca de medios, o suelta ahí una imagen del ordenador.
+   - Las columnas admiten «Imagen de fondo», con tres niveles de oscurecido.
+4. **Deshacer (Ctrl+Z) ya no te sube al inicio**: la vista previa conserva el scroll al repintar y se mantiene la sección seleccionada.
+5. **El filtro de sector filtra de verdad**:
+   - Los bloques propios de un sector solo salen con ese sector. Cobertura, dispositivos, extras de TV y packs, solo en Telco; calculadoras de ahorro y comparadores, solo en sectores con factura.
+   - Favoritos y recientes también se filtran.
+   - Los heros y secciones v5 entran con el copy del sector elegido.
+6. **Fondo de cada apartado**:
+   - Botón **🖌** en la barra de la sección: del estilo, blanco, suave, tinte de marca, marca, oscuro, color propio o imagen de fondo.
+   - Arreglado: el hero a pantalla completa sin foto, el vídeo de fondo sin foto, los extras con precio y la franja de oferta ignoraban el fondo elegido.
+7. **Mezclar apartados**:
+   - Nuevo elemento «Bloque del catálogo» para meter dentro de una columna cualquier bloque (calculadora, comparativa, cobertura, FAQ, opiniones…). Se edita en el mismo panel, funciona igual (CSS y JS incluidos) y se puede «Sacar a su propia sección».
+   - Botón **⤒ «Unir con la sección de arriba»** en la barra de la sección: las dos pasan a ser una sola sección editable cuyos elementos puedes mover entre filas y columnas.
+- **Arreglo**: los ids repetidos entre secciones (p. ej. dos calculadoras) se renumeran junto con sus etiquetas y enlaces, y el HTML sigue siendo válido.
+
 ## v5.7.1 — 2026-10-20 · Siempre en blanco y desde 0
 - El editor **arranca en blanco**: cabecera con teléfono, una «✦ Sección desde 0» vacía (ya seleccionada, con el constructor abierto), pie legal y barra fija móvil. Antes cargaba la plantilla «Fibra · Oferta con formulario arriba». Las plantillas siguen en «Plantillas».
 - **«Nueva landing»** (Mis landings) también empieza en blanco desde 0, en vez de dejar la página vacía del todo.
