@@ -75,7 +75,7 @@ const V5_DECK={
     sav:null,tick:"Central Receptora 24 h\nControl desde el móvil\nInstalación profesional\nEstudio sin compromiso"},
   alarmaneg:{s:"Alarmas",ph:"alarmas",il:"shield",u:"€/mes",eb:"Alarma para negocios",h:"Tu negocio protegido",hl:"también cuando cierras",
     sub:"Un técnico estudia tu local y te propone la protección que tiene sentido para tu actividad.",ck:"Estudio del local sin compromiso\nConectada a Central Receptora\n{{VENTAJA_NEGOCIO}}",
-    cta:"Pedir estudio del local",btn:"Pedir estudio",ct:"Estudio del local",cs:"Te llamamos para conocer tu negocio y su horario.",opts:"Tienda*|Oficina|Nave|Hostelería",
+    cta:"Quiero el estudio de mi local",btn:"Quiero mi estudio",ct:"Estudio del local",cs:"Te llamamos para conocer tu negocio y su horario.",opts:"Tienda*|Oficina|Nave|Hostelería",
     q:"¿Qué tipo de negocio tienes?",qo:"🏪 Tienda|🏢 Oficina|🏭 Nave|☕ Hostelería",
     ben:"shield-check|Vigilancia 24 h|Central Receptora que verifica cada aviso.\nimage|Cámaras|Revisa tu local desde el móvil.\nlock|Accesos|{{CONTROL_DE_ACCESOS}}.\nbadge-check|Normativa|{{CERTIFICACION}}.",
     st:"Hoy|Nos cuentas tu negocio|Tipo de local y horario.\n{{PLAZO_VISITA}}|Visita técnica|Estudiamos accesos y puntos sensibles.\n{{PLAZO_INSTALACION}}|Instalación|Fuera de tu horario si lo necesitas.\nDespués|Conectada 24 h|Avisos en el móvil y en la central.",
@@ -127,7 +127,7 @@ const V5_DECK={
     sav:null,tick:"Copagos claros\nCuadro médico en tu zona\nVideoconsulta\nAsesoramiento sin compromiso"},
   legal:{s:"Legal",ph:"legal",il:"scale",u:"",eb:"Estudio gratuito de tu caso",h:"¿Te han cobrado",hl:"lo que no debían?",
     sub:"Un abogado estudia tu caso sin coste y te dice si merece la pena reclamar. Sin compromiso.",ck:"Primera valoración sin coste\nAbogados colegiados\n{{CONDICION_HONORARIOS}}",
-    cta:"Estudiar mi caso",btn:"Que me llamen",ct:"Estudio de tu caso",cs:"Te llama un abogado para valorar tu caso.",opts:"Banco*|Seguro|Herencia|Otro",
+    cta:"Estudiar mi caso",btn:"Llamadme",ct:"Estudio de tu caso",cs:"Te llama un abogado para valorar tu caso.",opts:"Banco*|Seguro|Herencia|Otro",
     q:"¿Sobre qué es tu caso?",qo:"🏦 Banco|📄 Seguro|🏠 Vivienda|⚖️ Otro",
     ben:"scale|Valoración sin coste|Te decimos si tu caso tiene recorrido.\nbriefcase|Abogados colegiados|{{COLEGIO_DE_ABOGADOS}}.\neuro|Honorarios claros|{{CONDICION_HONORARIOS}}.\nmessage-circle|Seguimiento|Te contamos cada paso del proceso.",
     st:"Hoy|Nos cuentas tu caso|Una pregunta y tu teléfono.\n{{PLAZO_LLAMADA}}|Valoración|Un abogado estudia la documentación.\nSi hay caso|Reclamación|Te explicamos plazos y costes antes de empezar.\nHasta el final|Resolución|Te informamos en cada paso.",
@@ -153,7 +153,7 @@ const V5_DECK={
     sav:{l:"Lo que gastas en agua embotellada al mes",min:5,max:80,v:25},tick:"Sin garrafas\nInstalación por técnicos\nMantenimiento incluido\nDel grifo a tu vaso"},
   reformas:{s:"Reformas",ph:null,il:"spark",u:"€",eb:"Reformas con presupuesto cerrado",h:"Tu reforma",hl:"con un presupuesto claro",
     sub:"Visitamos tu casa, te damos un presupuesto detallado y un plazo de obra por escrito.",ck:"Visita y presupuesto sin compromiso\nPlazo de obra por escrito\n{{GARANTIA_OBRA}}",
-    cta:"Pedir presupuesto",btn:"Pedir presupuesto",ct:"Presupuesto sin compromiso",cs:"Te llamamos para concretar una visita.",opts:"Baño*|Cocina|Integral",
+    cta:"Quiero mi presupuesto",btn:"Quiero mi presupuesto",ct:"Presupuesto sin compromiso",cs:"Te llamamos para concretar una visita.",opts:"Baño*|Cocina|Integral",
     q:"¿Qué quieres reformar?",qo:"🛁 Baño|🍳 Cocina|🏠 Integral|🔧 Otra",
     ben:"clipboard-check|Presupuesto detallado|Partida a partida, sin sorpresas.\ncalendar|Plazo por escrito|{{PLAZO_OBRA}}.\nhammer|Equipo propio|{{EQUIPO}}.\nshield-check|Garantía|{{GARANTIA_OBRA}}.",
     st:"Hoy|Nos cuentas tu reforma|Y nos dejas tu teléfono.\n{{PLAZO_VISITA}}|Visita|Medimos y vemos lo que quieres.\n{{PLAZO_PRESUPUESTO}}|Presupuesto|Detallado y con plazo de obra.\nDurante la obra|Seguimiento|Un responsable de obra de referencia.",
@@ -179,7 +179,7 @@ const V5_DECK={
     sav:null,tick:"Atención 24 h\nEn casa y fuera\nAvisamos a la familia\nSin compromiso"},
   empresas:{s:"Empresas",ph:"legal",il:"wifi",u:"€/mes + IVA",eb:"Fibra y telefonía para empresas",h:"Conectividad para tu empresa",hl:"con un gestor de referencia",
     sub:"Te decimos qué necesita tu empresa y cuánto cuesta antes de firmar nada.",ck:"Gestor de referencia\nEstudio de tus líneas actuales\n{{VENTAJA_EMPRESA}}",
-    cta:"Hablar con un gestor",btn:"Que me llame un gestor",ct:"Habla con un gestor",cs:"Te llamamos en horario laboral para conocer tu empresa.",opts:"Fibra|Fibra + móviles*|Centralita",
+    cta:"Quiero hablar con un gestor",btn:"Que me llame un gestor",ct:"Habla con un gestor",cs:"Te llamamos en horario laboral para conocer tu empresa.",opts:"Fibra|Fibra + móviles*|Centralita",
     q:"¿Cuántas personas sois?",qo:"1-5|6-20|21-50|Más de 50",
     ben:"wifi|Fibra simétrica|{{VELOCIDAD}} y respaldo {{RESPALDO}}.\nphone|Centralita|{{TIPO_CENTRALITA}}.\nsmartphone|Líneas móviles|Para todo el equipo.\nhandshake|Gestor de referencia|Una persona que conoce tu cuenta.",
     st:"Hoy|Nos dejas tu teléfono|Y el tamaño de tu equipo.\n{{PLAZO_LLAMADA}}|Estudio|Revisamos tus líneas y facturas actuales.\nPropuesta|Por escrito|Con precio final y plazos.\n{{PLAZO_INSTALACION}}|Puesta en marcha|Sin cortar tu actividad.",
@@ -531,6 +531,24 @@ v5("Energía · Formulario en 3 pasos",{g:G_QUAL,v:"luz",look:"editorial",pi:3,d
   ["db_nav","dx_hsteps","db_seals","dx_timeline","db_reviews","db_faq","db_footer","db_sticky"]);
 v5("Fibra · Tarifas en el hero",{g:G_TAR,v:"telco",look:"swiss",desc:"Las tarifas se ven sin hacer scroll, la destacada marcada y un botón por tarifa."},
   ["da_topbar","da_nav","dx_hplans","dx_badges","dx_vs","da_faq","da_cta","da_footer","da_sticky"]);
+
+/* v5.6 · heros y bloques del research de CRO */
+Object.assign(V5_MAP,{
+  dx_hcallback:(D,M)=>Object.assign({eyebrow:D.eb,headline:D.h,highlight:D.hl,sub:D.cs,btn:D.btn,layout:"split"},v5Img(D,M.pi)),
+  dx_hprice:(D,M)=>{const L=v5Lines(D.pl),c=(L[1]||L[0]||"").split("|");return {canal:M.canal,act:"popup",eyebrow:D.eb,headline:D.h,highlight:D.hl,sub:D.sub,plan:c[0]||"{{NOMBRE_TARIFA}}",price:"{{PRECIO}}",unit:D.u||"€/mes",feats:(c[1]||"").split(";").join("\n")};},
+  dx_hintent:(D,M)=>({eyebrow:D.eb}),
+  dx_hcalc:(D,M)=>{const v=D.sav||{};return {canal:M.canal,act:"popup",eyebrow:D.eb,label:v.l||"Lo que pagas ahora",min:String(v.min||10),max:String(v.max||150),val:String(v.v||50),unit:D.u||"€/mes"};},
+  dx_cmp3:(D,M)=>({cols:v5Lines(D.pl).slice(0,3).map((l,i)=>`${l.split("|")[0]}|{{PRECIO_${i+1}}}|${D.u||"€/mes"}${i===1?"|*":""}`).join("\n")}),
+  dx_objections:(D,M)=>({}),dx_callhours:(D,M)=>({})
+});
+v5("Alarma · Callback de un campo con sellos",{g:G_RAP,v:"alarma",look:"bauhaus",pi:1,desc:"Solo el teléfono en el hero, microcopia que quita miedo y los sellos de confianza junto al botón."},
+  ["da_nav","dx_hcallback","dx_timeline","dx_objections","db_reviews","dx_callhours","da_footer","da_sticky"]);
+v5("Móvil · Precio protagonista",{g:G_OFF,v:"movil",look:"tipografico",desc:"El precio manda: céntimos pequeños, condiciones en una línea y la tarifa destacada. Para tráfico que ya compara."},
+  ["da_topbar","da_nav","dx_hprice","dx_checklist","dx_cmp3","dx_objections","da_faq","da_footer","da_sticky"]);
+v5("Legal · ¿Qué necesitas?",{g:G_QUAL,v:"legal",look:"papel",desc:"El visitante elige su caso y cada opción le lleva a su canal (formulario, llamada o WhatsApp)."},
+  ["db_nav",_s("dx_hintent",{headline:"¿En qué te podemos ayudar?",items:"scale|Quiero reclamar|Te decimos si tu caso tiene opciones, sin compromiso.|form\nclipboard-check|Quiero saber qué me corresponde|Revisamos tu caso y te lo explicamos.|form\nphone|Prefiero hablar ya|Te atendemos por teléfono.|call\nmessage-circle|Tengo una duda|Escríbenos por WhatsApp.|wa"}),"db_steps","dx_objections","db_reviews","dx_faqsplit","db_footer","db_sticky"]);
+v5("Fibra · Calcula tu ahorro a la vista",{g:G_TAR,v:"telco",look:"senal",desc:"La calculadora enseña el ahorro al momento, sin pedir datos; después, comparativa de 3 tarifas con cabecera fija."},
+  ["da_nav","dx_hcalc","dx_cmp3","dx_badges","dx_callhours","da_footer","da_sticky"]);
 
 /* ===== 5 · CLIENTES (marca propia) ===== */
 TEMPLATE_BRAND["Cliente · SICOR Teleasistencia"]="c_teleasistencia";

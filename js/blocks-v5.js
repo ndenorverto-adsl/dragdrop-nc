@@ -180,7 +180,7 @@ dx_checklist:{label:"✚ Qué incluye y qué no",ico:"✓✗",cat:"Secciones v5"
 (function(){const H=["dx_hsplit","dx_hfull","dx_hmin","dx_hpicker","dx_heditorial","dx_hvideo","dx_hsaver","dx_hcoupon","dx_hchat","dx_hbento","dx_hposter"],
   S=["dx_offerstrip","dx_ticker","dx_spotlight","dx_timeline","dx_profiles","dx_checklist","dx_faqsplit","dx_phoneband"];
   let i=ORDER.indexOf("da_trust");if(i<0)i=ORDER.length;ORDER.splice(i,0,...H);let j=ORDER.indexOf("dx_coverage");if(j<0)j=ORDER.length;ORDER.splice(j,0,...S);})();
-const NC_V5_TYPES=/^dx_(h(split|full|min|picker|editorial|video|saver|coupon|chat|bento|poster|slider|videobg|steps|plans)|spotlight|timeline|phoneband|faqsplit|offerstrip|ticker|profiles|checklist)$/;
+const NC_V5_TYPES=/^dx_(h(split|full|min|picker|editorial|video|saver|coupon|chat|bento|poster|slider|videobg|steps|plans|callback|price|intent|calc)|spotlight|timeline|phoneband|faqsplit|offerstrip|ticker|profiles|checklist|cmp3|objections|callhours)$/;
 
 function ncV5CSS(){return `
 .hx,.sx{overflow-wrap:break-word}.hx .da-h1{overflow-wrap:normal;word-break:normal;hyphens:manual}

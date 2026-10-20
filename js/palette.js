@@ -4,11 +4,11 @@
    · Favoritos (★) y recientes, guardados en este navegador.
    · Filtros de sector y canal: el bloque entra ya con el copy de ese sector y con ese canal como principal. */
 const PAL_GOALS=[
-  ["top","Cabecera y hero","Lo primero que se ve: navegación, barra de oferta y hero.",/^(d[abc]_(nav|topbar|hero)|dx_(subnav|product|promohero|hsplit|hfull|hmin|hpicker|heditorial|hvideo|hsaver|hcoupon|hchat|hbento|hposter|hslider|hvideobg|hsteps|hplans))$/],
-  ["lead","Captar el lead","Formularios, CTAs, quiz y canales directos.",/(_cta|form|form2|quiz|leadmag|exit|_wa|thanks|coverage|covtabs|booking|phoneband)$/],
-  ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|calc|countdown|_vs|finder|bundle|plantabs|devices|addons|offerstrip|profiles)$/],
+  ["top","Cabecera y hero","Lo primero que se ve: navegación, barra de oferta y hero.",/^(d[abc]_(nav|topbar|hero)|dx_(subnav|product|promohero|hsplit|hfull|hmin|hpicker|heditorial|hvideo|hsaver|hcoupon|hchat|hbento|hposter|hslider|hvideobg|hsteps|hplans|hcallback|hprice|hintent|hcalc))$/],
+  ["lead","Captar el lead","Formularios, CTAs, quiz y canales directos.",/(_cta|form|form2|quiz|leadmag|exit|_wa|thanks|coverage|covtabs|booking|phoneband|callhours)$/],
+  ["price","Precio y oferta","Tarifas, calculadora, cuenta atrás y comparativas de precio.",/(plans|calc|countdown|_vs|finder|bundle|plantabs|devices|addons|offerstrip|profiles|cmp3)$/],
   ["trust","Confianza y prueba","Cifras, sellos, opiniones, garantías y quién te atiende.",/(trust|seals|reviews|rating|logos|guarantee|_pro|letter|stats|counters|area|vtestis|spotlight)$/],
-  ["explain","Explicar y resolver dudas","Ventajas, pasos, imagen + texto, bento y preguntas.",/(benefits|steps|story|media|_text|tiles|colortiles|article|compare|gallery|video|faq|faqsplit|timeline|checklist)$/],
+  ["explain","Explicar y resolver dudas","Ventajas, pasos, imagen + texto, bento y preguntas.",/(benefits|steps|story|media|_text|tiles|colortiles|article|compare|gallery|video|faq|faqsplit|timeline|checklist|objections)$/],
   ["web","Elementos de diseño web","Separadores, tablas, vídeo, mapa, pestañas, carrusel, galería, equipo, pie con columnas…",/^dx_(spacer|iconlist|badges|callout|table|video|map|tabs|slider|beforeafter|modalinfo|counters|logos|team|gallery|ctaimg|footcols|ticker)$/],
   ["close","Cierre y elementos fijos","Footer y barra fija de móvil.",/(footer|sticky|infobar)$/]
 ];
@@ -36,6 +36,13 @@ function palThumb(t){const P="var(--acc,#7c6cff)",L="currentColor";const r=(x,y,
     dx_hvideobg:r(0,0,56,34,L,.55)+'<path d="M12 12v8l7-4z" fill="#fff" opacity=".85"/>'+r(4,24,20,3,"#fff",.7)+r(34,6,18,22,"#fff",.9)+r(37,21,12,4,P,.95),
     dx_hsteps:r(3,9,20,5)+r(3,16,14,3)+r(29,4,24,26,L,.2)+r(31,7,20,2,L,.3)+r(31,7,9,2,P,.95)+r(31,12,9,6,P,.5)+r(42,12,9,6,L,.3)+r(31,20,9,6,L,.3)+r(42,20,9,6,L,.3),
     dx_hplans:r(18,3,20,4)+[4,21,38].map((x,i)=>r(x,10,14,22,i===1?P:L,i===1?.35:.2)+r(x+2,14,10,3)+r(x+2,26,10,3,P,.9)).join(""),
+    dx_hcallback:r(3,6,22,5)+r(3,13,16,3)+r(3,19,24,6,L,.2)+r(18,20,8,4,P,.95)+[3,10,17].map(x=>r(x,28,5,2,P,.7)).join("")+r(31,4,22,26,L,.3),
+    dx_hprice:r(3,9,20,5)+r(3,16,14,3)+r(29,4,24,26,P,.18)+r(31,3,9,3,P,.95)+r(32,10,12,10,P,.9)+r(45,10,4,4,P,.9)+r(32,24,18,4,P,.95),
+    dx_hintent:r(16,3,24,4)+[[4,10],[29,10],[4,21],[29,21]].map(([x,y],i)=>r(x,y,23,9,L,.22)+r(x+2,y+2,5,5,P,.8)+r(x+9,y+3,11,3)).join(""),
+    dx_hcalc:r(3,9,20,5)+r(3,16,14,3)+r(29,4,24,26,L,.2)+r(32,8,18,2,L,.5)+'<circle cx="40" cy="9" r="2.6" fill="'+P+'"/>'+r(32,14,16,3,L,.5)+r(32,18,9,3,P,.9)+r(32,23,18,3,P,.3)+r(32,27,18,2,P,.95),
+    dx_cmp3:r(4,3,48,7,L,.2)+[10,24,38].map((x,i)=>r(x,4,12,5,i===1?P:L,i===1?.85:.4)).join("")+[13,19,25].map(y=>r(4,y,48,1,L,.3)+[15,29,43].map(x=>'<circle cx="'+x+'" cy="'+(y-2)+'" r="1.6" fill="'+P+'" opacity=".8"/>').join("")).join(""),
+    dx_objections:[[3,4],[29,4],[3,18],[29,18]].map(([x,y])=>r(x,y,24,12,L,.2)+'<circle cx="'+(x+4)+'" cy="'+(y+4)+'" r="2.4" fill="'+P+'"/>'+r(x+8,y+3,13,3)).join(""),
+    dx_callhours:r(3,8,18,4)+r(3,15,12,3,L,.3)+'<circle cx="5" cy="23" r="2" fill="#16a34a"/>'+r(8,22,12,3,L,.3)+r(27,4,27,26,L,.2)+[29,37,45].map((x,i)=>r(x,8,7,5,i?L:P,i?.35:.85)).join("")+r(29,16,23,5,L,.3)+r(29,23,23,5,P,.95),
     dx_spotlight:'<text x="6" y="17" font-size="16" font-family="Georgia" fill="'+P+'" opacity=".8">“</text>'+r(16,9,34,4)+r(16,15,30,4)+r(16,24,14,3,L,.25),
     dx_timeline:r(27,3,2,28,P,.5)+[6,14,22].map((y,i)=>'<circle cx="28" cy="'+(y+2)+'" r="2.6" fill="'+P+'"/>'+(i%2?r(32,y,18,4):r(6,y,18,4))).join(""),
     dx_phoneband:r(3,9,30,9,P,.85)+r(3,21,18,3,L,.3)+r(37,7,17,20,L,.2)+r(39,20,13,4,P,.9),

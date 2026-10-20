@@ -193,6 +193,8 @@ function renderGlobal(){
     ${st.thanks?`<div class="fld"><label>Texto de gracias</label><input id="gThanksTxt" value="${esc(st.thanksText)}"></div>`:''}
     <div class="fld"><label>URL de gracias (opcional)</label><input id="gThanksUrl" value="${esc(st.thanksUrl)}" placeholder="https://…/gracias"><div class="help">Si la rellenas, tras enviar redirige ahí (ideal para medir la conversión en Google Ads).</div></div>
     <div class="fld inline"><label>Casilla de privacidad obligatoria</label><input type="checkbox" id="gPrivCheck" ${st.privacyCheck!==false?'checked':''}></div>
+    <div class="fld inline"><label>Casilla aparte para comunicaciones comerciales (sin marcar)</label><input type="checkbox" id="gMktCheck" ${st.marketingCheck?'checked':''}></div>
+    ${st.marketingCheck?`<div class="fld"><label>Texto de la casilla comercial</label><input id="gMktTxt" value="${esc(st.marketingText||'')}" placeholder="Quiero recibir ofertas y novedades comerciales de… (opcional)"><div class="help">Opcional y separada de la de privacidad (RGPD): nunca marcada por defecto. Se envía como <code>acepta_comunicaciones=si</code>.</div></div>`:''}
     <div class="fld"><label>URL política de privacidad</label><input id="gUrlPriv" value="${esc(st.urlPrivacy)}" placeholder="{{URL_PRIVACIDAD}}"></div>
     <div class="fld"><label>Responsable del tratamiento</label><input id="gLegalOwner" value="${esc(st.legalOwner)}" placeholder="Razón social del cliente"><div class="help">Muestra la primera capa informativa RGPD bajo cada formulario.</div></div>
     <div class="fld inline"><label>Capturar UTM y gclid/gbraid/fbclid</label><input type="checkbox" id="gAttr" ${st.attribution!==false?'checked':''}></div>
@@ -225,7 +227,7 @@ function renderGlobal(){
   bindG("gTitle","title",false);bindG("gDesc","desc",false);bindG("gGtm","gtm",false);bindG("gSlug","slug",false);
   bindG("gThanksUrl","thanksUrl",false);bindG("gUrlPriv","urlPrivacy",true);bindG("gLegalOwner","legalOwner",true);bindG("gUrlCk","urlCookies",false);bindG("gPageUrl","pageUrl",false);bindG("gFav","favicon",false);
   const chk=(id,key,rr)=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{commit();state.settings[key]=el.checked;renderPreview();if(rr)renderGlobal();});};
-  chk("gPrivCheck","privacyCheck");chk("gAttr","attribution");chk("gEc","ecData");chk("gNoindex","noindex");
+  chk("gPrivCheck","privacyCheck");chk("gMktCheck","marketingCheck",true);bindG("gMktTxt","marketingText",false);chk("gAttr","attribution");chk("gEc","ecData");chk("gNoindex","noindex");
   const cn=document.getElementById("gConsent");if(cn)cn.addEventListener('change',()=>{commit();state.settings.consent=cn.value;state.settings.cookies=(cn.value==='banner');renderPreview();renderGlobal();});
   const cnt=(id,out,lo,hi)=>{const el=document.getElementById(id),o=document.getElementById(out);if(!el||!o)return;const u=()=>{const n=el.value.length;o.textContent=n+' caracteres · ideal '+lo+'–'+hi;o.style.color=(n&&(n<lo||n>hi))?'var(--danger)':'';};el.addEventListener('input',u);u();};
   cnt("gTitle","gTitleCnt",30,60);cnt("gDesc","gDescCnt",70,155);

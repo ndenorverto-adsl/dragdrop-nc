@@ -1,5 +1,24 @@
 # Changelog
 
+## v5.6 — 2026-10-20 · Mejoras basadas en el research de CRO del sector
+Investigación de landings de referencia (telco, energía, alarmas, seguros, legal) y de estudios de usabilidad (NN/g, Baymard, web.dev). Lo aplicado:
+- **4 heros nuevos** (Heros v5):
+  - **Callback de un campo + sellos**: solo el teléfono, microcopia «Gratis · Sin compromiso · Te llamamos en…» y los sellos de confianza junto al botón. Sin foto, sale centrado.
+  - **Precio protagonista**: céntimos en superíndice (29,90), condiciones del precio en una línea (IVA incluido · permanencia…), etiqueta de destacado y precio anterior tachado opcional.
+  - **¿Qué necesitas? (selector de intención)**: 2-4 caminos, cada uno a su canal (popup, llamada, WhatsApp o enlace). La opción elegida viaja con el lead en el campo oculto `intencion` y se mide con `hero_intent`.
+  - **¿Cuánto ahorras? (resultado a la vista)**: barra + campo numérico, comparativa en barras y ahorro anual al momento, sin pedir datos. Si ya paga menos, lo dice con honestidad. Evento `calc_use`.
+- **3 bloques nuevos** (Secciones v5):
+  - **Comparativa de hasta 3 tarifas** con cabecera fija al hacer scroll, también en móvil y sin scroll lateral.
+  - **Dudas antes de decidir**: las objeciones respondidas a la vista, junto al CTA.
+  - **¿Cuándo te llamamos?**: franja preferida (campo `franja`) + teléfono, horario visible y «Atendiendo ahora / fuera de horario» según el horario indicado (hora de Madrid).
+  - Ya existían y no se han duplicado: barra de confianza, cobertura por código postal y preguntas frecuentes.
+- **Sellos de confianza en cualquier bloque**: Contenido → Elementos añadidos → «Sellos de confianza» (icono|texto). Cuentan como prueba social en el informe CRO.
+- **4 plantillas nuevas** (111 en total): «Alarma · Callback de un campo con sellos», «Móvil · Precio protagonista», «Legal · ¿Qué necesitas?» y «Fibra · Calcula tu ahorro a la vista».
+- **Velocidad (LCP)**: arreglado un fallo. Las imágenes de los heros v5 salían con `loading="lazy"` en el export y se cargaban más tarde. Ahora salen con prioridad alta, sin carga diferida y con preload. Las fotos 2 y siguientes del carrusel sí cargan en diferido.
+- **CTAs en primera persona**: se han cambiado los botones de las plantillas que no lo estaban («Quiero mi presupuesto», «Llamadme»…). El informe CRO avisa si un botón está en segunda persona («Solicita», «Contrata»…).
+- **RGPD**: nueva opción en Global → Formulario y RGPD, «Casilla aparte para comunicaciones comerciales». Es opcional, nunca va marcada y se envía como `acepta_comunicaciones=si`; el texto se puede editar.
+- **Precio tachado**: aviso en el checklist de export y en el informe CRO. El precio anterior debe ser el más bajo de los 30 días previos (Directiva Omnibus); hay que revisarlo con legal.
+
 ## v5.5.1 — 2026-10-20 · Revisión de heros (carrusel y controles en el editor)
 - **El carrusel se arrastraba como sección**: en el editor, arrastrar el carrusel con el ratón movía la sección entera (reordenar). Ahora un gesto que empieza en un carrusel, en algo que se desliza en horizontal (tarifas en móvil) o en un campo no arrastra la sección; se sigue reordenando desde cualquier otra zona o desde la barra de la sección.
 - **Carrusel**: se puede **arrastrar con el ratón** (en móvil ya deslizaba), el siguiente slide **asoma en móvil** para que se vea que hay más, el **avance automático viene desactivado** (convierte mejor; si se activa: solo escritorio, se para al tocarlo y lleva botón de pausa), un arrastre nunca dispara el botón de la oferta y el punto activo se calcula bien con el slide que asoma.

@@ -58,6 +58,11 @@ function ncEnhanceForms(root,formId){
       d.innerHTML=`<div class="form-check text-start mb-0"><input class="form-check-input" type="checkbox" required name="acepta_privacidad" value="si" id="${esc(id)}"><label class="form-check-label" for="${esc(id)}">${esc(st.privacyText||'He leído y acepto la')} <a href="${esc(ph(st.urlPrivacy,'URL_PRIVACIDAD'))}" target="_blank" rel="noopener">política de privacidad</a></label></div>`;
       ins(d);
     }
+    // Casilla aparte (opcional, sin marcar) para comunicaciones comerciales — consentimiento separado del de privacidad
+    if(st.marketingCheck&&!f.querySelector('input[name="acepta_comunicaciones"]')){
+      const id='mkt_'+fid;const d=doc.createElement('div');d.className='col-12 nc-legal nc-mkt';
+      d.innerHTML=`<div class="form-check text-start mb-0"><input class="form-check-input" type="checkbox" name="acepta_comunicaciones" value="si" id="${esc(id)}"><label class="form-check-label" for="${esc(id)}">${esc(st.marketingText||('Quiero recibir ofertas y novedades comerciales de '+(st.legalOwner||'{{NOMBRE_EMPRESA}}')+' (opcional)'))}</label></div>`;
+      ins(d);}
     // Honeypot anti-spam (invisible para personas, los bots lo rellenan)
     if(!f.querySelector('[name="nc_website"]')){const hp=doc.createElement('div');hp.className='nc-hp';hp.setAttribute('aria-hidden','true');hp.innerHTML='<label>No rellenar <input type="text" name="nc_website" tabindex="-1" autocomplete="off"></label>';f.appendChild(hp);}
     // Campos ocultos de atribución y contexto
@@ -74,10 +79,13 @@ function ncEnhanceForms(root,formId){
 function ncEnhanceImages(root,s){
   const imgs=[...root.querySelectorAll('img')];if(!imgs.length)return;
   const type=s.type||'';const lib=LIB[type]||{};
-  const aboveFold=/hero/.test(type)||(lib.raw&&/nav|topbar/.test(type));
+  /* v5.6: los heros v5 (dx_h…) no llevan «hero» en el tipo: se detectan por categoría/etiqueta para no cargarlos en diferido (LCP) */
+  const isHero=/hero/.test(type)||/^Heros/.test(lib.cat||'')||/^\W*Hero\b/.test(lib.label||'');
+  const aboveFold=isHero||(lib.raw&&/nav|topbar/.test(type));
   imgs.forEach((im,i)=>{
     im.setAttribute('decoding','async');
-    if(aboveFold){im.removeAttribute('loading');if(i===0&&/hero/.test(type))im.setAttribute('fetchpriority','high');}
+    if(aboveFold&&im.closest('.sl:not(:first-child)')){im.setAttribute('loading','lazy');im.removeAttribute('fetchpriority');return;} /* slides 2+ del carrusel */
+    if(aboveFold){im.removeAttribute('loading');if(i===0&&isHero)im.setAttribute('fetchpriority','high');}
     else if(!im.getAttribute('loading'))im.setAttribute('loading','lazy');
   });
   // alt descriptivo para la imagen principal si está vacío
@@ -266,6 +274,7 @@ function ncAudit(){
   const kb=Math.round(html.length/1024);
   if(kb>1500)A(`El HTML pesa ${kb} KB (imágenes en Base64). Sube las imágenes a la nube para que cargue rápido.`);
   else if(has(/src="data:image/))A('Hay imágenes en Base64 embebidas: pesan más y no se cachean.');
+  if(/<(s|del)[\s>]/.test(html.replace(/<script[\s\S]*?<\/script>/g,'')))A('Hay un precio tachado: el precio anterior debe ser el más bajo aplicado en los 30 días previos (Directiva Omnibus). Revísalo con legal antes de publicar.');
   if(forms&&!st.thanks&&!st.thanksUrl)A('Tras enviar, el usuario sale a la respuesta del endpoint. Activa “Gracias sin recargar” o una URL de gracias.','gThanks');
   return out;
 }

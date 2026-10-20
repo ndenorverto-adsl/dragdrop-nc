@@ -40,7 +40,8 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   look-escaparate.js                              # v4.8: estilo Escaparate + marca Jazztel 2026 + 7 bloques + plantillas Jazztel (literal y placeholders)
   blocks-v5.js                                    # v5.0: 11 heros y 8 secciones nuevas
   heros-v53.js                                    # v5.3: heros carrusel, vídeo de fondo, multipaso y tarifas
-  templates-v5.js                                 # v5.0-5.3: catálogo de 107 plantillas por objetivo (copy por vertical en V5_DECK)
+  heros-v56.js                                    # v5.6: heros callback+sellos, precio protagonista, intención, calculadora; comparativa de 3, objeciones, franja horaria
+  templates-v5.js                                 # v5.0-5.6: catálogo de 111 plantillas por objetivo (copy por vertical en V5_DECK)
   theme.js                                        # v4.9: tema claro / oscuro / automático de la interfaz
   ds-import.js                                    # v5.1: importar un sistema de diseño de Claude (tokens.json/.zip → marca editable)
   modules.js                                      # v5.2: módulos propios (HTML/CSS/JS con {{campos}}, desde una web, biblioteca del equipo)

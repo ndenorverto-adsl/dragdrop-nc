@@ -5,7 +5,7 @@
      Nada inventado: cifras, fechas y precios salen como {{PLACEHOLDER}}. */
 const CRO_CATS=[["fold","Above the fold"],["data","Datos pendientes"],["fric","Fricción y CTAs"],["trust","Confianza y técnica"]];
 const CRO_VP={m:[390,844],d:[1440,900]};
-const CRO_PROOF=/^(db_reviews|dx_rating|da_trust|db_seals|dc_logos|dx_pro|dx_guarantee|dx_story)$/;
+const CRO_PROOF=/^(db_reviews|dx_rating|da_trust|db_seals|dc_logos|dx_pro|dx_guarantee|dx_story|dx_spotlight|dx_seals|dx_badges|dx_vtestis)$/;
 
 /* ---- utilidades de color ---- */
 function croRGB(s){s=String(s||"");let m=s.match(/rgba?\(([^)]+)\)/);
@@ -78,6 +78,8 @@ function croChecks(m,d,html){
   C("fric",3,m.fields?(m.fields<=3?1:m.fields<=5?.5:0):null,m.fields?`El primer formulario pide ${m.fields} dato(s).`:"No hay formulario.",m.fields>3?"Para captar un callback basta con el teléfono (y como mucho nombre y código postal).":"");
   const dens=m.ctaCount/m.pages;C("fric",2,dens>=.6?1:dens>=.35?.5:0,`${m.ctaCount} botones de acción en ${Math.round(m.pages)} pantallas de móvil.`,dens<.6?"Añade un CTA intermedio (CTA final, calculadora o garantía) para que siempre haya uno a mano.":"");
   const gen=[...new Set(m.texts.filter(t=>/^(enviar|submit|click|clic aquí|pulsa aquí|más info(rmación)?|saber más|continuar|aceptar|ok)$/i.test(t)))];
+  const yo=[...new Set(m.texts.filter(t=>/^(solicita|contrata|pide|infórmate|informate|llámanos|llamanos|envía|envia|consulta|descubre|compra|regístrate|registrate|contacta|contáctanos|contactanos)\b/i.test(t)))];
+  C("fric",1,yo.length?.5:1,yo.length?`Botones en segunda persona: ${yo.slice(0,4).join(", ")}.`:"Los botones hablan en primera persona o con el resultado.",yo.length?"Prueba la primera persona: «Llamadme gratis», «Quiero mi precio», «La quiero».":"");
   C("fric",2,gen.length?.5:1,gen.length?`Botones genéricos: ${gen.join(", ")}.`:"Los botones dicen lo que pasa al pulsarlos.",gen.length?"Cambia por el resultado: “Quiero que me llaméis”, “Ver mi precio”…":"");
   const dist=[...new Set(m.texts.map(t=>t.toLowerCase()))].filter(t=>!/^\+?\d[\d\s]{7,}$/.test(t)).length;
   C("fric",1,dist<=7?1:.5,dist<=7?"El mensaje de los botones es coherente.":`Hay ${dist} textos de botón distintos.`,dist>7?"Unifica el CTA principal en 1-2 textos para que el visitante sepa qué va a pasar.":"");
@@ -85,11 +87,12 @@ function croChecks(m,d,html){
   const chans=[m.forms>0,m.tel||d.tel,m.wa||d.wa].filter(Boolean).length;
   C("fric",1,chans>=2?1:.5,chans>=2?`${chans} canales de contacto disponibles.`:"Solo hay un canal de contacto.",chans<2?"Añade la llamada o WhatsApp como plan B (Global → Contacto).":"");
   /* CONFIANZA Y TÉCNICA */
-  const proof=state.sections.some(s=>!s.hidden&&CRO_PROOF.test(s.type))||!!(hero&&(hero.props.proof||hero.props.kpis||hero.props.quote));
+  const proof=state.sections.some(s=>!s.hidden&&(CRO_PROOF.test(s.type)||(s.type==="dx_hcallback"&&String(s.props.seals||"").trim())||(s.extras||[]).some(x=>x.k==="trust")))||!!(hero&&(hero.props.proof||hero.props.kpis||hero.props.quote));
   C("trust",3,proof?1:0,proof?"Hay prueba social o de confianza (opiniones, sellos, cifras, garantía).":"No hay prueba social ni elementos de confianza.",proof?"":"Añade opiniones reales, sellos o una garantía.",proof?"":"add:"+(fam==="da"?"dx_rating":"db_reviews"));
   const pv=has("gUrlPriv"),lo=has("gLegalOwner");C("trust",2,pv?0:lo?.5:(m.forms?1:null),pv?pv.m:lo?lo.m:"RGPD: casilla y enlace a la política de privacidad.","",pv?"gUrlPriv":lo?"gLegalOwner":"");
   const cons=[...m.con.map(x=>Object.assign({vp:"móvil"},x)),...d.con.map(x=>Object.assign({vp:"escritorio"},x))],bad=cons.filter(x=>x.r<x.min);
   C("trust",2,!cons.length?null:bad.length?0:1,!cons.length?"Contraste no medible (texto sobre foto o degradado).":bad.length?"Contraste bajo: "+[...new Set(bad.map(x=>`${x.lbl} ${x.r}:1 en ${x.vp}`))].join(" · "):"Contraste suficiente en titular, subtítulo y botón.",bad.length?"Mínimo 4,5:1 para texto y 3:1 para titulares y botones (WCAG AA).":"");
+  const strike=/<(s|del)[\s>]/.test(html.replace(/<script[\s\S]*?<\/script>/g,''));if(strike)C("trust",1,.5,"Hay un precio tachado.","El precio anterior tiene que ser el más bajo aplicado en los 30 días previos (Directiva Omnibus). Confírmalo con legal.");
   const kb=Math.round(html.length/1024),b64=/src="data:image/.test(html);C("trust",2,kb>1500?0:(kb>500||b64)?.5:1,`El HTML pesa ${kb} KB${b64?" (con imágenes en Base64)":""}.`,kb>500||b64?"Sube las imágenes a la nube para que cargue rápido en móvil (LCP).":"");
   C("trust",1,m.noAlt?.5:1,m.noAlt?`${m.noAlt} imagen(es) sin texto alternativo.`:"Las imágenes tienen texto alternativo.","");
   const t=has("gTitle"),ds=has("gDesc");C("trust",1,t?0:ds?.5:1,t?t.m:ds?ds.m:"Título SEO y meta description completos.","",t?"gTitle":ds?"gDesc":"");
