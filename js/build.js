@@ -243,6 +243,8 @@ function bxBind(cf,s){const P=document.getElementById("bxPanel");if(!P)return;co
 .bx-ov .nc-ov-box{width:640px}.bx-ov .fld{margin-bottom:12px}.bx-ov .bx-st{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.bx-ov .bx-st label{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px;cursor:pointer;margin:0}
 .bx-ov .bx-st input{margin-top:3px}.bx-ov .bx-st label:has(input:checked){border-color:var(--acc,#7c6cff);background:rgba(124,108,255,.08)}.bx-ov .bx-st small{display:block;color:var(--muted,#8a93a3);font-size:11.5px}.bx-ov .bx-go{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}`;document.head.appendChild(css);})();
 
+/* ---------- landing en blanco (predeterminada al abrir y en «Nueva landing») ---------- */
+function ncBlankSections(){const mk=t=>({id:nid(),type:t,props:LIB[t].def(),style:{}});return [mk("da_nav"),mk("dx_build"),mk("da_footer"),mk("da_sticky")];}
 /* ---------- nueva landing «Desde 0» ---------- */
 const BX_START=[["empty","Sección vacía","Montas tú las filas y los elementos."],["hero-form","Hero · texto + formulario","Promesa, ventajas y formulario de llamada al lado."],["hero-center","Hero · centrado","Titular grande, botón y teléfono centrados."],["hero-img","Hero · texto + imagen","Texto, precio y botones con una foto al lado."]];
 function bxNewOverlay(){let ov=document.getElementById("bxNewOv");

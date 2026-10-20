@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.7.1 — 2026-10-20 · Siempre en blanco y desde 0
+- El editor **arranca en blanco**: cabecera con teléfono, una «✦ Sección desde 0» vacía (ya seleccionada, con el constructor abierto), pie legal y barra fija móvil. Antes cargaba la plantilla «Fibra · Oferta con formulario arriba». Las plantillas siguen en «Plantillas».
+- **«Nueva landing»** (Mis landings) también empieza en blanco desde 0, en vez de dejar la página vacía del todo.
+- En «✦ Desde 0», «Sección vacía» es la opción marcada por defecto.
+
 ## v5.7 — 2026-10-20 · Diseño desde 0
 - **«✦ Desde 0»** (barra superior y galería de plantillas): crea una landing nueva eligiendo marca, estilo y con qué empezar. Las opciones son una sección vacía, «Hero · texto + formulario», «Hero · centrado» o «Hero · texto + imagen». Arranca con un esqueleto mínimo para captar: cabecera con teléfono, tu sección, pie legal y barra fija en móvil. Los datos de contacto y medición empiezan vacíos, como en una landing nueva.
 - **Bloque «✦ Sección desde 0 (constructor)»** (grupo «✦ Desde 0» del panel izquierdo): se monta con filas, columnas y elementos.

@@ -59,7 +59,7 @@ const FAKE = fs.readFileSync(path.join(__dirname, 'fake-supabase.js'), 'utf8');
   ok(await count() === c0 + 1, 'Ctrl+D con el foco en el preview');
   // Nueva landing no arrastra datos de contacto
   await ev(() => { state.settings.tel = '600111222'; state.settings.gtm = 'GTM-AAAA111'; newLanding(); });
-  ok(await ev(() => !state.settings.tel && !state.settings.gtm && !state.sections.length && cloud.id === null), 'Nueva landing reinicia teléfono/GTM');
+  ok(await ev(() => !state.settings.tel && !state.settings.gtm && state.sections.some(s=>s.type==='dx_build')&&!state.sections.find(s=>s.type==='dx_build').props.rows.length && cloud.id === null), 'Nueva landing reinicia teléfono/GTM');
   // Borrador local + recuperación tras recargar
   await ev(() => { loadTemplate('Fibra · Premium oscuro'); }); await p.waitForTimeout(1200);
   const nDraft = await count();
