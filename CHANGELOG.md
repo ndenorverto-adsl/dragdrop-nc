@@ -1,5 +1,11 @@
 # Changelog
 
+## Sin publicar · Registro único de marcas
+- Las marcas se leen de la tabla compartida `nc_brands` de Supabase (`js/brands-registry.js`). `brands.js` queda como respaldo cuando no hay conexión o la tabla no existe.
+- Se aplica primero la copia guardada en el navegador, para que una landing con una marca del registro no vuelva a Next Conversion al abrirse.
+- Marcas nuevas en el registro: aparecen solas en el selector. Si les faltan tokens, se completan con valores neutros.
+- Instalación: `supabase-migration-v6.0-brands.sql` y después `seed.sql` (en `023_Brandbooks_Clientes/registro-marcas`).
+
 ## v5.9.1 — 2026-10-20 · Landings exportadas del builder y «Datos de la página»
 - **Reimportar una landing exportada del builder** (por ejemplo, la de Lowi con toda la página dentro de un módulo) sale **idéntica píxel a píxel**, en escritorio y en móvil.
   - Se separa en sus secciones reales: cabecera, hero, bloques, pie y barra móvil. Se conserva el sprite de iconos SVG.
