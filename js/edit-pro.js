@@ -67,6 +67,8 @@ document.addEventListener('click',function(e){if(e.target.closest('[contentedita
   e.preventDefault();e.stopPropagation();pick(el,sec);},true);
 function pick(el,sec){if(cur)cur.classList.remove('nc-elsel');cur=el;el.classList.add('nc-elsel');var r=el.getBoundingClientRect();
   parent.postMessage({nc:'elsel',id:sec.getAttribute('data-sec'),path:path(el,sec),label:lbl(el),tag:el.tagName,img:el.tagName==='IMG',r:{x:r.left,y:r.top,w:r.width,h:r.height},fs:parseFloat(getComputedStyle(el).fontSize)||16,col:getComputedStyle(el).color,up:!!(el.parentElement&&el.parentElement!==sec&&!el.parentElement.matches('[data-sec]'))},'*');}
+window.addEventListener('message',function(e){var d=e.data;if(!d||(d.nc!=='elpick'&&d.nc!=='elhv'))return;if(hv){hv.classList.remove('nc-elhv');hv=null;}var sec=document.querySelector('[data-sec="'+d.id+'"]');if(!sec||!d.path)return;var n=sec;String(d.path).split('>').forEach(function(p){if(!n)return;var k=+p.split(':')[1],c=n.firstElementChild,i=0;for(;c;c=c.nextElementSibling){if(ex(c))continue;i++;if(i===k)break;}n=c;});if(!n)return;if(d.nc==='elhv'){hv=n;n.classList.add('nc-elhv');return;}var r0=n.getBoundingClientRect();if(r0.top<0||r0.bottom>innerHeight)n.scrollIntoView({block:'center'});pick(n,sec);});
+
 window.addEventListener('message',function(e){var d=e.data;if(!d||d.nc!=='elup'||!cur)return;var sec=cur.closest('[data-sec]'),p=cur.parentElement;if(sec&&p&&p!==sec)pick(p,sec);});
 window.addEventListener('message',function(e){var d=e.data;if(!d||d.nc!=='elre')return;var sec=document.querySelector('[data-sec="'+d.id+'"]');if(!sec)return;var n=sec;String(d.path).split('>').forEach(function(p){if(!n)return;var m=p.split(':'),k=+m[1],c=n.firstElementChild,i=0;for(;c;c=c.nextElementSibling){if(ex(c))continue;i++;if(i===k)break;}n=c;});
   if(cur)cur.classList.remove('nc-elsel');if(n){cur=n;n.classList.add('nc-elsel');var r=n.getBoundingClientRect();parent.postMessage({nc:'elpos',r:{x:r.left,y:r.top,w:r.width,h:r.height}},'*');}});
@@ -76,6 +78,7 @@ const PICK_CSS=`[data-sec].sel .nc-elhv{outline:1px solid rgba(110,90,255,.55)!i
 const _bd=buildDoc;buildDoc=function(forExport){PREV=!forExport;let h;try{h=_bd.apply(this,arguments);}finally{PREV=false;}const css=allCSS(!!forExport);
   if(css)h=h.replace("</head>",`<style id="nc-els">${css}</style></head>`);
   if(!forExport&&!state.freeMode)h=h.replace("</head>",`<style>${PICK_CSS}</style></head>`).replace(/<\/body>(?![\s\S]*<\/body>)/,`<script>${PICK_JS}<\/script></body>`);return h;};
+window.ncEpLive=()=>live();
 function live(){const f=document.getElementById("pv");const d=f&&f.contentDocument;if(!d){renderPreview();return;}let st=d.getElementById("nc-els");if(!st){st=d.createElement("style");st.id="nc-els";d.head.appendChild(st);}st.textContent=allCSS(false);posBar();if(typeof ncDirty==="function")try{ncDirty();}catch(e){}}
 
 /* ---------- barra flotante ---------- */

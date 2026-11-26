@@ -48,6 +48,10 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   edit-pro.js                                     # v5.5: estilo por elemento, elementos añadidos, diseño y espaciado por sección
   build.js                                        # v5.7-5.8: diseño desde 0 (dx_build), estilos por elemento, arrastrar en lienzo, bloques dentro de columnas, 🖌 fondo y ⤒ unir secciones
   code-edit.js                                    # v5.9: código importado/módulos idéntico (CSS aislado .nc-imp) y 100 % editable · v5.9.1: «Datos de la página» (window.CONFIG)
+  studio.js                                       # v6.0: barra superior en menús, nombres sin capas, «Acabado» (limpio / con adornos) y estilos recomendados
+  brief.js                                        # v6.0: «Generar desde brief» (landing completa a partir de sector, objetivo, oferta y marca)
+  layers.js                                       # v6.0: panel «Capas» (árbol de la sección: seleccionar, resaltar, ocultar, quitar estilo)
+  brand-url.js                                    # v6.0: «Marca desde una web» (colores, tipografías, radios y logo medidos en la web pintada)
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 api/fetch.js          # trae una página pública para convertir una sección en módulo (con sesión; bloquea IPs privadas)
 api/publish.js        # publicar por FTP/FTPS o en Vercel (credenciales solo en variables de entorno)
@@ -63,6 +67,14 @@ vercel.json · .vercelignore · .gitignore
 > Para añadir un archivo JS nuevo: créalo en `js/` y añade su `<script>` en `index.html` en el orden correcto.
 
 ## Trabajo en el editor
+
+- **Barra superior (v6)**: una sola fila. A la vista: Plantillas, **Generar** (desde brief), deshacer/rehacer, dispositivo, marca, vista previa y **Exportar**. En menús: **Archivo** (guardar, mis landings, nueva desde 0, importar HTML/ZIP/Figma, lote CSV), **Más** (medios, texto de ejemplo, modo libre, atajos) y **Revisar** (checklist, CRO, velocidad).
+- **Catálogo de bloques (v6)**: 37 tarjetas en el orden en que se lee una landing (Empezar, Cabecera, Hero, Oferta y precio, Captar el lead, Confianza, Explicar, Pie). Cada tarjeta es una función y sus diseños son variantes (píldoras); la elegida se recuerda. Ya no hay familias A/B/C ni bloques repetidos en el panel; los tipos internos no cambian.
+- **Acabado (v6)**: en Global. *Limpio* (por defecto en landings nuevas) quita las capas de adorno: notas a mano, letra manuscrita, grano/papel, numeración editorial, fotos en B/N o duotono, mockups girados y sellos. *Con adornos* recupera los toques personales. Las landings guardadas antes de la v6 abren con *Con adornos* para no cambiar su aspecto.
+- **Estilos (v6)**: 9 recomendados a la vista (Base, Neobanco, Vitrina, Nocturno, Editorial, Minimal lujo, Swiss, Prensa, Escaparate); los demás, en «Ver estilos experimentales».
+- **Capas (v6)**: panel derecho → «Secciones | Capas» (tecla `L`). Árbol de la sección seleccionada: clic para seleccionar en el lienzo, doble clic para todos los ajustes, ojo para ocultar (móvil → escritorio → siempre), ⟲ para quitar el estilo propio.
+- **Marca desde una web (v6)**: menú Más, Global → Marca o el brief. Con URL (versión desplegada y con sesión, vía `/api/fetch`) o pegando el HTML. Mide la web pintada (sin scripts) y crea la marca editable con colores, tipografías, radios y logo; antes de aplicar se revisa y retoca.
+- **Generar desde brief (v6)**: sector, producto, promesa, precio, ventajas («Título: explicación»), tarifas opcionales («Nombre | precio | ventaja; ventaja», `*` = recomendada), objetivo (que deje su teléfono, que llame, WhatsApp, que pida información), enfoque (precio, ahorro, confianza, urgencia), contacto, marca o colores propios, logo y estilo. Monta 7-12 secciones con reglas de CRO; lo que no se da queda como `{{PLACEHOLDER}}` (nunca inventa datos).
 
 - **Autoguardado**: cada cambio se guarda como borrador en el navegador; al volver a abrir la herramienta ofrece recuperarlo. Si la landing ya está en la nube, se sincroniza sola a los 15 s de dejar de editar.
 - **Estado** junto al nombre: *✓ Guardado*, *● Sin guardar*, *Guardando…*. Al cerrar la pestaña con cambios sin subir, el navegador avisa.

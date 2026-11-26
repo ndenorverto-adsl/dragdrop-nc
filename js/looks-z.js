@@ -88,7 +88,7 @@ ${lkS('btn')}{border-radius:10px!important;font-weight:600}& .dx-pill{border-rad
 ${lkS('card')}{border-radius:16px!important;box-shadow:none!important;border:1px solid var(--lkb)!important;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015))!important;color:var(--bink)}
 & .da-card,& .db-form{background:#101113!important;box-shadow:0 30px 80px -30px rgba(0,0,0,.9),0 0 0 1px var(--lkb)!important}
 ${lkS('input')},& .form-select,& .dx-prod-form .form-control{border-radius:10px!important;border:1px solid rgba(255,255,255,.14)!important;background:#0c0d0f!important;color:var(--bink)!important}& .form-control::placeholder{color:#6b7079}
-& .form-check-input{background-color:#0c0d0f;border-color:rgba(255,255,255,.22)}& a{color:var(--bpt)}
+& .form-check-input{background-color:#0c0d0f;border-color:rgba(255,255,255,.22)}& a{color:var(--bpt)}& a.da-bigcall,& a.da-bigwa{color:var(--btntext,#fff)}
 ${lkS('num')}{font-weight:var(--lk-hw)!important;letter-spacing:-.05em;color:var(--bink)}& .da-price .u,& .da-price .u b{color:var(--bmuted)}
 & .da-checks li:before{color:var(--bpt)}& .da-ben .ic{color:var(--bpt)}
 & .da-trust{background:var(--lkc)!important;border-color:var(--lkb)!important}& .da-trust .it{color:var(--bmuted)}& .da-trust .it b{color:var(--bink)}

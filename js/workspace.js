@@ -63,7 +63,7 @@ function wsModal(html,onAct,wide,sticky){
 /* ---- Atajos ---- */
 function wsShortcutsHelp(){
   wsModal(`<div class="nc-ov-head"><b>Atajos de teclado</b><button class="btn sm ghost" data-m="x">Cerrar</button></div>
-  <div class="kbd-list">${[["Ctrl + S","Guardar en la nube (crea versión)"],["Ctrl + Z / Ctrl + Y","Deshacer / rehacer"],["Ctrl + D","Duplicar sección seleccionada"],["Ctrl + C / Ctrl + V","Copiar / pegar sección (también entre landings)"],["Supr","Eliminar sección seleccionada"],["Alt + ↑ / Alt + ↓","Mover sección"],["H","Ocultar / mostrar sección (no se exporta)"],["Esc","Quitar selección"],["?","Esta ayuda"]].map(k=>`<div><kbd>${k[0]}</kbd><span>${k[1]}</span></div>`).join("")}</div>`);
+  <div class="kbd-list">${[["Ctrl + S","Guardar en la nube (crea versión)"],["L","Panel derecho: alternar Secciones / Capas"],["Ctrl + Z / Ctrl + Y","Deshacer / rehacer"],["Ctrl + D","Duplicar sección seleccionada"],["Ctrl + C / Ctrl + V","Copiar / pegar sección (también entre landings)"],["Supr","Eliminar sección seleccionada"],["Alt + ↑ / Alt + ↓","Mover sección"],["H","Ocultar / mostrar sección (no se exporta)"],["Esc","Quitar selección"],["?","Esta ayuda"]].map(k=>`<div><kbd>${k[0]}</kbd><span>${k[1]}</span></div>`).join("")}</div>`);
 }
 function wsKey(k){ // k: {key,ctrl,shift,alt,inField}
   const key=(k.key||"").toLowerCase(),ctrl=k.ctrl,sel=state.selected;

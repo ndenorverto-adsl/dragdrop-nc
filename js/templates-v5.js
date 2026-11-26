@@ -537,7 +537,7 @@ Object.assign(V5_MAP,{
   dx_hcallback:(D,M)=>Object.assign({eyebrow:D.eb,headline:D.h,highlight:D.hl,sub:D.cs,btn:D.btn,layout:"split"},v5Img(D,M.pi)),
   dx_hprice:(D,M)=>{const L=v5Lines(D.pl),c=(L[1]||L[0]||"").split("|");return {canal:M.canal,act:"popup",eyebrow:D.eb,headline:D.h,highlight:D.hl,sub:D.sub,plan:c[0]||"{{NOMBRE_TARIFA}}",price:"{{PRECIO}}",unit:D.u||"€/mes",feats:(c[1]||"").split(";").join("\n")};},
   dx_hintent:(D,M)=>({eyebrow:D.eb}),
-  dx_hcalc:(D,M)=>{const v=D.sav||{};return {canal:M.canal,act:"popup",eyebrow:D.eb,label:v.l||"Lo que pagas ahora",min:String(v.min||10),max:String(v.max||150),val:String(v.v||50),unit:D.u||"€/mes"};},
+  dx_hcalc:(D,M)=>{const v=D.sav||{};return {canal:M.canal,act:"popup",eyebrow:D.eb,label:v.l||"Lo que pagas ahora",min:String(v.min||10),max:String(v.max||150),val:String(v.v||50),unit:/kwh/i.test(D.u||"")?"€/mes":(D.u||"€/mes")};},
   dx_cmp3:(D,M)=>({cols:v5Lines(D.pl).slice(0,3).map((l,i)=>`${l.split("|")[0]}|{{PRECIO_${i+1}}}|${D.u||"€/mes"}${i===1?"|*":""}`).join("\n")}),
   dx_objections:(D,M)=>({}),dx_callhours:(D,M)=>({})
 });

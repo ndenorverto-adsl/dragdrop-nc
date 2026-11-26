@@ -16,7 +16,7 @@ async function teamLoad(force){if(team.loading||(team.loaded&&!force))return;tea
   catch(e){team.err=String(e&&e.message||e);team.rows=teamLocalGet();team.local=true;}
   finally{team.loading=false;team.loaded=true;teamRegisterTemplates();renderPalette();}}
 function teamClean(sec){const c=JSON.parse(JSON.stringify(sec));delete c.id;delete c.hidden;return c;}
-function teamSettingsSnap(){const s=state.settings;return {brand:s.brand,look:s.look,lookBrandFont:s.lookBrandFont,voice:s.voice,annot:s.annot,hand:s.hand,texture:s.texture,editorial:s.editorial,mTitle:s.mTitle,mSpace:s.mSpace,stickyShow:s.stickyShow,stickyStyle:s.stickyStyle,ctaStyle:s.ctaStyle,ctaAction:s.ctaAction};}
+function teamSettingsSnap(){const s=state.settings;return {brand:s.brand,look:s.look,finish:s.finish,lookBrandFont:s.lookBrandFont,voice:s.voice,annot:s.annot,hand:s.hand,texture:s.texture,editorial:s.editorial,mTitle:s.mTitle,mSpace:s.mSpace,stickyShow:s.stickyShow,stickyStyle:s.stickyStyle,ctaStyle:s.ctaStyle,ctaAction:s.ctaAction};}
 async function teamSave(row){row.created_by=(typeof ws!=="undefined"&&ws.user)||null;
   if(teamCloud()&&!team.err){const {data,error}=await window.NC_SB.from("team_blocks").insert(row).select("id,kind,nombre,cliente,etiquetas,data,created_by,created_at").single();
     if(error){toast("Error: "+error.message);return false;}team.rows.unshift(data);}

@@ -25,7 +25,7 @@ const FAKE = fs.readFileSync(path.join(__dirname, 'fake-supabase.js'), 'utf8');
   const n1 = await count();
   await ev(() => addSection('dx_stats')); await ev(() => saveLanding()); await p.waitForTimeout(200);
   ok(await ev(() => __db.landing_versions.length === 2), 'segundo guardado manual → 2 versiones');
-  await p.locator('#btnMine').click(); await p.waitForTimeout(300);
+  await p.locator('.tbm[data-menu=file] .tbm-b').click(); await p.locator('#btnMine').click(); await p.waitForTimeout(300);
   await p.locator('[data-ver]').first().click(); await p.waitForTimeout(300);
   ok(await p.locator('#verList [data-m=restore]').count() === 2, 'modal de versiones lista 2');
   await p.locator('#verList [data-m=restore]').last().click(); await p.waitForTimeout(300);
@@ -35,7 +35,7 @@ const FAKE = fs.readFileSync(path.join(__dirname, 'fake-supabase.js'), 'utf8');
   ok(await ev(() => __db.landing_versions.length <= 30), 'se conservan máx. 30 versiones (' + await ev(() => __db.landing_versions.length) + ')');
   // XSS + buscador
   await ev(() => __db.landings.push({ id: 'evil', nombre: '<img src=x onerror="window.__xss=1">Cliente Z', marca: 'nc', data: { sections: [] }, updated_at: new Date().toISOString() }));
-  await p.locator('#btnMine').click(); await p.waitForTimeout(400);
+  await p.locator('.tbm[data-menu=file] .tbm-b').click(); await p.locator('#btnMine').click(); await p.waitForTimeout(400);
   ok(await ev(() => !window.__xss) && (await p.locator('#mineList').textContent()).includes('<img'), 'nombres escapados (sin XSS)');
   await p.locator('#mineSearch').fill('cliente z'); await p.waitForTimeout(100);
   ok(await p.locator('#mineList [data-load]').count() === 1, 'buscador filtra por nombre');
@@ -69,7 +69,7 @@ const FAKE = fs.readFileSync(path.join(__dirname, 'fake-supabase.js'), 'utf8');
   await p.locator('#wsOverlay [data-m=restore]').click(); await p.waitForTimeout(300);
   ok(await count() === nDraft, 'borrador recuperado (' + nDraft + ' secciones)');
   // Exportar / importar .json
-  await p.locator('#btnMine').click(); await p.waitForTimeout(200);
+  await p.locator('.tbm[data-menu=file] .tbm-b').click(); await p.locator('#btnMine').click(); await p.waitForTimeout(200);
   const [dl] = await Promise.all([p.waitForEvent('download'), p.locator('#mineJsonOut').click()]);
   const jf = path.join(OUT, 'proyecto.nc.json'); await dl.saveAs(jf);
   await ev(() => { state.sections = []; renderPreview(); });

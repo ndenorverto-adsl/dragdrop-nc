@@ -369,7 +369,7 @@ ${lkS('card')}{border-radius:8px!important;box-shadow:none!important;border:1px 
 & .da-card,& .db-form{position:relative;padding-top:52px!important;box-shadow:0 30px 60px -30px rgba(0,0,0,.8)!important}
 & .da-card::before,& .db-form::before{content:"● ● ●   solicitud.sh";position:absolute;left:0;right:0;top:0;padding:10px 14px;font:500 12px/1 var(--fmono);letter-spacing:.02em;color:var(--bmuted);border-bottom:1px solid var(--lkb);background:#1c232c;border-radius:8px 8px 0 0;white-space:pre}
 ${lkS('input')},& .form-select{border-radius:6px!important;border:1px solid var(--lkb)!important;background:var(--lkp)!important;color:var(--bink)!important;font-family:var(--fmono)}& .form-control::placeholder{color:#6e7681}
-& .form-check-input{background-color:var(--lkp);border-color:var(--lkb)}& a{color:var(--bpt)}
+& .form-check-input{background-color:var(--lkp);border-color:var(--lkb)}& a{color:var(--bpt)}& a.da-bigcall,& a.da-bigwa{color:var(--btntext,#fff)}
 ${lkS('num')}{font-family:var(--fmono);font-weight:600!important;letter-spacing:-.05em;color:var(--bink)}
 & .da-price .u,& .da-price .u b{color:var(--bmuted)}
 & .da-checks li:before{content:"✓";color:var(--lkok)}& .da-ben .ic{color:var(--lkok)}

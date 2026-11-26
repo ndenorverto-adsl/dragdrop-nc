@@ -159,7 +159,7 @@ function ncProCSS(){return `
 .nc-alert{margin-top:.6rem;padding:.7rem .9rem;border-radius:10px;background:#fdecec;color:#8a1c1c;font-size:.9rem;text-align:left}
 .nc-alert a{color:inherit;font-weight:700}
 .nc-sending{opacity:.75;pointer-events:none}
-#ncCookies{position:fixed;left:12px;right:12px;bottom:12px;z-index:1060;background:var(--bink,#111);color:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.35);max-width:760px;margin:0 auto}
+#ncCookies{position:fixed;left:12px;right:12px;bottom:12px;z-index:1060;background:var(--bink,#111);color:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.35);max-width:760px;margin:0 auto}#ncCookies p,#ncCookies label,#ncCookies span,#ncCookies small{color:inherit}
 #ncCookies[hidden]{display:none}
 .nc-ck-in{padding:16px 18px}
 .nc-ck-txt{font-size:13px;line-height:1.45;margin:0 0 12px;opacity:.95}

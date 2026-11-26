@@ -15,7 +15,7 @@ const PAL_GOALS=[
 ];
 const PAL_SECTORS=["Telco","Energía","Alarmas","Seguros","Salud","Legal"];
 const PAL_CANAL=[["","Todos"],["form","Formulario"],["call","Llamada"],["wa","WhatsApp"]];
-const PAL_LS={fav:"nc_pal_fav_v1",rec:"nc_pal_rec_v1",open:"nc_pal_open_v1",flt:"nc_pal_flt_v1"};
+const PAL_LS={fav:"nc_pal_fav_v1",rec:"nc_pal_rec_v1",open:"nc_pal_open_v1",flt:"nc_pal_flt_v1",open6:"nc_pal_open_v6",var:"nc_pal_var_v6"};
 function palGet(k,d){try{const v=JSON.parse(localStorage.getItem(PAL_LS[k])||"null");return v==null?d:v;}catch(e){return d;}}
 function palSet(k,v){try{localStorage.setItem(PAL_LS[k],JSON.stringify(v));}catch(e){}}
 function palGoal(t){const W=PAL_GOALS.find(g=>g[0]==="web");if(W&&W[3].test(t))return "web";const g=PAL_GOALS.find(g=>g[3].test(t));return g?g[0]:"explain";}
@@ -124,37 +124,103 @@ function palPreset(s){const f=palGet("flt",{});const sec=f.sec,can=f.can;const d
     const rec=palGet("rec",[]).filter(x=>x!==type);rec.unshift(type);palSet("rec",rec.slice(0,8));
     if(!document.getElementById("palSearch").value)palRefreshTop();return r;};})();
 
-function palChip(t,fav){const b=LIB[t];const f=palGet("flt",{});const rec=f.can&&("canal" in (b._defc||(b._defc=b.def())));
-  return `<div class="chip pal-c" draggable="true" data-add="${t}" title="${esc(b.label)}">${palThumb(t)}<span class="pal-l">${esc(b.label.replace(/^[ABC] · |^✚ /,"").replace(/\s*\([^)]*\)\s*$/,""))}<small>${palFam(t)==="·"?"clásico":palFam(t)==="✚"?"extra":"familia "+palFam(t)}${rec?" · canal "+(PAL_CANAL.find(c=>c[0]===f.can)||[])[1]:""}</small></span><button type="button" class="pal-star${fav?" on":""}" data-fav="${t}" title="${fav?"Quitar de favoritos":"Añadir a favoritos"}" aria-label="Favorito">${fav?"★":"☆"}</button></div>`;}
+/* ---------- v6.0 · CATÁLOGO ÚNICO ----------
+   Antes el panel mezclaba capas de catálogo (familias A/B/C, «extras», «Heros v5», «Secciones v5», «Escaparate»…)
+   con bloques repetidos (3 FAQ, 3 pies, 3 barras fijas…). Ahora hay UN catálogo ordenado como se lee una landing:
+   cada tarjeta es una función («Preguntas frecuentes») y sus diseños son variantes que se eligen con las píldoras.
+   El tipo de bloque no cambia: las landings guardadas y las plantillas siguen igual. */
+const PAL6=[
+  ["start","Empezar","Una sección en blanco que montas con filas, columnas y elementos.",[
+    ["Sección desde 0","Filas, columnas y elementos a tu medida, o un diseño de partida.",[["dx_build","Constructor"]]]]],
+  ["head","Cabecera","Navegación y avisos de la parte de arriba.",[
+    ["Navegación","Logo y teléfono o botón siempre a mano.",[["da_nav","Con teléfono"],["db_nav","Editorial"],["dc_nav","Translúcida"]]],
+    ["Barra de aviso","Oferta o fecha límite encima de la cabecera.",[["da_topbar","Oferta"]]],
+    ["Barra de producto fija","Nombre del producto y botón de compra siempre visibles.",[["dx_subnav","Fija"]]]]],
+  ["hero","Hero","Lo primero que se ve. Elige según lo que quieres que haga el usuario.",[
+    ["Hero con formulario","Promesa y formulario a la vista, sin scroll.",[["da_hero","Oferta + precio"],["dx_hfull","Foto a sangre"],["dx_promohero","Promo lateral"],["dx_hmin","Minimal"],["dx_hcallback","Un solo campo"],["dx_hsteps","Multipaso"],["db_hero","Con pregunta"]]],
+    ["Hero de precio","El precio o la oferta mandan.",[["dx_hprice","Precio grande"],["dx_hsplit","Partido"],["dx_hplans","Con tarifas"],["dx_hpicker","Selector"],["dx_hslider","Carrusel"],["dx_hcoupon","Cupón"]]],
+    ["Hero de producto","Imagen y mensaje de marca, para tráfico que aún no compara.",[["dx_product","Centrado"],["dc_hero","Oscuro"],["dx_hbento","Bento"],["dx_heditorial","Editorial"],["dx_hposter","Cartel"]]],
+    ["Hero con vídeo","Un vídeo que explica o ambienta.",[["dx_hvideo","Vídeo al lado"],["dx_hvideobg","Vídeo de fondo"]]],
+    ["Hero interactivo","El usuario hace algo antes de dejar sus datos.",[["dx_hcalc","¿Cuánto ahorras?"],["dx_hsaver","Calculadora"],["dx_hintent","¿Qué necesitas?"],["dx_hchat","Chat WhatsApp"]]]]],
+  ["offer","Oferta y precio","Tarifas, comparativas y urgencia.",[
+    ["Tarifas","Las opciones con su precio y un botón cada una.",[["da_plans","Tarjetas"],["dx_plantabs","Con pestañas"],["dx_cmp3","Comparativa"],["dx_finder","Con filtros"],["dx_table","Tabla"]]],
+    ["Franja de oferta","Una línea con la oferta y el botón.",[["dx_offerstrip","Franja"],["dx_countdown","Cuenta atrás"],["dx_ticker","Cinta"]]],
+    ["Ayuda a elegir","Recomienda la opción que encaja con cada perfil.",[["dx_profiles","Perfiles"],["dx_bundle","Configura tu pack"]]],
+    ["Productos y extras","Dispositivos con cuota o servicios con precio.",[["dx_devices","Dispositivos"],["dx_addons","Extras"]]],
+    ["Calculadora de ahorro","Lo que paga ahora frente a lo que pagaría.",[["dx_calc","Calculadora"]]],
+    ["Comparativa","Por qué tú y no otros, con honestidad.",[["dx_vs","Nosotros vs. otros"],["db_compare","Tabla honesta"],["dx_checklist","Incluye / no incluye"]]]]],
+  ["lead","Captar el lead","Formularios, llamadas y canales directos.",[
+    ["Llamada a la acción","Cierre con el botón o el formulario.",[["da_cta","Clásica"],["db_cta","Editorial"],["dc_cta","Oscura"],["dx_ctaimg","Con imagen"],["dx_phoneband","Teléfono grande"]]],
+    ["Formulario","Captación por pasos o con más contexto.",[["dx_form2","En 2 pasos"],["dx_quiz","Quiz"],["dx_callhours","¿Cuándo te llamamos?"],["dx_booking","Pide cita"]]],
+    ["Cobertura","Comprobar si llega a su dirección.",[["dx_coverage","Código postal"],["dx_covtabs","Con pestañas"]]],
+    ["Guía descargable","Lead magnet a cambio del email.",[["dx_leadmag","Guía"]]],
+    ["WhatsApp flotante","Botón fijo de WhatsApp.",[["dx_wa","Flotante"]]],
+    ["Popup de salida","Última oportunidad al ir a cerrar.",[["dx_exit","Exit-intent"]]],
+    ["Página de gracias","Lo que ve tras enviar.",[["dx_thanks","Gracias"]]]]],
+  ["trust","Confianza","Prueba social, cifras, garantías y personas.",[
+    ["Cifras","Datos reales que dan seguridad.",[["da_trust","Barra"],["dx_stats","Grandes"],["dx_counters","Animadas"]]],
+    ["Opiniones","Lo que dicen los clientes.",[["db_reviews","Tarjetas"],["dx_spotlight","Destacada"],["dx_rating","Resumen"],["dx_vtestis","En vídeo"]]],
+    ["Sellos y garantías","Certificados, garantías e insignias.",[["dx_seals","Banda"],["db_seals","Certificados"],["dx_badges","Insignias"],["dx_guarantee","Garantía"]]],
+    ["Logos","Clientes, partners o medios.",[["dx_logos","Clientes"],["dc_logos","Medios"]]],
+    ["Personas","Quién atiende y quién está detrás.",[["dx_pro","Quién te atiende"],["dx_team","Equipo"],["dx_letter","Nota del equipo"]]],
+    ["Zona de servicio","Dónde estáis y a quién atendéis.",[["dx_area","Zonas"],["dx_map","Mapa"]]]]],
+  ["explain","Explicar","Ventajas, pasos, imágenes y contenido.",[
+    ["Ventajas","Por qué con vosotros.",[["da_benefits","Rejilla"],["dx_iconlist","Lista"],["dc_bento","Bento"],["dx_tiles","Lo esencial"],["dx_colortiles","Mosaico"]]],
+    ["Cómo funciona","Qué pasa después de dejar sus datos.",[["db_steps","Pasos"],["dx_timeline","Línea de tiempo"],["dx_story","Problema → solución"]]],
+    ["Imagen y texto","Contar algo con apoyo visual.",[["dx_media","Imagen + texto"],["dx_gallery","Galería"],["dx_slider","Carrusel"],["dx_beforeafter","Antes / después"],["dx_video","Vídeo"]]],
+    ["Contenido","Texto, pestañas y avisos.",[["dx_text","Texto"],["dx_tabs","Pestañas"],["dx_callout","Aviso"],["dx_modalinfo","Condiciones"],["dx_article","Advertorial"]]],
+    ["Preguntas frecuentes","Resuelve las dudas antes de que se vaya.",[["da_faq","Acordeón"],["dx_faqsplit","Con contacto al lado"],["db_faq","Editorial"],["dc_faq","Oscura"]]],
+    ["Dudas antes de decidir","Las objeciones respondidas junto al botón.",[["dx_objections","Objeciones"]]]]],
+  ["foot","Pie y elementos fijos","El final de la página y lo que acompaña en móvil.",[
+    ["Pie","Datos legales y enlaces.",[["da_footer","Simple"],["dx_footcols","Con columnas"],["db_footer","Editorial"],["dc_footer","Oscuro"]]],
+    ["Barra fija en móvil","Llamar o pedir info siempre a un toque.",[["da_sticky","Clásica"],["dx_infobar","Contacto"],["db_sticky","Editorial"],["dc_sticky","Oscura"]]],
+    ["Separador","Espacio o línea entre secciones.",[["dx_spacer","Separador"]]]]]
+];
+/* Nombre limpio de un bloque: sin la capa (A ·, B ·, C ·, ✚) */
+function palName(t){const b=LIB[t];return b?String(b.label).replace(/^[ABC] · |^[✚✦] /,""):t;}
+/* Cualquier bloque que no esté en el catálogo (p. ej. uno nuevo) sale en «Otros» para que nunca se pierda */
+function pal6Items(){const seen=new Set();PAL6.forEach(g=>g[3].forEach(it=>it[2].forEach(v=>seen.add(v[0]))));
+  const extra=ORDER.filter(t=>LIB[t]&&!seen.has(t)&&t!=="imported").map(t=>[palName(t),String(LIB[t].cat||""),[[t,"Diseño"]]]);
+  return extra.length?PAL6.concat([["more","Otros","Bloques que aún no tienen sitio en el catálogo.",extra]]):PAL6;}
+function palVar(name){const v=palGet("var",{});return v[name];}
 function palVisible(t,q){const b=LIB[t];if(!b||b.hidden)return false;if(b.brand&&b.brand!==state.settings.brand)return false;
-  if(q&&!(b.label.toLowerCase().includes(q)||String(b.cat||"").toLowerCase().includes(q)||t.includes(q)))return false;
-  const f=palGet("flt",{});if(f.fam&&f.fam!==palFam(t)&&!(f.fam==="A"&&palFam(t)==="✚"))return false;if(!palSecOk(t))return false;if(f.can==="wa"&&/_wa$/.test(t))return true;return true;}
-function palTopHTML(){const fav=palGet("fav",[]).filter(t=>LIB[t]&&palSecOk(t)),rec=palGet("rec",[]).filter(t=>LIB[t]&&!fav.includes(t)&&palSecOk(t));let h="";
-  if(fav.length)h+=`<div class="pal-top"><div class="pal-tt">★ Favoritos</div>${fav.map(t=>palChip(t,true)).join("")}</div>`;
-  if(rec.length)h+=`<div class="pal-top"><div class="pal-tt">🕘 Recientes</div><div class="pal-recs">${rec.slice(0,6).map(t=>`<button type="button" class="pal-rec" data-add="${t}" draggable="true" title="${esc(LIB[t].label)}">${palThumb(t)}<span>${esc(LIB[t].label.replace(/^[ABC] · |^✚ /,"").slice(0,22))}</span></button>`).join("")}</div></div>`;
+  if(q&&!(palName(t).toLowerCase().includes(q)||String(b.cat||"").toLowerCase().includes(q)||t.includes(q)))return false;return palSecOk(t);}
+function palCard(it,q,fav){const [name,desc,V]=it;const vis=V.filter(v=>palVisible(v[0],"")&&(!q||[name,desc,v[1],palName(v[0]),v[0],LIB[v[0]]._lab0||"",LIB[v[0]].cat||""].join(" ").toLowerCase().includes(q)));if(!vis.length)return "";
+  const cur=vis.find(v=>v[0]===palVar(name))||vis[0];const t=cur[0];const f=palGet("flt",{});const isFav=fav.includes(t);
+  const can=f.can&&("canal" in (LIB[t]._defc||(LIB[t]._defc=LIB[t].def())));
+  return `<div class="chip pal-c pal6" draggable="true" data-add="${t}" data-name="${esc(name)}" title="Clic o arrastra para añadir «${esc(name)} · ${esc(cur[1])}»">
+    <div class="pal6-h">${palThumb(t)}<span class="pal-l"><b>${esc(name)}</b><small>${esc(desc)}${can?" · canal "+esc((PAL_CANAL.find(c=>c[0]===f.can)||[])[1]):""}</small></span><button type="button" class="pal-star${isFav?" on":""}" data-fav="${t}" title="${isFav?"Quitar de favoritos":"Añadir a favoritos"}" aria-label="Favorito">${isFav?"★":"☆"}</button></div>
+    ${vis.length>1?`<div class="pal6-v" role="radiogroup" aria-label="Diseño">${vis.map(v=>`<button type="button" class="pal6-p${v[0]===t?" on":""}" data-var="${v[0]}" role="radio" aria-checked="${v[0]===t}" title="${esc(palName(v[0]))}">${esc(v[1])}</button>`).join("")}</div>`:""}</div>`;}
+function palChip(t,fav){const it=[palName(t),"",[[t,""]]];return palCard(it,"",fav?[t]:[]);}
+function palTopHTML(){const fav=palGet("fav",[]).filter(t=>LIB[t]&&palSecOk(t)),rec=palGet("rec",[]).filter(t=>LIB[t]&&!fav.includes(t)&&palSecOk(t)&&t!=="dx_build");let h="";
+  if(fav.length)h+=`<div class="pal-top"><div class="pal-tt">★ Favoritos</div><div class="pal-recs">${fav.map(t=>`<button type="button" class="pal-rec" data-add="${t}" draggable="true" title="${esc(palName(t))}">${palThumb(t)}<span>${esc(palName(t).slice(0,24))}</span></button>`).join("")}</div></div>`;
+  if(rec.length)h+=`<div class="pal-top"><div class="pal-tt">Recientes</div><div class="pal-recs">${rec.slice(0,6).map(t=>`<button type="button" class="pal-rec" data-add="${t}" draggable="true" title="${esc(palName(t))}">${palThumb(t)}<span>${esc(palName(t).slice(0,24))}</span></button>`).join("")}</div></div>`;
   return h;}
 function palRefreshTop(){const el=document.getElementById("palTop");if(el){el.innerHTML=palTopHTML();palBind(el);}}
 renderPalette=function(){
   const ps=document.getElementById("palSearch");let q=(ps&&ps.value||"").toLowerCase().trim();if(q.indexOf("@")>-1){q="";if(ps)ps.value="";}
-  const f=palGet("flt",{}),open=palGet("open",{top:true,lead:true}),fav=palGet("fav",[]);
-  const groups={};ORDER.forEach(t=>{if(!palVisible(t,q))return;const g=palGoal(t);(groups[g]=groups[g]||[]).push(t);});
-  const famOrder={"A":0,"B":1,"C":2,"✚":3,"·":4};Object.values(groups).forEach(a=>a.sort((x,y)=>famOrder[palFam(x)]-famOrder[palFam(y)]));
+  const f=palGet("flt",{}),open=palGet("open6",{start:true,hero:true}),fav=palGet("fav",[]);
   const fl=`<div class="pal-flt"><select id="palSec" title="Sector: muestra solo los bloques que encajan con ese sector y los inserta con su copy"><option value="">Sector: todos</option>${Object.keys(V4_SECTORS).map(s=>`<option ${f.sec===s?"selected":""}>${s}</option>`).join("")}</select>
-    <select id="palCan" title="Canal principal de los bloques que lo admiten">${PAL_CANAL.map(c=>`<option value="${c[0]}" ${f.can===c[0]?"selected":""}>${c[0]?"Canal: "+c[1]:"Canal: todos"}</option>`).join("")}</select>
-    <select id="palFam" title="Familia de diseño"><option value="">Familia: todas</option><option value="A" ${f.fam==="A"?"selected":""}>A · Oferta directa</option><option value="B" ${f.fam==="B"?"selected":""}>B · Confianza</option><option value="C" ${f.fam==="C"?"selected":""}>C · Premium</option><option value="·" ${f.fam==="·"?"selected":""}>Clásicos</option></select></div>`;
-  let h=fl+(q?"":`<div id="palTop">${palTopHTML()}</div>`);
-  PAL_GOALS.forEach(([k,lab,desc])=>{const L=groups[k]||[];if(!L.length)return;const isOpen=q?true:!!open[k];
-    h+=`<details class="pal-g" data-g="${k}" ${isOpen?"open":""}><summary><span>${lab}</span><b>${L.length}</b></summary><div class="pal-d">${desc}</div><div class="cat">${L.map(t=>palChip(t,fav.includes(t))).join("")}</div></details>`;});
-  const p=document.getElementById("palette");p.innerHTML=h;if(!Object.keys(groups).length)p.insertAdjacentHTML("beforeend",`<div class="empty">Sin resultados</div>`);
+    <select id="palCan" title="Canal principal de los bloques que lo admiten">${PAL_CANAL.map(c=>`<option value="${c[0]}" ${f.can===c[0]?"selected":""}>${c[0]?"Canal: "+c[1]:"Canal: todos"}</option>`).join("")}</select></div>`;
+  let h=fl+(q?"":`<div id="palTop">${palTopHTML()}</div>`),n=0;
+  pal6Items().forEach(([k,lab,desc,items])=>{const cards=items.map(it=>palCard(it,q,fav)).filter(Boolean);if(!cards.length)return;n+=cards.length;const isOpen=q?true:!!open[k];
+    h+=`<details class="pal-g" data-g="${k}" ${isOpen?"open":""}><summary><span>${lab}</span><b>${cards.length}</b></summary><div class="pal-d">${desc}</div><div class="cat">${cards.join("")}</div></details>`;});
+  const p=document.getElementById("palette");p.innerHTML=h;if(!n)p.insertAdjacentHTML("beforeend",`<div class="empty">Sin resultados</div>`);
   palBind(p);
-  p.querySelectorAll("details.pal-g").forEach(d=>d.addEventListener("toggle",()=>{if(q)return;const o=palGet("open",{top:true,lead:true});o[d.dataset.g]=d.open;palSet("open",o);}));
-  const sv=(id,k)=>{const el=document.getElementById(id);if(el)el.addEventListener("change",()=>{const o=palGet("flt",{});o[k]=el.value;palSet("flt",o);renderPalette();});};sv("palSec","sec");sv("palCan","can");sv("palFam","fam");
+  p.querySelectorAll("details.pal-g").forEach(d=>d.addEventListener("toggle",()=>{if(q)return;const o=palGet("open6",{start:true,hero:true});o[d.dataset.g]=d.open;palSet("open6",o);}));
+  const sv=(id,k)=>{const el=document.getElementById(id);if(el)el.addEventListener("change",()=>{const o=palGet("flt",{});o[k]=el.value;palSet("flt",o);renderPalette();});};sv("palSec","sec");sv("palCan","can");
 };
 function palBind(root){
   root.querySelectorAll("[data-add]").forEach(c=>{if(c._pb)return;c._pb=1;
     c.addEventListener("dragstart",()=>{dragType=c.dataset.add;showDrop(true);palHide();});c.addEventListener("dragend",()=>showDrop(false));
-    c.addEventListener("click",e=>{if(e.target.closest("[data-fav]"))return;palHide();addSection(c.dataset.add);});
+    c.addEventListener("click",e=>{if(e.target.closest("[data-fav],[data-var]"))return;palHide();addSection(c.dataset.add);});
     c.addEventListener("mouseenter",()=>palHover(c));c.addEventListener("mouseleave",()=>{clearTimeout(palHover._t);palHide();});});
+  /* variante: cambia el diseño de la tarjeta (se recuerda) sin añadir nada */
+  root.querySelectorAll("[data-var]").forEach(b=>b.addEventListener("click",e=>{e.stopPropagation();const card=b.closest(".pal6");const t=b.dataset.var;
+    const v=palGet("var",{});v[card.dataset.name]=t;palSet("var",v);card.dataset.add=t;
+    card.querySelectorAll("[data-var]").forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-checked",x===b);});
+    const th=card.querySelector(".pal-th");if(th)th.outerHTML=palThumb(t);const st=card.querySelector("[data-fav]");if(st){const on=palGet("fav",[]).includes(t);st.dataset.fav=t;st.classList.toggle("on",on);st.textContent=on?"★":"☆";}
+    palHover(card);}));
   root.querySelectorAll("[data-fav]").forEach(b=>b.addEventListener("click",e=>{e.stopPropagation();const t=b.dataset.fav;let fav=palGet("fav",[]);fav=fav.includes(t)?fav.filter(x=>x!==t):[t,...fav];palSet("fav",fav.slice(0,16));renderPalette();}));}
 /* vista previa real al pasar el ratón */
 const palCache={};
@@ -162,6 +228,6 @@ function palHover(c){clearTimeout(palHover._t);palHover._t=setTimeout(()=>{const
   let pop=document.getElementById("palPop");if(!pop){pop=document.createElement("div");pop.id="palPop";pop.innerHTML=`<div class="pal-pop-h"></div><div class="pal-pop-f"><iframe title="Vista previa del bloque" sandbox="allow-same-origin" tabindex="-1"></iframe></div>`;document.body.appendChild(pop);}
   const key=t+"|"+state.settings.brand+"|"+ncLook()+"|"+JSON.stringify(palGet("flt",{}))+"|"+(CUSTOM.bp||"");
   if(!palCache[key]){const bak=state.sections,sel=state.selected;try{const s={id:"palpv",type:t,props:LIB[t].def(),style:{}};palPreset(s);state.sections=[s];state.selected=null;palCache[key]=buildDoc(true).replace(/<script[\s\S]*?<\/script>/gi,"").replace("</head>","<style>#ncCookies{display:none!important}html,body{overflow:hidden}.da-sticky,.db-sticky,.dc-sticky{position:static!important}[data-fx]{opacity:1!important;transform:none!important;clip-path:none!important;filter:none!important}</style></head>");}catch(e){palCache[key]="<p style='font:13px sans-serif;padding:20px'>Sin vista previa</p>";}finally{state.sections=bak;state.selected=sel;}}
-  pop.querySelector(".pal-pop-h").textContent=LIB[t].label;const fr=pop.querySelector("iframe");if(fr.dataset.k!==key){fr.srcdoc=palCache[key];fr.dataset.k=key;}
+  pop.querySelector(".pal-pop-h").textContent=palName(t);const fr=pop.querySelector("iframe");if(fr.dataset.k!==key){fr.srcdoc=palCache[key];fr.dataset.k=key;}
   const r=c.getBoundingClientRect();pop.style.top=Math.max(8,Math.min(window.innerHeight-300,r.top-20))+"px";pop.style.left=(r.right+10)+"px";pop.classList.add("on");},260);}
 function palHide(){const p=document.getElementById("palPop");if(p)p.classList.remove("on");}

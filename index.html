@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NC Landing Builder — v5.9.1</title>
+<title>NC Landing Builder — v6.0</title>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
@@ -20,34 +20,70 @@
 </head>
 <body>
 <div class="app">
+  <!-- v6.0 · Barra superior en una sola fila: lo frecuente a la vista y el resto en menús.
+       Los botones conservan su id: los módulos que los crean o escuchan siguen funcionando igual.
+       Los que se crean por JS (Desde 0, Medios, Velocidad, Publicar, Lote) se colocan en su hueco [data-slot] (js/studio.js). -->
   <div class="topbar">
-    <div class="brandmark"><span class="dot"></span> NC Landing Builder <small>· v5.9.1</small></div>
-    <input id="landingName" class="txt" style="max-width:180px" placeholder="Nombre de la landing" title="Nombre" autocomplete="off" name="nc_landing_name" data-lpignore="true" data-1p-ignore data-form-type="other">
+    <div class="brandmark" title="NC Landing Builder"><span class="dot"></span><span class="bm-n">NC Builder</span><small>v6.0</small></div>
+    <input id="landingName" class="txt" placeholder="Landing sin nombre" title="Nombre de la landing" autocomplete="off" name="nc_landing_name" data-lpignore="true" data-1p-ignore data-form-type="other">
     <span class="savechip" id="saveChip"></span>
-    <button class="btn" id="btnSave" title="Guardar en la nube (Ctrl+S)">💾 Guardar</button>
-    <button class="btn" id="btnMine" title="Mis landings">☁ Mis landings</button>
-    <button class="btn" id="btnLorem" title="Rellenar textos con Lorem ipsum">¶ Lorem</button>
-    <button class="btn" id="btnImport" title="Importar HTML de cliente">⇱ Importar</button>
-    <button class="btn" id="btnFigma" title="Importar desde Figma">◆ Figma</button>
-    <button class="btn" id="btnFree" title="Mover elementos libremente (posición absoluta)">✥ Modo libre</button>
-    <div class="spacer"></div>
-    <span class="lbl" id="userChip"></span>
-    <button class="btn icob" id="btnUndo" title="Deshacer (Ctrl+Z)">↺</button>
-    <button class="btn icob" id="btnRedo" title="Rehacer (Ctrl+Y)">↻</button>
-    <button class="btn icob" id="btnKeys" title="Atajos de teclado (?)">⌨</button>
-    <button class="btn icob theme" id="btnTheme" title="Tema de la herramienta">☾</button>
-    <button class="btn" id="btnTpl" title="Galería de plantillas">▦ Plantillas</button>
-    <span class="lbl">Marca</span>
-    <select class="sel" id="brandTop"></select>
-    <div class="seg" id="devSeg">
-      <button data-dev="mobile">Móvil</button><button data-dev="tablet">Tablet</button><button data-dev="desktop" class="on">Desktop</button>
+
+    <div class="tbm" data-menu="file">
+      <button type="button" class="btn tbm-b" aria-haspopup="true" aria-expanded="false">Archivo</button>
+      <div class="tbm-pop" role="menu">
+        <div class="tbm-h">Landing</div>
+        <button class="btn" id="btnSave" data-ico="save" data-kbd="Ctrl S" title="Guardar en la nube (Ctrl+S)">Guardar</button>
+        <button class="btn" id="btnMine" data-ico="folder" title="Mis landings">Mis landings</button>
+        <span data-slot="btnScratch" data-ico="sparkles" data-label="Nueva desde 0"></span>
+        <div class="tbm-sep"></div>
+        <div class="tbm-h">Traer contenido</div>
+        <button class="btn" id="btnImport" data-ico="code" title="Importar HTML de cliente">Importar HTML o ZIP</button>
+        <button class="btn" id="btnFigma" data-ico="figma" title="Importar desde Figma">Importar frame de Figma</button>
+        <span data-slot="btnBatch" data-ico="table" data-label="Lote desde CSV"></span>
+      </div>
     </div>
-    <button class="btn" id="btnPreview">Abrir ⧉</button>
-    <button class="btn" id="btnCro" title="Puntuación CRO: above the fold, datos pendientes, fricción y confianza">📈 CRO</button>
-    <button class="btn" id="btnCheck" title="Checklist antes de publicar">✓ Revisar</button>
-    <button class="btn" id="btnExportHtml" title="Un único HTML autocontenido (FTP)">HTML ↓</button>
-    <button class="btn" id="btnExportAB" title="Test A/B: dos HTML (original y con la idea A/B aplicada) + guía de medición">A/B ↓</button>
-    <button class="btn primary" id="btnExport" title="ZIP con index.html + css/ + js/ + README">ZIP ↓</button>
+    <div class="tbm" data-menu="tools">
+      <button type="button" class="btn tbm-b" aria-haspopup="true" aria-expanded="false">Más</button>
+      <div class="tbm-pop" role="menu">
+        <span data-slot="btnMedia" data-ico="image" data-label="Biblioteca de medios"></span>
+        <button class="btn" id="btnLorem" data-ico="text" title="Rellenar textos con Lorem ipsum">Rellenar con texto de ejemplo</button>
+        <button class="btn" id="btnFree" data-ico="move" title="Mover elementos libremente (posición absoluta)">Modo libre (posición absoluta)</button>
+        <div class="tbm-sep"></div>
+        <button class="btn" id="btnKeys" data-ico="keyboard" data-kbd="?" title="Atajos de teclado (?)">Atajos de teclado</button>
+      </div>
+    </div>
+    <button class="btn tb-tpl" id="btnTpl" title="Galería de plantillas">Plantillas</button>
+    <button class="btn tb-brief" id="btnBrief" title="Genera una landing completa a partir de un brief: sector, oferta, objetivo y marca">Generar desde brief</button>
+
+    <div class="spacer"></div>
+    <div class="tb-hist"><button class="btn icob" id="btnUndo" title="Deshacer (Ctrl+Z)">↺</button><button class="btn icob" id="btnRedo" title="Rehacer (Ctrl+Y)">↻</button></div>
+    <div class="seg" id="devSeg">
+      <button data-dev="mobile" title="Móvil">Móvil</button><button data-dev="tablet" title="Tablet">Tablet</button><button data-dev="desktop" class="on" title="Escritorio">Escritorio</button>
+    </div>
+    <div class="spacer"></div>
+
+    <label class="tb-brand"><span class="lbl">Marca</span><select class="sel" id="brandTop"></select></label>
+    <div class="tbm" data-menu="check">
+      <button type="button" class="btn tbm-b" aria-haspopup="true" aria-expanded="false">Revisar</button>
+      <div class="tbm-pop right" role="menu">
+        <button class="btn" id="btnCheck" data-ico="list-checks" title="Checklist antes de publicar">Checklist antes de publicar</button>
+        <button class="btn" id="btnCro" data-ico="chart" title="Puntuación CRO: above the fold, datos pendientes, fricción y confianza">Puntuación CRO</button>
+        <span data-slot="btnPerf" data-ico="zap" data-label="Velocidad (LCP y peso)"></span>
+      </div>
+    </div>
+    <button class="btn" id="btnPreview" title="Abrir la landing en una pestaña">Vista previa</button>
+    <div class="tbm" data-menu="export">
+      <button type="button" class="btn primary tbm-b" aria-haspopup="true" aria-expanded="false">Exportar</button>
+      <div class="tbm-pop right" role="menu">
+        <span data-slot="btnPublish" data-ico="rocket" data-label="Publicar (FTP o Vercel)"></span>
+        <div class="tbm-sep"></div>
+        <button class="btn" id="btnExportHtml" data-ico="file" title="Un único HTML autocontenido (FTP)">HTML único (FTP)</button>
+        <button class="btn" id="btnExport" data-ico="archive" title="ZIP con index.html + css/ + js/ + README">ZIP con css/ y js/</button>
+        <button class="btn" id="btnExportAB" data-ico="split" title="Test A/B: dos HTML (original y con la idea A/B aplicada) + guía de medición">Test A/B (dos versiones)</button>
+      </div>
+    </div>
+    <span class="lbl" id="userChip"></span>
+    <button class="btn icob theme" id="btnTheme" title="Tema de la herramienta">☾</button>
   </div>
 
   <div class="main">
@@ -178,6 +214,10 @@
 <script src="js/edit-pro.js"></script>
 <script src="js/build.js"></script>
 <script src="js/code-edit.js"></script>
+<script src="js/studio.js"></script>
+<script src="js/brief.js"></script>
+<script src="js/layers.js"></script>
+<script src="js/brand-url.js"></script>
 <script src="js/boot.js"></script>
 </body>
 </html>

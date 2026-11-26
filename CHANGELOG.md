@@ -1,5 +1,50 @@
 # Changelog
 
+## v6.0 — 2026-11-26 · Estudio: menos capas, mejor resultado y landing desde brief
+- **Barra superior en una fila**: antes había 26 botones en dos filas. Ahora están a la vista Plantillas, **Generar**, deshacer/rehacer, dispositivo, marca, Vista previa y **Exportar**. El resto va en menús: **Archivo**, **Más** y **Revisar**, con iconos de línea, teclado (↑ ↓ Esc) y cambio de menú al pasar el ratón. Los botones conservan su id.
+- **Catálogo único de bloques**: se acaban las capas del panel (familias A/B/C, «Extras CRO», «Heros v5», «Secciones v5», «Escaparate»…) y los repetidos (3 FAQ, 3 pies, 3 barras fijas, 3 navegaciones…).
+  - 37 tarjetas en el orden en que se lee una landing: Empezar, Cabecera, Hero, Oferta y precio, Captar el lead, Confianza, Explicar y Pie.
+  - Cada tarjeta es una función («Preguntas frecuentes») y sus diseños son variantes que se eligen con píldoras («Acordeón · Con contacto al lado · Editorial · Oscura»). Se recuerda la elegida y la vista previa al pasar el ratón sigue funcionando.
+  - Están los 111 bloques; uno nuevo sin sitio sale en «Otros». Los nombres pierden «A ·», «B ·», «C ·» y «✚» en todo el editor (también en Estructura). El buscador encuentra por nombre, variante, nombre antiguo o id (`faq`).
+  - Fuera el filtro «Familia».
+- **Acabado (Global)**: *Limpio* o *Con adornos*.
+  - *Limpio* (por defecto en landings nuevas y en las generadas) quita las capas que se pintaban encima del diseño: notas y flechas a mano, letra manuscrita, grano/papel, numeración editorial, fotos en B/N o duotono, bloques de color sobre la foto, mockups girados y sellos.
+  - Colores, tipografía y estructura del estilo no cambian.
+  - Las landings guardadas antes de la v6 se abren con *Con adornos*, así que no cambia su aspecto.
+- **Estilos recomendados**: 9 a la vista (Base, Neobanco, Vitrina, Nocturno, Editorial, Minimal lujo, Swiss, Prensa y Escaparate). Los otros 24 pasan a «Ver estilos experimentales» en Global y a «Más estilos…» en la galería de plantillas.
+- **✦ Generar desde brief**: crea una landing completa a partir de:
+  - sector, producto, promesa (con parte destacada), subtítulo, precio y ventajas («Título: explicación»);
+  - tarifas opcionales («Nombre | precio | ventaja; ventaja», `*` para la recomendada);
+  - objetivo: que deje su teléfono, que llame, WhatsApp o que pida información;
+  - enfoque: precio, ahorro, confianza o urgencia (con texto de oferta y fecha);
+  - teléfono y WhatsApp, marca o colores y tipografía propios, logo, estilo (automático por sector) y longitud.
+  - Elige el hero por objetivo × enfoque y monta de 7 a 12 secciones con reglas de CRO: prueba, ventajas (la rejilla se ajusta al número), tarifas solo si las das, pasos, testimonio, objeciones, FAQ con contacto y un cierre según el canal.
+  - Usa el copy del vertical y lo sustituye por lo que escribes. Lo que no das queda como `{{PLACEHOLDER}}`: nunca inventa precios, cifras ni opiniones. Rellena el título SEO, la descripción, el nombre de la landing y el logo en texto.
+- **Capas (edición visual directa)**: en el panel derecho, «Secciones | Capas» (atajo `L`). Capas muestra el árbol de la sección seleccionada tal y como se ve en el lienzo, como en Figma: titulares, textos, botones, imágenes, formularios, campos, listas y grupos.
+  - Clic en una capa: la selecciona en el lienzo, con su barra flotante y Estilo → «Elemento seleccionado». Doble clic: abre todos sus ajustes. Al pasar el ratón se resalta en el lienzo.
+  - Ojo: ocultar en móvil → en escritorio → siempre → visible. No sale en el export.
+  - Un punto marca las capas con estilo propio; ⟲ lo quita.
+  - Las cajas se pliegan, y lo que seleccionas en el lienzo se marca en el árbol. Se navega con ↑ ↓ e Intro.
+  - Usa las mismas rutas que el estilo por elemento, así que se guarda, duplica y exporta igual.
+- **Marca desde una web** (menú Más, Global → Marca y el brief): con la URL (versión desplegada y con sesión) o pegando el HTML de la página.
+  - Pinta la web en un iframe aislado y sin scripts, y mide lo que calcula el navegador. Cuentan también las hojas de estilo enlazadas y las fuentes.
+  - Saca color principal (botones), acento, texto, fondo suave, texto de botón, radio de botón y de tarjeta, tipografías de titular y de texto, nombre y logo (imagen o SVG de la cabecera; si no hay, el icono de la web).
+  - Antes de aplicar se ve una vista previa y cada color se puede retocar. Avisa de lo que no encuentra y de las tipografías que no están en Google Fonts: en ese caso usa Inter.
+  - Al aplicar crea la marca editable, usa su tipografía aunque el estilo tenga otra y pone el logo en las cabeceras de la landing y en las que añadas después.
+- **Arreglos**:
+  - Hero «Foto a pantalla completa»: el oscurecido quedaba debajo de la foto y el texto se leía mal. Ahora va entre la foto y el texto.
+  - Estilos Nocturno, Ácido y Terminal: el botón grande de llamar salía con el texto del mismo color que el fondo.
+  - Banner de cookies: el texto podía salir oscuro sobre fondo oscuro con estilos que colorean los párrafos.
+  - Hero «¿Cuánto ahorras?» de luz: la factura mensual salía en €/kWh; ahora sale en €/mes.
+- Comprobado en el navegador:
+  - las 111 plantillas con los dos acabados y los 112 bloques se exportan sin errores;
+  - las 448 combinaciones del brief generan su estructura;
+  - landings generadas revisadas en escritorio y en móvil (375 px), sin scroll lateral;
+  - Capas: selección, resaltado y ocultar en móvil, en una plantilla y en una «Sección desde 0»;
+  - Marca desde una web con HTML pegado: colores, Poppins/Lato, radios 24/16 y logo SVG aplicados a la landing. La ruta por URL solo se ha probado en su aviso sin sesión (en local no hay `/api/fetch`);
+  - tema claro y oscuro.
+  - No se ha podido pasar `npm test` en este equipo (no tiene Node).
+
 ## Sin publicar · Registro único de marcas
 - Las marcas se leen de la tabla compartida `nc_brands` de Supabase (`js/brands-registry.js`). `brands.js` queda como respaldo cuando no hay conexión o la tabla no existe.
 - Se aplica primero la copia guardada en el navegador, para que una landing con una marca del registro no vuelva a Next Conversion al abrirse.
