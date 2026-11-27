@@ -1,5 +1,33 @@
 # Changelog
 
+## v6.1 — 2026-11-27 · Popups y barras con disparadores, scripts y píxeles
+Funciones de las herramientas de landings de referencia (Unbounce, Instapage, Leadpages) que faltaban.
+- **Popups y barras** (menú Más o Global → «Popups, barras y scripts»):
+  - **Formatos**: popup centrado, barra arriba (empuja la página), barra abajo o aviso en la esquina.
+  - **Disparadores**:
+    - al entrar o tras X segundos;
+    - al hacer scroll hasta un X % de la página;
+    - intención de salida: en escritorio, al sacar el ratón por arriba; en móvil, al subir rápido después de leer;
+    - tras X segundos sin actividad.
+  - **Frecuencia**: una vez por sesión, una vez cada N días o en cada visita.
+  - **Público**: dispositivo (móvil o escritorio), palabras en la URL (utm_source, utm_medium, utm_campaign, utm_term, ref; «google» también vale para gclid) y no mostrar a quien ya ha enviado un formulario.
+  - **Contenido**: etiqueta, título, texto, imagen y acción: formulario de teléfono (con RGPD, antispam y atribución, como el resto), llamar, WhatsApp, ir al formulario o enlace.
+  - **Plantillas de partida**: popup de salida, popup con retraso, aviso al 50 %, barra de oferta y barra de WhatsApp en móvil.
+  - **En el editor** no salta nada solo: «Ver en el lienzo» lo enseña y un botón flotante vuelve al gestor.
+  - **Accesible**: el foco va al primer campo y queda dentro del popup; Esc o el fondo lo cierran y el foco vuelve a su sitio; respeta «reducir movimiento».
+  - **Medición**: `overlay_view`, `overlay_click` y `overlay_close` (con `overlay_name` y `close_reason`).
+  - El checklist avisa si un popup salta nada más entrar, porque en móvil es intrusivo.
+- **Scripts y píxeles**:
+  - Código propio en `<head>`, al abrir `<body>` o al final, con nombre, orden y activar/desactivar. Solo en la landing exportada, nunca en el editor.
+  - Consentimiento por script: tras aceptar analítica, tras aceptar publicidad o siempre. Con el banner propio se cargan en cuanto el visitante acepta, sin recargar. Con CMP externa salen como `type="text/plain"` con su categoría.
+  - Plantillas para el píxel de Meta, TikTok, Hotjar/Clarity y chat.
+  - Avisa de GTM duplicado, scripts por http, código que no es HTML y etiquetas `<html>`/`<body>` sobrantes.
+- Comprobado en la landing exportada:
+  - la barra sale al entrar y empuja la página;
+  - el popup sale al ir a salir, con el foco en el teléfono, y Esc lo cierra;
+  - los eventos llegan al dataLayer;
+  - el script de analítica no se ejecuta hasta aceptar las cookies; el «siempre», sí.
+
 ## v6.0 — 2026-11-26 · Estudio: menos capas, mejor resultado y landing desde brief
 - **Barra superior en una fila**: antes había 26 botones en dos filas. Ahora están a la vista Plantillas, **Generar**, deshacer/rehacer, dispositivo, marca, Vista previa y **Exportar**. El resto va en menús: **Archivo**, **Más** y **Revisar**, con iconos de línea, teclado (↑ ↓ Esc) y cambio de menú al pasar el ratón. Los botones conservan su id.
 - **Catálogo único de bloques**: se acaban las capas del panel (familias A/B/C, «Extras CRO», «Heros v5», «Secciones v5», «Escaparate»…) y los repetidos (3 FAQ, 3 pies, 3 barras fijas, 3 navegaciones…).

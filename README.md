@@ -52,6 +52,7 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   brief.js                                        # v6.0: «Generar desde brief» (landing completa a partir de sector, objetivo, oferta y marca)
   layers.js                                       # v6.0: panel «Capas» (árbol de la sección: seleccionar, resaltar, ocultar, quitar estilo)
   brand-url.js                                    # v6.0: «Marca desde una web» (colores, tipografías, radios y logo medidos en la web pintada)
+  convert.js                                      # v6.1: popups y barras con disparadores, frecuencia y público · scripts y píxeles con consentimiento
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 api/fetch.js          # trae una página pública para convertir una sección en módulo (con sesión; bloquea IPs privadas)
 api/publish.js        # publicar por FTP/FTPS o en Vercel (credenciales solo en variables de entorno)
