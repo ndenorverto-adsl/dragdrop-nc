@@ -53,8 +53,11 @@ js/                   # lógica, cargada en este orden (scripts clásicos, sin b
   layers.js                                       # v6.0: panel «Capas» (árbol de la sección: seleccionar, resaltar, ocultar, quitar estilo)
   brand-url.js                                    # v6.0: «Marca desde una web» (colores, tipografías, radios y logo medidos en la web pintada)
   convert.js                                      # v6.1: popups y barras con disparadores, frecuencia y público · scripts y píxeles con consentimiento
+  zoom.js                                         # v6.1: lienzo al ancho real del dispositivo (390/768/1280/1440) con zoom y «Ajustar»
+  ai-copy.js                                      # v6.1: ✨ asistente de textos con IA en el panel Contenido (llama a /api/ai)
 api/figma.js          # proxy a la API de Figma (función de Vercel)
 api/fetch.js          # trae una página pública para convertir una sección en módulo (con sesión; bloquea IPs privadas)
+api/ai.js             # asistente de textos con Claude (con sesión; necesita ANTHROPIC_API_KEY en Vercel)
 api/publish.js        # publicar por FTP/FTPS o en Vercel (credenciales solo en variables de entorno)
 package.json          # dependencias de las funciones de /api (basic-ftp); el sitio sigue sin build
 config.js             # claves públicas de Supabase (a partir de config.example.js)

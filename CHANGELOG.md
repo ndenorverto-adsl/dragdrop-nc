@@ -1,6 +1,6 @@
 # Changelog
 
-## v6.1 — 2026-11-27 · Popups y barras con disparadores, scripts y píxeles
+## v6.1 — 2026-11-27 · Popups y barras, scripts y píxeles, lienzo real con zoom y textos con IA
 Funciones de las herramientas de landings de referencia (Unbounce, Instapage, Leadpages) que faltaban.
 - **Popups y barras** (menú Más o Global → «Popups, barras y scripts»):
   - **Formatos**: popup centrado, barra arriba (empuja la página), barra abajo o aviso en la esquina.
@@ -22,11 +22,25 @@ Funciones de las herramientas de landings de referencia (Unbounce, Instapage, Le
   - Consentimiento por script: tras aceptar analítica, tras aceptar publicidad o siempre. Con el banner propio se cargan en cuanto el visitante acepta, sin recargar. Con CMP externa salen como `type="text/plain"` con su categoría.
   - Plantillas para el píxel de Meta, TikTok, Hotjar/Clarity y chat.
   - Avisa de GTM duplicado, scripts por http, código que no es HTML y etiquetas `<html>`/`<body>` sobrantes.
+- **Lienzo a tamaño real con zoom**:
+  - Cada dispositivo se pinta a su ancho real: móvil 390, tablet 768 y escritorio 1280 o 1440. Antes el escritorio no pasaba de 1100 px, más estrecho que un portátil, y algunos heros salían a una columna cuando en la web real van a dos.
+  - «Ajustar» encaja el lienzo en el espacio; también se puede ir de 33 % a 150 %.
+  - Control abajo a la derecha. Atajos: Ctrl + rueda, Ctrl 0 (ajustar), Ctrl + y Ctrl −.
+  - La barra flotante del elemento seleccionado se coloca bien con cualquier zoom.
+- **Asistente de textos con IA** (✨ junto a cada texto del panel Contenido: titulares, subtítulos, etiquetas, botones…):
+  - Opciones: variantes para test A/B, más corto, más directo, centrado en el beneficio, urgencia honesta, tono cercano o profesional, textos de botón en primera persona y corregir.
+  - Cada propuesta se aplica con un clic (Ctrl+Z la deshace) o se copia.
+  - Usa como contexto la marca, el sector y el resto de titulares de la página. Nunca inventa precios, plazos, cifras ni opiniones, y conserva los `{{MARCADORES}}`.
+  - Lo hace la función nueva `api/ai.js` con Claude (SDK oficial `@anthropic-ai/sdk`, modelo `claude-opus-5-5`, salida JSON validada con esquema y modelo de respaldo si el principal rechaza).
+  - **Para activarlo**: variable de entorno `ANTHROPIC_API_KEY` en Vercel. Opcional: `NC_AI_MODEL` para cambiar de modelo. Solo responde a usuarios con sesión del builder; sin clave avisa de que no está activado.
 - Comprobado en la landing exportada:
   - la barra sale al entrar y empuja la página;
   - el popup sale al ir a salir, con el foco en el teléfono, y Esc lo cierra;
   - los eventos llegan al dataLayer;
-  - el script de analítica no se ejecuta hasta aceptar las cookies; el «siempre», sí.
+  - el script de analítica no se ejecuta hasta aceptar las cookies; el «siempre», sí;
+  - zoom en móvil, escritorio 1280 y 1440, y barra flotante alineada con el titular al 63 %;
+  - asistente: botones ✨ en los textos correctos (no en precios, URLs ni listas) y aviso claro sin sesión. `api/ai.js` solo se ha comprobado de sintaxis: no se ha podido llamar a Claude en local (no hay Node ni clave aquí).
+  - Las 111 plantillas y los 112 bloques siguen generándose sin errores.
 
 ## v6.0 — 2026-11-26 · Estudio: menos capas, mejor resultado y landing desde brief
 - **Barra superior en una fila**: antes había 26 botones en dos filas. Ahora están a la vista Plantillas, **Generar**, deshacer/rehacer, dispositivo, marca, Vista previa y **Exportar**. El resto va en menús: **Archivo**, **Más** y **Revisar**, con iconos de línea, teclado (↑ ↓ Esc) y cambio de menú al pasar el ratón. Los botones conservan su id.

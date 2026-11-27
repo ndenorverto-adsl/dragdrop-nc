@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NC Landing Builder — v6.0</title>
+<title>NC Landing Builder — v6.1</title>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
@@ -24,7 +24,7 @@
        Los botones conservan su id: los módulos que los crean o escuchan siguen funcionando igual.
        Los que se crean por JS (Desde 0, Medios, Velocidad, Publicar, Lote) se colocan en su hueco [data-slot] (js/studio.js). -->
   <div class="topbar">
-    <div class="brandmark" title="NC Landing Builder"><span class="dot"></span><span class="bm-n">NC Builder</span><small>v6.0</small></div>
+    <div class="brandmark" title="NC Landing Builder"><span class="dot"></span><span class="bm-n">NC Builder</span><small>v6.1</small></div>
     <input id="landingName" class="txt" placeholder="Landing sin nombre" title="Nombre de la landing" autocomplete="off" name="nc_landing_name" data-lpignore="true" data-1p-ignore data-form-type="other">
     <span class="savechip" id="saveChip"></span>
 
@@ -99,7 +99,7 @@
           <iframe id="pv" title="preview"></iframe>
         </div>
       </div>
-      <div class="hint">Arrastra bloques al lienzo · clic en una sección para editar · en el preview aparecen ↑↓⧉🗑 sobre la sección activa · reordena en “Estructura” · pulsa <b>?</b> para ver los atajos.</div>
+      <div class="hint">Arrastra bloques al lienzo · clic para editar · doble clic en un texto para escribir · <b>L</b> capas · <b>?</b> atajos</div>
     </div>
 
     <div class="col right">
@@ -219,6 +219,8 @@
 <script src="js/layers.js"></script>
 <script src="js/brand-url.js"></script>
 <script src="js/convert.js"></script>
+<script src="js/zoom.js"></script>
+<script src="js/ai-copy.js"></script>
 <script src="js/boot.js"></script>
 </body>
 </html>

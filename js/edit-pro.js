@@ -84,7 +84,7 @@ function live(){const f=document.getElementById("pv");const d=f&&f.contentDocume
 /* ---------- barra flotante ---------- */
 let bar=null;
 function posBar(r){const s=EP.sel&&state.sections.find(x=>x.id===EP.sel.id);if(!bar||!s){if(bar)bar.style.display="none";return;}if(r)EP.sel.r=r;r=EP.sel.r;const f=document.getElementById("pv").getBoundingClientRect();
-  let top=f.top+r.y-44;if(top<f.top+4)top=f.top+r.y+r.h+8;const left=Math.max(f.left+4,Math.min(f.left+r.x,f.right-bar.offsetWidth-4));bar.style.top=top+"px";bar.style.left=left+"px";bar.style.display=(r.y+r.h<0||r.y>f.height)?"none":"flex";}
+  const z=window.ncZoom||1;/* v6.1: el lienzo puede estar con zoom */let top=f.top+r.y*z-44;if(top<f.top+4)top=f.top+(r.y+r.h)*z+8;const left=Math.max(f.left+4,Math.min(f.left+r.x*z,f.right-bar.offsetWidth-4));bar.style.top=top+"px";bar.style.left=left+"px";bar.style.display=((r.y+r.h)*z<0||r.y*z>f.height)?"none":"flex";}
 function el(){const s=state.sections.find(x=>x.id===(EP.sel&&EP.sel.id));if(!s)return null;s.els=s.els||{};return s.els[EP.sel.path]=s.els[EP.sel.path]||{};}
 function clean(){const s=state.sections.find(x=>x.id===(EP.sel&&EP.sel.id));if(!s||!s.els)return;Object.keys(s.els).forEach(k=>{const o=s.els[k];Object.keys(o).forEach(j=>{if(o[j]===""||o[j]==null||o[j]===false)delete o[j];});if(!Object.keys(o).length)delete s.els[k];});}
 function drawBar(){if(!bar){bar=document.createElement("div");bar.className="ep-bar";document.body.appendChild(bar);}const o=el()||{};const fs=+o.fs||Math.round(EP.sel.fs||16);

@@ -41,6 +41,10 @@
     "api/fetch.js": {
       "maxDuration": 20,
       "includeFiles": "config.js"
+    },
+    "api/ai.js": {
+      "maxDuration": 60,
+      "includeFiles": "config.js"
     }
   }
 }
