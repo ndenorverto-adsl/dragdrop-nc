@@ -33,6 +33,7 @@ Funciones de las herramientas de landings de referencia (Unbounce, Instapage, Le
   - Usa como contexto la marca, el sector y el resto de titulares de la página. Nunca inventa precios, plazos, cifras ni opiniones, y conserva los `{{MARCADORES}}`.
   - Lo hace la función nueva `api/ai.js` con Claude (SDK oficial `@anthropic-ai/sdk`, modelo `claude-opus-5-5`, salida JSON validada con esquema y modelo de respaldo si el principal rechaza).
   - **Para activarlo**: variable de entorno `ANTHROPIC_API_KEY` en Vercel. Opcional: `NC_AI_MODEL` para cambiar de modelo. Solo responde a usuarios con sesión del builder; sin clave avisa de que no está activado.
+  - **Oculto mientras no esté activado**: el editor pregunta a `GET /api/ai` si hay clave y solo entonces enseña los ✨. Sin clave (o en local) no se ve el botón y no hay ningún coste. La API de Anthropic se paga por uso, aparte de cualquier suscripción de Claude: con Claude Opus 5.5, unos 0,02-0,03 $ por propuesta; con `NC_AI_MODEL=claude-haiku-5-5`, menos de 0,001 $.
 - Comprobado en la landing exportada:
   - la barra sale al entrar y empuja la página;
   - el popup sale al ir a salir, con el foco en el teléfono, y Esc lo cierra;

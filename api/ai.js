@@ -1,5 +1,6 @@
 // /api/ai — asistente de copy del builder (v6.1): reescribe textos cortos de una landing con Claude.
 //
+//  GET  /api/ai   → { enabled } (sin sesión: solo dice si la clave está puesta; el editor oculta ✨ si no)
 //  POST /api/ai   Cabecera obligatoria: Authorization: Bearer <access_token de la sesión de Supabase del builder>
 //  Cuerpo JSON: { action, text, field, context: { sector, brand, product, audience, page } }
 //  → { variants: [{ text, why }] }
@@ -89,8 +90,11 @@ module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   const send = (code, obj) => { res.statusCode = code; res.end(JSON.stringify(obj)); };
   try {
+    const enabled = !!(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN);
+    /* GET: ¿está activado? El editor solo enseña el botón ✨ si la clave está puesta (no gasta nada). */
+    if (req.method === 'GET') return send(200, { enabled });
     if (req.method !== 'POST') return send(405, { error: 'Método no permitido' });
-    if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN) return send(501, { error: 'El asistente de textos no está activado: falta ANTHROPIC_API_KEY en Vercel.' });
+    if (!enabled) return send(501, { error: 'El asistente de textos no está activado: falta ANTHROPIC_API_KEY en Vercel.' });
     const me = await whoami(req); if (!me.ok) return send(me.code, { error: me.error });
     const b = await readBody(req);
     const action = ACTIONS[b.action] ? b.action : 'variants';

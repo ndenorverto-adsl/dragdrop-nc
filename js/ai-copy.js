@@ -38,8 +38,13 @@ function decorate(){const cf=document.getElementById("contentFields");if(!cf)ret
   cf.querySelectorAll("input[data-fk],textarea[data-fk]").forEach(inp=>{const f=inp.closest(".fld");if(!f||f.querySelector(".ai-b")||!ok(inp))return;const l=f.querySelector("label");if(!l)return;
     const b=document.createElement("button");b.type="button";b.className="ai-b";b.title="Mejorar este texto con IA";b.setAttribute("aria-label","Mejorar «"+l.textContent.trim()+"» con IA");b.textContent="✨";
     b.addEventListener("click",e=>{e.preventDefault();open(inp,b);});l.appendChild(b);});}
-const _rr=renderRight;renderRight=function(){const r=_rr.apply(this,arguments);try{decorate();}catch(e){}return r;};
+/* El botón ✨ solo aparece si la IA está activada en el servidor (ANTHROPIC_API_KEY en Vercel).
+   Sin clave, en local o si /api/ai no existe, no se ve nada y no hay ningún coste. */
+let ON=false;
+(async function(){try{const r=await fetch("/api/ai",{method:"GET",cache:"no-store"});if(!r.ok)return;const j=await r.json().catch(()=>({}));
+  if(j&&j.enabled===true){ON=true;try{decorate();}catch(e){}}}catch(e){}})();
+const _rr=renderRight;renderRight=function(){const r=_rr.apply(this,arguments);try{if(ON)decorate();}catch(e){}return r;};
 document.addEventListener("keydown",e=>{if(e.key==="Escape")close();});
 document.addEventListener("mousedown",e=>{if(POP&&!POP.contains(e.target)&&!e.target.closest(".ai-b"))close();});
-window.ncAiDecorate=decorate;
+window.ncAiDecorate=()=>{if(ON)decorate();};
 })();
